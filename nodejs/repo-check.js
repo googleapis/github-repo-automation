@@ -310,7 +310,7 @@ async function checkReadmeLinks(repository, branch) {
     let match = regex.exec(link);
     if (!match) {
       logError(
-        `${repository}: README.md has link ${link} which does not look valid`
+        `${repository}: [!] README.md has link ${link} which does not look valid`
       );
       continue;
     }
@@ -325,7 +325,7 @@ async function checkReadmeLinks(repository, branch) {
         await httpsRequest(undefined, 'GET', hostname, path, undefined, '*/*');
       }
     } catch (err) {
-      logError(`${repository}: README.md has link ${link} which does not work`);
+      logError(`${repository}: [!] README.md has link ${link} which does not work`);
     }
   }
 }
