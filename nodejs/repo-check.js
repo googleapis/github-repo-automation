@@ -18,7 +18,7 @@ const githubTokenFile = `${process.env.HOME}/github-token`;
 const circleTokenFile = `${process.env.HOME}/circleci-token`;
 
 const githubOrg = 'googleapis';
-const githubRepoNameRegex = /^nodejs-pubsub/;
+const githubRepoNameRegex = /^nodejs-/;
 
 function logError(string) {
   if (logError.errorCounter === undefined) {
