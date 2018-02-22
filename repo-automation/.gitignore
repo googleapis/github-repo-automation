@@ -1,0 +1,9 @@
+**/*.log
+**/node_modules
+.coverage
+.nyc_output
+docs/
+out/
+test.js
+config.yaml
+ignored

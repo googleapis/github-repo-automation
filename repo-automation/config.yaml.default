@@ -1,0 +1,5 @@
+---
+auth:
+  token: your-github-token
+organization: googleapis
+repo-name-regex: 'nodejs-.*'
