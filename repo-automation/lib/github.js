@@ -310,6 +310,37 @@ class GitHubRepository {
     });
     return result.data;
   }
+
+  /** Returns branch protection status checks for master branch.
+   * @returns {Object} Status checks object, as returned by GitHub API.
+   */
+  async getRequiredMasterBranchProtectionStatusChecks() {
+    let owner = this.repository['owner']['login'];
+    let repo = this.repository['name'];
+    let branch = 'master';
+
+    // I believe there is no need to support paging here
+    let result = await this.octokit.repos.getProtectedBranchRequiredStatusChecks(
+      {owner, repo, branch}
+    );
+    return result.data;
+  }
+
+  /** Updates branch protection status checks for master branch.
+   * @param {string[]} contexts Required status checks.
+   * @returns {Object} Status checks object, as returned by GitHub API.
+   */
+  async updateRequiredMasterBranchProtectionStatusChecks(contexts) {
+    let owner = this.repository['owner']['login'];
+    let repo = this.repository['name'];
+    let branch = 'master';
+    let strict = true;
+
+    let result = await this.octokit.repos.updateProtectedBranchRequiredStatusChecks(
+      {owner, repo, branch, strict, contexts}
+    );
+    return result.data;
+  }
 }
 
 module.exports = GitHub;
