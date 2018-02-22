@@ -139,6 +139,19 @@ class GitHubRepository {
     return result.data;
   }
 
+  /** Returns contents of the file from the given branch in GitHub repository.
+   * @param {string} branch Branch name.
+   * @param {string} path Path to file in repository.
+   * @returns {Object} File object, as returned by GitHub API.
+   */
+  async getFileFromBranch(branch, path) {
+    let owner = this.repository['owner']['login'];
+    let repo = this.repository['name'];
+    let ref = branch;
+    let result = await this.octokit.repos.getContent({owner, repo, path, ref});
+    return result.data;
+  }
+
   /** Lists open pull requests in the repository.
    * @returns {Object[]} Pull request objects, as returned by GitHub API.
    */
