@@ -2,63 +2,10 @@
  * @fileoverview Wraps some octokit GitHub API calls.
  */
 
-const fs = require('fs');
-const util = require('util');
-const readFile = util.promisify(fs.readFile);
+'use strict';
+
 const OctoKit = require('@octokit/rest');
-const yaml = require('js-yaml');
-
-/** Configuration object. Contains GitHub token, organization and repository
- * filter regex.
- */
-class Config {
-  /** Constructs a configuration object.
-   * @constructor
-   * @param {string} configFilename Path to a configuration file. If not given,
-   * uses `./config.yaml`.
-   */
-  constructor(configFilename) {
-    this.filename = configFilename || './config.yaml';
-  }
-
-  /** Reads the configuration.
-   */
-  async init() {
-    try {
-      const yamlContent = await readFile(this.filename);
-      this.config = yaml.load(yamlContent);
-    } catch (err) {
-      console.error(
-        `Cannot read configuration file ${
-          this.filename
-        }. Have you created it? Use config.yaml.default as a sample.`
-      );
-      throw new Error('Configuration file is not found');
-    }
-  }
-
-  /** Get option value.
-   * @param {string} option Configuration option.
-   * @returns {string|Object} Requested value.
-   */
-  get(option) {
-    return this.configData[option];
-  }
-
-  /** Get configuration object.
-   * @returns {Object} Parsed configuration yaml.
-   */
-  get config() {
-    return this.config;
-  }
-
-  /** Assigns configuration object.
-   * @param {Object} Configuration object.
-   */
-  set config(configData) {
-    this.configData = configData;
-  }
-}
+const Config = require('./config.js');
 
 /** Wraps some octokit GitHub API calls.
  */
@@ -73,9 +20,10 @@ class GitHub {
     let octokit = new OctoKit();
     octokit.authenticate({
       type: 'token',
-      token: config.get('auth')['token'],
+      token: config.get('auth')['github-token'],
     });
 
+    this.organization = config.get('organization');
     this.octokit = octokit;
     this.config = config;
   }
@@ -85,7 +33,7 @@ class GitHub {
    * @returns {GitHubRepository[]} Repositories matching the filter.
    */
   async getRepositories() {
-    let org = this.config.get('organization');
+    let org = this.organization;
     let type = 'public';
     let repoNameRegexConfig = this.config.get('repo-name-regex') || '.*';
     let repoNameRegex = new RegExp(repoNameRegexConfig);
@@ -100,7 +48,9 @@ class GitHub {
 
       for (let repo of reposPage) {
         if (repo['name'].match(repoNameRegex)) {
-          repos.push(new GitHubRepository(this.octokit, repo));
+          repos.push(
+            new GitHubRepository(this.octokit, repo, this.organization)
+          );
         }
       }
     }
@@ -116,9 +66,10 @@ class GitHubRepository {
    * @constructor
    * @param {Object} repository Repository object, as returned by GitHub API.
    */
-  constructor(octokit, repository) {
+  constructor(octokit, repository, organization) {
     this.octokit = octokit;
     this.repository = repository;
+    this.organization = organization;
   }
 
   /** Returns the Repository object as returned by GitHub API.
@@ -126,6 +77,13 @@ class GitHubRepository {
    */
   getRepository() {
     return this.repository;
+  }
+
+  /** Returns the name of repository.
+   * @returns {string} Name of repository.
+   */
+  get name() {
+    return this.repository['name'];
   }
 
   /** Returns contents of the file in GitHub repository, master branch.
@@ -153,12 +111,13 @@ class GitHubRepository {
   }
 
   /** Lists open pull requests in the repository.
+   * @param {string} state Pull request state (open, closed), defaults to open.
    * @returns {Object[]} Pull request objects, as returned by GitHub API.
    */
-  async listOpenPullRequests() {
+  async listPullRequests(state) {
     let owner = this.repository['owner']['login'];
     let repo = this.repository['name'];
-    let state = 'open';
+    state = state || 'open';
 
     let prs = [];
     for (let page = 1; ; ++page) {
@@ -324,6 +283,34 @@ class GitHubRepository {
     return result.data;
   }
 
+  /** Returns branch settings for the given branch.
+   * @param {string} branch Name of the branch.
+   * @returns {Object} Branch object, as returned by GitHub API.
+   */
+  async getBranch(branch) {
+    let owner = this.repository['owner']['login'];
+    let repo = this.repository['name'];
+
+    let result = await this.octokit.repos.getBranch({owner, repo, branch});
+    return result.data;
+  }
+
+  /** Returns branch protection settings for master branch.
+   * @returns {Object} Branch protection object, as returned by GitHub API.
+   */
+  async getRequiredMasterBranchProtection() {
+    let owner = this.repository['owner']['login'];
+    let repo = this.repository['name'];
+    let branch = 'master';
+
+    let result = await this.octokit.repos.getBranchProtection({
+      owner,
+      repo,
+      branch,
+    });
+    return result.data;
+  }
+
   /** Returns branch protection status checks for master branch.
    * @returns {Object} Status checks object, as returned by GitHub API.
    */
@@ -332,7 +319,6 @@ class GitHubRepository {
     let repo = this.repository['name'];
     let branch = 'master';
 
-    // I believe there is no need to support paging here
     let result = await this.octokit.repos.getProtectedBranchRequiredStatusChecks(
       {owner, repo, branch}
     );

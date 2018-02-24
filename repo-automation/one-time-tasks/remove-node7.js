@@ -3,8 +3,7 @@
  * node7 task from workflows and dependencies.
  */
 
-// NOTE: apply patch https://github.com/octokit/rest.js/pull/748.patch manually
-// until the pull request is merged and the module is released.
+'use strict';
 
 const yaml = require('js-yaml');
 const updateOneFile = require('../lib/update-one-file.js');
@@ -104,4 +103,6 @@ async function main() {
   });
 }
 
-main();
+main().catch(err => {
+  console.error(err.toString());
+});

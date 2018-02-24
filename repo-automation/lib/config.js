@@ -1,17 +1,29 @@
 /**
- * @fileoverview Configuration object to be used by other files.
+ * @fileoverview Wraps some octokit GitHub API calls.
  */
+
+'use strict';
 
 const fs = require('fs');
 const util = require('util');
 const readFile = util.promisify(fs.readFile);
 const yaml = require('js-yaml');
 
+/** Configuration object. Contains GitHub token, organization and repository
+ * filter regex.
+ */
 class Config {
+  /** Constructs a configuration object.
+   * @constructor
+   * @param {string} configFilename Path to a configuration file. If not given,
+   * uses `./config.yaml`.
+   */
   constructor(configFilename) {
     this.filename = configFilename || './config.yaml';
   }
 
+  /** Reads the configuration.
+   */
   async init() {
     try {
       const yamlContent = await readFile(this.filename);
@@ -26,14 +38,24 @@ class Config {
     }
   }
 
+  /** Get option value.
+   * @param {string} option Configuration option.
+   * @returns {string|Object} Requested value.
+   */
   get(option) {
     return this.configData[option];
   }
 
+  /** Get configuration object.
+   * @returns {Object} Parsed configuration yaml.
+   */
   get config() {
     return this.config;
   }
 
+  /** Assigns configuration object.
+   * @param {Object} Configuration object.
+   */
   set config(configData) {
     this.configData = configData;
   }

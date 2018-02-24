@@ -4,6 +4,8 @@
  * matching `regex`, one by one. Without a regex, will go through all open PRs.
  */
 
+'use strict';
+
 const axios = require('axios');
 const readline = require('readline');
 const GitHub = require('./lib/github.js');
@@ -146,10 +148,10 @@ async function main(args) {
   let regex = new RegExp(args[2] || '.*');
   let repos = await github.getRepositories();
   for (let repository of repos) {
-    console.log(repository.getRepository()['name']);
+    console.log(repository.name);
     let prs;
     try {
-      prs = await repository.listOpenPullRequests();
+      prs = await repository.listPullRequests();
     } catch (err) {
       console.warn('  cannot list open pull requests:', err.toString());
       continue;
@@ -164,4 +166,6 @@ async function main(args) {
   }
 }
 
-main(process.argv);
+main(process.argv).catch(err => {
+  console.error(err.toString());
+});

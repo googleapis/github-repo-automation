@@ -3,6 +3,8 @@
  * in many GitHub repositories.
  */
 
+'use strict';
+
 const GitHub = require('./github.js');
 
 /** Updates one existing file in the repository and sends a pull request with
@@ -44,9 +46,9 @@ async function processRepository(
   let oldFileSha = file['sha'];
   let decodedContent = Buffer.from(file['content'], 'base64');
   let patchedContent = patchFunction(decodedContent);
-  if (!patchedContent) {
+  if (patchedContent === undefined) {
     console.warn(
-      '  patch function returned false value, skipping this repository'
+      '  patch function returned undefined  value, skipping this repository'
     );
     return;
   }
@@ -170,7 +172,7 @@ async function updateOneFile(options) {
 
   let repos = await github.getRepositories();
   for (let repository of repos) {
-    console.log(repository.getRepository()['name']);
+    console.log(repository.name);
     await processRepository(
       repository,
       path,

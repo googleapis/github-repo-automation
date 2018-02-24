@@ -2,8 +2,7 @@
  * @fileoverview Apply a quick fix to CircleCI configuration.
  */
 
-// NOTE: apply patch https://github.com/octokit/rest.js/pull/748.patch manually
-// until the pull request is merged and the module is released.
+'use strict';
 
 const updateOneFileInBranch = require('../lib/update-file-in-branch.js');
 
@@ -13,7 +12,9 @@ const updateOneFileInBranch = require('../lib/update-file-in-branch.js');
  * wrong.
  */
 function fixCircleConfig(circleConfigText) {
-  let newText = circleConfigText.toString().replace(new RegExp('ref_0', 'g'), 'unit_tests');
+  let newText = circleConfigText
+    .toString()
+    .replace(new RegExp('ref_0', 'g'), 'unit_tests');
   if (newText === circleConfigText) {
     return;
   }
@@ -31,4 +32,6 @@ async function main() {
   });
 }
 
-main();
+main().catch(err => {
+  console.error(err.toString());
+});

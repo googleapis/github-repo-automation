@@ -3,6 +3,8 @@
  * list of required CI tasks.
  */
 
+'use strict';
+
 const GitHub = require('../lib/github.js');
 
 async function main() {
@@ -33,7 +35,9 @@ async function main() {
     contexts.splice(index, 1);
 
     try {
-      await repository.updateRequiredMasterBranchProtectionStatusChecks(contexts);
+      await repository.updateRequiredMasterBranchProtectionStatusChecks(
+        contexts
+      );
     } catch (err) {
       console.warn('  error setting required status checks:', err.toString());
       continue;
@@ -41,4 +45,6 @@ async function main() {
   }
 }
 
-main();
+main().catch(err => {
+  console.error(err.toString());
+});
