@@ -43,21 +43,21 @@ class Config {
    * @returns {string|Object} Requested value.
    */
   get(option) {
-    return this.configData[option];
+    return this._config[option];
   }
 
   /** Get configuration object.
    * @returns {Object} Parsed configuration yaml.
    */
   get config() {
-    return this.config;
+    return this._config;
   }
 
   /** Assigns configuration object.
-   * @param {Object} Configuration object.
+   * @param {Object} config Configuration object.
    */
-  set config(configData) {
-    this.configData = configData;
+  set config(config) {
+    this._config = config;
   }
 }
 

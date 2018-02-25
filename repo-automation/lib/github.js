@@ -35,7 +35,7 @@ class GitHub {
   async getRepositories() {
     let org = this.organization;
     let type = 'public';
-    let repoNameRegexConfig = this.config.get('repo-name-regex') || '.*';
+    let repoNameRegexConfig = this.config.get('repo-name-regex');
     let repoNameRegex = new RegExp(repoNameRegexConfig);
 
     let repos = [];
@@ -343,3 +343,4 @@ class GitHubRepository {
 }
 
 module.exports = GitHub;
+module.exports.GitHubRepository = GitHubRepository;

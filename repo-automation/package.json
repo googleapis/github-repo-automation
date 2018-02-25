@@ -10,12 +10,20 @@
     "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-prettier": "^2.6.0",
     "ink-docstrap": "^1.3.2",
+    "intelli-espower-loader": "^1.0.1",
     "jsdoc": "^3.5.5",
-    "prettier": "^1.10.2"
+    "mocha": "^5.0.1",
+    "mock-fs": "^4.4.2",
+    "nyc": "^11.4.1",
+    "power-assert": "^1.4.4",
+    "prettier": "^1.10.2",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.4.1"
   },
   "scripts": {
     "lint": "eslint -- *.js */*.js",
     "prettier": "prettier --write *.js */*.js",
-    "docs": "jsdoc -c .jsdoc.js"
+    "docs": "jsdoc -c .jsdoc.js",
+    "test": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report"
   }
 }
