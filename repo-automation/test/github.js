@@ -61,6 +61,10 @@ class OctokitStub {
   authenticate() {}
 }
 
+function getPage(arr, page, perPage) {
+  return arr.slice((page - 1) * perPage, page * perPage);
+}
+
 const GitHub = proxyquire('../lib/github.js', {
   './config.js': ConfigStub,
   '@octokit/rest': OctokitStub,
@@ -80,31 +84,25 @@ describe('GitHub', () => {
   });
 
   it('should get repositories', async () => {
-    let org = testConfig['organization'];
-    let type = 'public';
+    let testOrg = testConfig['organization'];
+    let testType = 'public';
+    let repositories = [
+      {name: 'matches-1'},
+      {name: 'does-not-match-1'},
+      {name: '2-matches'},
+      {name: '2-does-not-match'},
+    ];
     let github = new GitHub();
     await github.init();
     let stub = sinon.stub(github.octokit.repos, 'getForOrg');
-    stub.onFirstCall().returns(
-      Promise.resolve({
-        data: [{name: 'matches-1'}, {name: 'does-not-match-1'}],
-      })
-    );
-    stub.onSecondCall().returns(
-      Promise.resolve({
-        data: [{name: '2-matches'}, {name: '2-does-not-match'}],
-      })
-    );
-    stub.onThirdCall().returns(
-      Promise.resolve({
-        data: [],
-      })
-    );
+    stub.callsFake(({org, type, page, per_page}) => {
+      assert.equal(org, testOrg);
+      assert.equal(type, testType);
+      return Promise.resolve({
+        data: getPage(repositories, page || 1, per_page || 1),
+      });
+    });
     let repos = await github.getRepositories();
-    assert.equal(stub.callCount, 3);
-    assert(stub.calledWith({org, type, page: 1}));
-    assert(stub.calledWith({org, type, page: 2}));
-    assert(stub.calledWith({org, type, page: 3}));
     assert.equal(repos.length, 2);
     assert.equal(repos[0].name, 'matches-1');
     assert.equal(repos[0].organization, testConfig['organization']);
@@ -170,30 +168,33 @@ describe('GitHubRepository', () => {
   it('should list open pull requests', async () => {
     let prs = [{id: 1}, {id: 2}];
     let stub = sinon.stub(octokit.pullRequests, 'getAll');
-    stub.onFirstCall().returns(Promise.resolve({data: [prs[0]]}));
-    stub.onSecondCall().returns(Promise.resolve({data: [prs[1]]}));
-    stub.onThirdCall().returns(Promise.resolve({data: []}));
+    let testOwner = owner;
+    let testRepo = repo;
+    let testState = 'open';
+    stub.callsFake(({owner, repo, state, page, per_page}) => {
+      assert.equal(owner, testOwner);
+      assert.equal(repo, testRepo);
+      assert.equal(state, testState);
+      return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
+    });
     let result = await repository.listPullRequests();
-    assert.equal(stub.callCount, 3);
-    assert(stub.calledWith({owner, repo, state: 'open', page: 1}));
-    assert(stub.calledWith({owner, repo, state: 'open', page: 2}));
-    assert(stub.calledWith({owner, repo, state: 'open', page: 3}));
     assert.deepEqual(result, prs);
     stub.restore();
   });
 
   it('should list pull requests', async () => {
     let prs = [{id: 1}, {id: 2}];
-    let state = 'test-state';
     let stub = sinon.stub(octokit.pullRequests, 'getAll');
-    stub.onFirstCall().returns(Promise.resolve({data: [prs[0]]}));
-    stub.onSecondCall().returns(Promise.resolve({data: [prs[1]]}));
-    stub.onThirdCall().returns(Promise.resolve({data: []}));
-    let result = await repository.listPullRequests(state);
-    assert.equal(stub.callCount, 3);
-    assert(stub.calledWith({owner, repo, state, page: 1}));
-    assert(stub.calledWith({owner, repo, state, page: 2}));
-    assert(stub.calledWith({owner, repo, state, page: 3}));
+    let testOwner = owner;
+    let testRepo = repo;
+    let testState = 'test-state';
+    stub.callsFake(({owner, repo, state, page, per_page}) => {
+      assert.equal(owner, testOwner);
+      assert.equal(repo, testRepo);
+      assert.equal(state, testState);
+      return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
+    });
+    let result = await repository.listPullRequests(testState);
     assert.deepEqual(result, prs);
     stub.restore();
   });
@@ -247,8 +248,16 @@ describe('GitHubRepository', () => {
     let stub = sinon
       .stub(octokit.repos, 'updateFile')
       .returns(Promise.resolve({data: commit}));
-    let result = await repository.updateFileInBranch(branch, path, message, content, sha);
-    assert(stub.calledOnceWith({owner, repo, path, message, content, sha, branch}));
+    let result = await repository.updateFileInBranch(
+      branch,
+      path,
+      message,
+      content,
+      sha
+    );
+    assert(
+      stub.calledOnceWith({owner, repo, path, message, content, sha, branch})
+    );
     assert.deepEqual(result, commit);
     stub.restore();
   });
@@ -354,7 +363,9 @@ describe('GitHubRepository', () => {
     let stub = sinon
       .stub(octokit.repos, 'updateProtectedBranchRequiredStatusChecks')
       .returns(Promise.resolve({data: updatedResponse}));
-    let result = await repository.updateRequiredMasterBranchProtectionStatusChecks(contexts);
+    let result = await repository.updateRequiredMasterBranchProtectionStatusChecks(
+      contexts
+    );
     assert(stub.calledOnceWith({owner, repo, branch, strict, contexts}));
     assert.deepEqual(result, updatedResponse);
     stub.restore();
