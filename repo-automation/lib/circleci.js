@@ -27,7 +27,7 @@ class CircleCI {
    * @returns {Object[]} Projects, as returned by CircleCI API.
    */
   async getProjects() {
-    let repoNameRegexConfig = this.config.get('repo-name-regex') || '.*';
+    let repoNameRegexConfig = this.config.get('repo-name-regex');
     let repoNameRegex = new RegExp(repoNameRegexConfig);
 
     let result = await axios.get('https://circleci.com/api/v1.1/projects', {
