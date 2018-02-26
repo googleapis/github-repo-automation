@@ -1,4 +1,5 @@
 {
+  "license": "Apache-2.0",
   "dependencies": {
     "@octokit/rest": "^14.0.9",
     "axios": "^0.18.0",
@@ -22,8 +23,8 @@
     "sinon": "^4.4.1"
   },
   "scripts": {
-    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js",
-    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js",
+    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js one-time-tasks/*.js",
+    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js one-time-tasks/*.js",
     "docs": "jsdoc -c .jsdoc.js",
     "test": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report"
   }

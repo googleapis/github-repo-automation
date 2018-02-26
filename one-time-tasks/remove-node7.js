@@ -1,3 +1,17 @@
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /**
  * @fileoverview Fix CircleCI configuration file in all repositories: remove
  * node7 task from workflows and dependencies.
@@ -6,7 +20,7 @@
 'use strict';
 
 const yaml = require('js-yaml');
-const updateOneFile = require('../lib/update-one-file.js');
+const updateFile = require('../lib/update-file.js');
 
 /** A helper function to remove a job from CirleCI job array.
  * @param {Object[]} jobArray Jobs, as written in CircleCI config yaml.
@@ -80,7 +94,7 @@ function removeJobFromCircleConfig(circleConfigText, jobNameToRemove) {
 }
 
 /** Removes node7 job from CircleCI configuration yaml file. Used as a callback
- * to `updateOneFile`.
+ * to `updateFile`.
  * @param {string} circleConfigText CircleCI configuration yaml file.
  * @returns {string} Returns updated config file, or undefined if anything is
  * wrong.
@@ -92,7 +106,7 @@ function removeNode7FromCircleConfig(circleConfigText) {
 /** Main function.
  */
 async function main() {
-  await updateOneFile({
+  await updateFile({
     path: '.circleci/config.yml',
     patchFunction: removeNode7FromCircleConfig,
     branch: 'remove-node7-test',
