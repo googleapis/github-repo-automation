@@ -36,11 +36,15 @@ class FakeGitHubRepository {
     this.branches[branch][path] = {content, sha, type};
   }
 
-  async getFile(path) {
-    if (this.branches['master'][path] === undefined) {
-      return Promise.reject(`No file ${path} in branch master`);
+  async getFileFromBranch(branch, path) {
+    if (this.branches[branch][path] === undefined) {
+      return Promise.reject(`No file ${path} in branch ${branch}`);
     }
-    return Promise.resolve(this.branches['master'][path]);
+    return Promise.resolve(this.branches[branch][path]);
+  }
+
+  async getFile(path) {
+    return await this.getFileFromBranch('master', path);
   }
 
   async getLatestCommitToMaster() {
@@ -111,8 +115,7 @@ class FakeGitHubRepository {
   }
 }
 
-let repository1 = new FakeGitHubRepository('repo1');
-let repository2 = new FakeGitHubRepository('repo2');
+let repository = new FakeGitHubRepository('test-repository');
 
 class FakeGitHub {
   async init() {
@@ -120,11 +123,10 @@ class FakeGitHub {
   }
 
   async getRepositories() {
-    return [repository1, repository2];
+    return [repository];
   }
 }
 
 module.exports = FakeGitHub;
-module.exports.repository1 = repository1;
-module.exports.repository2 = repository2;
 module.exports.FakeGitHubRepository = FakeGitHubRepository;
+module.exports.repository = repository;
