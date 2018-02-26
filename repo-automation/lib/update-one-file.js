@@ -44,11 +44,11 @@ async function processRepository(
   }
 
   let oldFileSha = file['sha'];
-  let decodedContent = Buffer.from(file['content'], 'base64');
+  let decodedContent = Buffer.from(file['content'], 'base64').toString();
   let patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(
-      '  patch function returned undefined  value, skipping this repository'
+      '  patch function returned undefined value, skipping this repository'
     );
     return;
   }
@@ -94,12 +94,7 @@ async function processRepository(
 
   let pullRequest;
   try {
-    pullRequest = await repository.createPullRequest(
-      branch,
-      message,
-      comment,
-      reviewers
-    );
+    pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
       `  cannot create pull request for branch ${branch}! Branch is still there.`,

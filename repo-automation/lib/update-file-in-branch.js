@@ -40,7 +40,7 @@ async function processRepository(
   }
 
   let oldFileSha = file['sha'];
-  let decodedContent = Buffer.from(file['content'], 'base64');
+  let decodedContent = Buffer.from(file['content'], 'base64').toString();
   let patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(

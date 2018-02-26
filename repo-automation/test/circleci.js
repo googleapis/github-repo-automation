@@ -48,7 +48,7 @@ describe('CircleCI', () => {
     ];
     let circleci = new CircleCI();
     await circleci.init();
-    let scope = nock('https://circleci.com')
+    nock('https://circleci.com')
       .get('/api/v1.1/projects')
       .query({'circle-token': token})
       .reply(200, projects);
@@ -64,7 +64,7 @@ describe('CircleCI', () => {
     let project = 'test-project';
     let circleci = new CircleCI();
     await circleci.init();
-    let scope = nock('https://circleci.com')
+    nock('https://circleci.com')
       .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
       .query({'circle-token': token})
       .reply(200, builds);
@@ -78,7 +78,7 @@ describe('CircleCI', () => {
     let project = 'test-project';
     let circleci = new CircleCI();
     await circleci.init();
-    let scope = nock('https://circleci.com')
+    nock('https://circleci.com')
       .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
       .query({'circle-token': token})
       .reply(200, builds);

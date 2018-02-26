@@ -28,28 +28,25 @@ class ConfigStub {
 class OctokitReposStub {
   async getForOrg() {}
   async getContent() {}
-  getForOrg() {}
-  getContent() {}
-  getContent() {}
-  getShaOfCommitRef() {}
-  merge() {}
-  updateFile() {}
-  getBranch() {}
-  getBranchProtection() {}
-  getProtectedBranchRequiredStatusChecks() {}
-  updateProtectedBranchRequiredStatusChecks() {}
+  async getShaOfCommitRef() {}
+  async merge() {}
+  async updateFile() {}
+  async getBranch() {}
+  async getBranchProtection() {}
+  async getProtectedBranchRequiredStatusChecks() {}
+  async updateProtectedBranchRequiredStatusChecks() {}
 }
 
 class OctokitPullRequestsStub {
-  getAll() {}
-  create() {}
-  createReviewRequest() {}
-  createReview() {}
-  merge() {}
+  async getAll() {}
+  async create() {}
+  async createReviewRequest() {}
+  async createReview() {}
+  async merge() {}
 }
 
 class OctokitGitdataStub {
-  createReference() {}
+  async createReference() {}
 }
 
 class OctokitStub {
