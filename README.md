@@ -1,5 +1,7 @@
 ## Tools to automate managing multiple github repositories.
 
+**This is not an officially supported Google product.**
+
 As we publish Node.js client libraries to multiple repositories under
 [googleapis](https://github.com/googleapis/), we need a set of small
 tools to perform management of those repositories, such as updating
