@@ -44,6 +44,7 @@ class OctokitReposStub {
   async getContent() {}
   async getShaOfCommitRef() {}
   async merge() {}
+  async createFile() {}
   async updateFile() {}
   async getBranch() {}
   async getBranchProtection() {}
@@ -245,6 +246,26 @@ describe('GitHubRepository', () => {
       .returns(Promise.resolve({data: commit}));
     let result = await repository.updateBranch(base, head);
     assert(stub.calledOnceWith({owner, repo, base, head}));
+    assert.deepEqual(result, commit);
+    stub.restore();
+  });
+
+  it('should create file in branch', async () => {
+    let branch = 'test-branch';
+    let path = 'test-path';
+    let message = 'test-message';
+    let content = 'test-content';
+    let commit = {sha: 'test-sha'};
+    let stub = sinon
+      .stub(octokit.repos, 'createFile')
+      .returns(Promise.resolve({data: commit}));
+    let result = await repository.createFileInBranch(
+      branch,
+      path,
+      message,
+      content
+    );
+    assert(stub.calledOnceWith({owner, repo, path, message, content, branch}));
     assert.deepEqual(result, commit);
     stub.restore();
   });

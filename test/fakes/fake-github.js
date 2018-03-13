@@ -50,6 +50,10 @@ class FakeGitHubRepository {
     this.branches[branch][path] = {content, sha, type};
   }
 
+  getRepository() {
+    return {clone_url: 'https://fake-clone-url/test.git'};
+  }
+
   async getFileFromBranch(branch, path) {
     if (this.branches[branch][path] === undefined) {
       return Promise.reject(`No file ${path} in branch ${branch}`);
@@ -77,6 +81,20 @@ class FakeGitHubRepository {
     }
     this.branches[branch] = Object.assign({}, this.branches['master']);
     return Promise.resolve({});
+  }
+
+  async createFileInBranch(branch, path, message, content) {
+    if (this.branches[branch] === undefined) {
+      return Promise.reject(`Branch ${branch} does not exist`);
+    }
+    if (this.branches[branch][path] !== undefined) {
+      return Promise.reject(`File ${path} already exists in branch ${branch}`);
+    }
+    let sha = hash(content);
+    let newFile = {content, sha, message};
+    this.branches[branch][path] = newFile;
+    this.branches[branch]['_latest'] = sha;
+    return Promise.resolve(newFile);
   }
 
   async updateFileInBranch(branch, path, message, content, oldFileSha) {
