@@ -36,7 +36,7 @@ Wrappers to GitHub client API
 [CircleCI API](https://circleci.com/docs/api/v1-reference/) that
 are used by other scripts.
 
-#### `lib/update-one-file.js`
+#### `lib/update-file.js`
 
 A function that applies the same fix to one file in all configured
 repositories, and sends pull requests (that can be approved and merged
@@ -49,3 +49,10 @@ configuration file in a certain way.
 A function that does pretty much the same, but to the file in the
 given branch in all configured repositories, and does not send any
 pull requests.
+
+#### `lib/update-repo.js`
+
+Similar to `update-file.js`, but instead of updating just one file,
+lets you make any changes to any number of files, and commits the
+changes.
+
