@@ -10,6 +10,18 @@ continuous integration setup, updating dependencies, and so on.
 This repository contains some scripts that may be useful for this kind
 of tasks.
 
+## List of tools and libraries included
+
+If you're not familiar with Node.js development you can still
+use `approve-pr.js` as it does not require writing any Javascript
+code. Before running the script, make sure you have Node.js version 8+
+installed (e.g. from [here](https://nodejs.org/en/)) and available in
+your `PATH`, and install the required dependencies:
+
+```sh
+npm install
+```
+
 ### `approve-pr.js`
 
 `node approve-pr.js [regex]`
