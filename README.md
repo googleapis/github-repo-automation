@@ -41,14 +41,7 @@ Iterates all configured repositories and checks that each repository
 is configured properly (branch protection, continuous integration,
 valid `README.md`, etc.).
 
-### `lib/github.js`, `lib/circleci.js`
-
-Wrappers to GitHub client API
-([@octokit/rest](https://github.com/octokit/rest.js)) and
-[CircleCI API](https://circleci.com/docs/api/v1-reference/) that
-are used by other scripts.
-
-#### `lib/update-file.js`
+### `lib/update-file.js`
 
 A function that applies the same fix to one file in all configured
 repositories, and sends pull requests (that can be approved and merged
@@ -56,15 +49,21 @@ later by `approve-pr.js` or manually). Useful if you need to make
 the same boring change to all the repositories, such as change some
 configuration file in a certain way.
 
-#### `lib/update-file-in-branch.js`
+### `lib/update-file-in-branch.js`
 
 A function that does pretty much the same, but to the file in the
 given branch in all configured repositories, and does not send any
 pull requests.
 
-#### `lib/update-repo.js`
+### `lib/update-repo.js`
 
 Similar to `update-file.js`, but instead of updating just one file,
 lets you make any changes to any number of files, and commits the
 changes.
 
+#### `lib/github.js`, `lib/circleci.js`
+
+Wrappers to GitHub client API
+([@octokit/rest](https://github.com/octokit/rest.js)) and
+[CircleCI API](https://circleci.com/docs/api/v1-reference/) that
+are used by other scripts.
