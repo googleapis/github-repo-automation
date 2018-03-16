@@ -8,15 +8,21 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - node9:
+          filters:
+            tags:
+              only: /.*/
       - lint:
           requires:
             - node8
+            - node9
           filters:
             tags:
               only: /.*/
       - docs:
           requires:
             - node8
+            - node9
           filters:
             tags:
               only: /.*/
@@ -26,9 +32,9 @@ jobs:
     docker:
       - image: node:8
         user: node
-    steps:
+    steps: &unit_tests_steps
       - checkout
-      - run:
+      - run: &npm_install
           name: Install modules and dependencies.
           command: npm install
       - run:
@@ -38,15 +44,18 @@ jobs:
           name: Submit coverage data to codecov.
           command: node_modules/.bin/codecov
           when: always
+  node9:
+    docker:
+      - image: node:9
+        user: node
+    steps: *unit_tests_steps
   lint:
     docker:
       - image: node:8
         user: node
     steps:
       - checkout
-      - run:
-          name: Install modules and dependencies.
-          command: npm install
+      - run: *npm_install
       - run:
           name: Run linting.
           command: npm run lint
@@ -57,9 +66,7 @@ jobs:
         user: node
     steps:
       - checkout
-      - run:
-          name: Install modules and dependencies.
-          command: npm install
+      - run: *npm_install
       - run:
           name: Build documentation.
           command: npm run docs
