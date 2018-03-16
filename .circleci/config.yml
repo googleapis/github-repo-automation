@@ -46,17 +46,10 @@ jobs:
       - checkout
       - run:
           name: Install modules and dependencies.
-          command: |
-            mkdir -p /home/node/.npm-global
-            npm install
-            npm link
-          environment:
-            NPM_CONFIG_PREFIX: /home/node/.npm-global
+          command: npm install
       - run:
           name: Run linting.
           command: npm run lint
-          environment:
-            NPM_CONFIG_PREFIX: /home/node/.npm-global
 
   docs:
     docker:
