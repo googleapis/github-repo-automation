@@ -1,0 +1,73 @@
+---
+version: 2.0
+workflows:
+  version: 2
+  tests:
+    jobs:
+      - node8:
+          filters:
+            tags:
+              only: /.*/
+      - lint:
+          requires:
+            - node8
+          filters:
+            tags:
+              only: /.*/
+      - docs:
+          requires:
+            - node8
+          filters:
+            tags:
+              only: /.*/
+
+jobs:
+  node8:
+    docker:
+      - image: node:8
+        user: node
+    steps:
+      - checkout
+      - run:
+          name: Install modules and dependencies.
+          command: npm install
+      - run:
+          name: Run unit tests.
+          command: npm test
+      - run:
+          name: Submit coverage data to codecov.
+          command: node_modules/.bin/codecov
+          when: always
+  lint:
+    docker:
+      - image: node:8
+        user: node
+    steps:
+      - checkout
+      - run:
+          name: Install modules and dependencies.
+          command: |
+            mkdir -p /home/node/.npm-global
+            npm install
+            npm link
+          environment:
+            NPM_CONFIG_PREFIX: /home/node/.npm-global
+      - run:
+          name: Run linting.
+          command: npm run lint
+          environment:
+            NPM_CONFIG_PREFIX: /home/node/.npm-global
+
+  docs:
+    docker:
+      - image: node:8
+        user: node
+    steps:
+      - checkout
+      - run:
+          name: Install modules and dependencies.
+          command: npm install
+      - run:
+          name: Build documentation.
+          command: npm run docs
+
