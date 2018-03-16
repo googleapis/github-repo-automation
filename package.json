@@ -1,4 +1,5 @@
 {
+  "repository": "googleapis/github-repo-automation",
   "license": "Apache-2.0",
   "dependencies": {
     "@octokit/rest": "^14.0.9",
@@ -7,6 +8,7 @@
     "tmp-promise": "^1.0.4"
   },
   "devDependencies": {
+    "codecov": "^3.0.0",
     "eslint": "^4.18.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-node": "^6.0.0",

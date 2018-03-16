@@ -274,7 +274,7 @@ describe('UpdateRepo', () => {
     try {
       await suppressConsole(async () => {
         await updateRepo({
-          updateCallback: str => {
+          updateCallback: () => {
             return Promise.resolve();
           },
           message,
@@ -292,7 +292,7 @@ describe('UpdateRepo', () => {
     try {
       await suppressConsole(async () => {
         await updateRepo({
-          updateCallback: str => {
+          updateCallback: () => {
             return;
           },
           branch,
@@ -310,7 +310,7 @@ describe('UpdateRepo', () => {
     try {
       await suppressConsole(async () => {
         await updateRepo({
-          updateCallback: str => {
+          updateCallback: () => {
             return Promise.resolve();
           },
           branch,
