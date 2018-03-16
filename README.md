@@ -22,6 +22,14 @@ your `PATH`, and install the required dependencies:
 npm install
 ```
 
+You need to make your own `config.yaml` and put your GitHub token there:
+```sh
+cp config.yaml.default config.yaml
+vim config.yaml
+```
+
+Now you are good to go!
+
 ### `approve-pr.js`
 
 `node approve-pr.js [regex]`
