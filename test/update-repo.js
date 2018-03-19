@@ -372,6 +372,7 @@ describe('UpdateRepo', () => {
     } catch (err) {
       // ignore
     }
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not perform update if updateCallback returned empty list', async () => {
@@ -390,5 +391,25 @@ describe('UpdateRepo', () => {
     } catch (err) {
       // ignore
     }
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+  });
+
+  it('should not perform update if updateCallback promise was rejected', async () => {
+    try {
+      await suppressConsole(async () => {
+        await updateRepo({
+          updateCallback: () => {
+            return Promise.reject();
+          },
+          branch,
+          message,
+          comment,
+        });
+      });
+      assert(false);
+    } catch (err) {
+      // ignore
+    }
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 });
