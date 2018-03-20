@@ -21,14 +21,14 @@ protection tasks list on GitHub for all our repositories.
 An example of fixing the existing file in branch (e.g. apply a quick change
 requested in the pull request review).
 
-### commit-package-lock.js
+### `commit-package-lock.js`
 
 An example of applying the change not to one file, but to the whole
 cloned repository. The `updateCallback` function takes a path to a folder
 where the repository is cloned, and performs requested changes.
 The changes are then committed and pull request is sent.
 
-### setup-nighty-builds.js
+### `setup-nighty-builds.js`
 
 One more example of updating several files at once. This example modifies
 `.circleci/config.yml` to add a `nightly` workflow, and changes some jobs.
