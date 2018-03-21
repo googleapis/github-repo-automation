@@ -171,6 +171,52 @@ async function checkCircleSettings(logger, circleci, repository) {
   }
 }
 
+async function checkSamplesPackageDependency(logger, repository) {
+  let response;
+  try {
+    response = await axios.get(
+      `https://raw.githubusercontent.com/${repository.organization}/${
+        repository.name
+      }/master/package.json`
+    );
+  } catch (err) {
+    logger.error(
+      `${repository.name}: [!] cannot download package.json: ${err.toString()}`
+    );
+    return;
+  }
+  let packageJson = response.data;
+  try {
+    response = await axios.get(
+      `https://raw.githubusercontent.com/${repository.organization}/${
+        repository.name
+      }/master/samples/package.json`
+    );
+  } catch (err) {
+    logger.warning(`${repository.name}: [!] no samples/package.json.`);
+    return;
+  }
+  let samplesPackageJson = response.data;
+  try {
+    let mainVersion = packageJson['version'];
+    let mainName = packageJson['name'];
+    let samplesDependency = samplesPackageJson['dependencies'][mainName];
+    if (samplesDependency !== mainVersion) {
+      logger.error(
+        `${
+          repository.name
+        }: [!] main package version ${mainVersion} does not match samples dependency ${samplesDependency}`
+      );
+    }
+  } catch (err) {
+    logger.error(
+      `${
+        repository.name
+      }: cannot check samples package dependencies: ${err.toString()}`
+    );
+  }
+}
+
 /** Checks if README.md contains any broken links.
  * Logs all errors and warnings.
  * @param {Logger} logger Logger object.
@@ -251,6 +297,7 @@ async function checkAllRepositories(logger) {
     await checkGithubMasterBranchProtection(logger, repository);
     await checkGreenkeeper(logger, repository);
     await checkCircleSettings(logger, circleci, repository);
+    await checkSamplesPackageDependency(logger, repository);
     await checkReadmeLinks(logger, repository);
 
     let foundErrors = logger.errorCount - errorCounter;
