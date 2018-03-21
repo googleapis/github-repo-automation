@@ -4,6 +4,18 @@ While we don't have a good documented samples (yet), this folder contains
 scripts that were used to solve some problems related to managing multiple
 repositories, and can be used as examples of using the library.
 
+### `fix-samples-dependency.sh`
+
+A sample shell script that can be passed to `apply-change.js`. This particular
+script uses [jq](https://stedolan.github.io/jq/) tool to validate if the
+samples package (`samples/package.json`) depends on the exactly the same version
+of the main package as listed in `package.json` (to make sure that when we run
+samples tests, we test the current code using `npm link`, and not the code of
+some older version downloaded from NPM). The script is called inside the
+temporary folder where each repository is cloned, and makes the required
+changes, after which the added and modified files will be checked in by
+`apply-change.js`.
+
 ### `remove-node7.js`
 
 Fix CircleCI configuration `.circleci/config.yml` in all repositories,
