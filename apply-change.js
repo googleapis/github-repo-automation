@@ -83,7 +83,7 @@ const helpSections = [
     content: [
       '$ node apply-change.js {bold --branch} {underline branch} {bold --message} {underline message}',
       '                       {bold --comment} {underline comment} [{bold --reviewers} {underline username}[,{underline username}...]]',
-      '                       {underline command}',
+      '                       [{bold --silent}] {underline command}',
       '$ node apply-change.js {bold --help}',
     ],
     raw: true,
@@ -177,7 +177,7 @@ async function updateCallback(options, repoPath) {
       for (;;) {
         let response = await question(
           'Going to commit the following files:\n' +
-            files.map(line => `  ${line}\n`) +
+            files.map(line => `  ${line}\n`).join('') +
             'Do it? [y/n]'
         );
         if (response === 'y') {
