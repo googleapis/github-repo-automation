@@ -13,8 +13,8 @@ of tasks.
 ## List of tools included
 
 If you're not familiar with Node.js development you can still
-use `approve-pr.js` as it does not require writing any Javascript
-code. Before running the script, make sure you have Node.js version 8+
+use the tools included as they don't require writing any Javascript
+code. Before running the scripts, make sure you have Node.js version 8+
 installed (e.g. from [here](https://nodejs.org/en/)) and available in
 your `PATH`, and install the required dependencies:
 
@@ -30,16 +30,20 @@ vim config.yaml
 
 Now you are good to go!
 
-### `approve-pr.js`
+### `approve-prs.js`
 
-`node approve-pr.js [regex]`
+`node approve-prs.js [regex]`
 
 Iterates over all open pull requests matching `regex` (all PRs if
 no regex is given) in all configured repositories.
 For each pull request, asks (in console) if it should be approved
 and merged. Useful for managing GreenKeeper's PRs:
 
-`node approve-pr.js 🚀`
+`node approve-prs.js 🚀`
+
+or all PRs with the word `test` in the title:
+
+`node approve-prs.js test`
 
 ### `apply-change.js`
 
@@ -98,9 +102,9 @@ your contributions are welcome!
 const updateRepo = require('./lib/update-repo.js');
 
 async function callbackFunction(repoPath) {
-   // make any changes to the cloned repo in repoPath
-   let files = ['path/to/updated/file', 'path/to/new/file'];
-   return Promise.resolve(files);
+  // make any changes to the cloned repo in repoPath
+  let files = ['path/to/updated/file', 'path/to/new/file'];
+  return Promise.resolve(files);
 }
 
 async function example() {
@@ -126,9 +130,9 @@ configuration file in a certain way.
 const updateFile = require('./lib/update-file.js');
 
 function callbackFunction(content) {
-   let newContent = content;
-   // make any changes to file content
-   return newContent;
+  let newContent = content;
+  // make any changes to file content
+  return newContent;
 }
 
 async function example() {
@@ -154,9 +158,9 @@ then decided to apply a quick change in all created branches.
 const updateFileInBranch = require('./lib/update-file-in-branch.js');
 
 function callbackFunction(content) {
-   let newContent = content;
-   // make any changes to file content
-   return newContent;
+  let newContent = content;
+  // make any changes to file content
+  return newContent;
 }
 
 async function example() {
@@ -177,7 +181,7 @@ A simple wrapper to GitHub client API
 ([@octokit/rest](https://github.com/octokit/rest.js)) that at least lets you
 pass less parameters to each API call.
 
-### `lib/circleci.js`
+#### `lib/circleci.js`
 
 A simple wrapper to [CircleCI API](https://circleci.com/docs/api/v1-reference/).
 
