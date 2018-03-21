@@ -75,7 +75,7 @@ valid `README.md`, etc.).
 
 The tools listed above use the following libraries available in `lib/` folder.
 Feel free to use them directly from your JavaScript code if you need more
-flexibility than provided by the tools. The files in `one-time-tasks/` folder
+flexibility than provided by the tools. The files in `samples/` folder
 can serve as samples that show library usage.
 
 ### `lib/update-repo.js`
