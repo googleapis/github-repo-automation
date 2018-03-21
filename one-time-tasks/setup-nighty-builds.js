@@ -96,8 +96,7 @@ fi
   await writeFile(circleConfigFullPath, newText);
 
   let pythonScriptPath = path.join('.circleci', 'get_workflow_name.py');
-  let pythonScriptSourceFolder =
-    '/usr/local/google/home/fenster/nodejs-packages/nodejs-cloud-container';
+  let pythonScriptSourceFolder = '/tmp/source_folder';
   let pythonScript = await readFile(
     path.join(pythonScriptSourceFolder, pythonScriptPath)
   );
