@@ -4,6 +4,8 @@
   "dependencies": {
     "@octokit/rest": "^14.0.9",
     "axios": "^0.18.0",
+    "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.3",
     "js-yaml": "^3.10.0",
     "tmp-promise": "^1.0.4"
   },
@@ -26,8 +28,8 @@
     "sinon": "^4.4.1"
   },
   "scripts": {
-    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js one-time-tasks/*.js",
-    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js one-time-tasks/*.js",
+    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js",
+    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js samples/*.js",
     "docs": "jsdoc -c .jsdoc.js",
     "test": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report"
   }
