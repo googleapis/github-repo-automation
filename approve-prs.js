@@ -21,26 +21,8 @@
 'use strict';
 
 const axios = require('axios');
-const readline = require('readline');
 const GitHub = require('./lib/github.js');
-
-/** Promisified version of readline question. Prints a prompt and waits for
- * response.
- * @param {string} prompt A prompt to print.
- * @returns {string} Response from stdin.
- */
-async function question(prompt) {
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    rl.question(prompt, response => {
-      rl.close();
-      resolve(response);
-    });
-  });
-}
+const question = require('./lib/question.js');
 
 /** Downloads and prints patch file (well, actually, any file) to a console.
  * @param {string} patch_url URL to download.
