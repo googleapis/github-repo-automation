@@ -171,6 +171,14 @@ async function checkCircleSettings(logger, circleci, repository) {
   }
 }
 
+/** Checks that the version of the dependency in samples/package.json
+ * matches the version of the package defined in package.json.
+ * E.g. if the package is "@google-cloud/example" version "1.2.3",
+ * samples must depend on exactly "@google-cloud/example": "1.2.3".
+ * Logs all errors and warnings.
+ * @param {GitHubRepository} repository Repository object.
+ * @param {Logger} logger Logger object.
+ */
 async function checkSamplesPackageDependency(logger, repository) {
   let response;
   try {
