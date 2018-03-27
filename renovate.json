@@ -2,6 +2,7 @@
   "extends": [
     "config:base"
   ],
+  "pinVersions": false,
   "rebaseStalePrs": true,
   "schedule": [
     "after 10pm and before 5am"
