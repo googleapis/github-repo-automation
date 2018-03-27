@@ -1,5 +1,16 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "rebaseStalePrs": true,
+  "schedule": [
+    "after 10pm and before 5am"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "recreateClosed": true,
+    "schedule": [
+      "before 10am on tuesday"
+    ]
+  }
 }
