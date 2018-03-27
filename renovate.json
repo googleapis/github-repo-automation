@@ -2,5 +2,16 @@
   "extends": [
     "config:base"
   ],
-  "pinVersions": false
+  "pinVersions": false,
+  "rebaseStalePrs": true,
+  "schedule": [
+    "after 10pm and before 5am"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "recreateClosed": true,
+    "schedule": [
+      "before 10am on tuesday"
+    ]
+  }
 }
