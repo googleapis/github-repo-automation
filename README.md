@@ -1,5 +1,7 @@
 ## Tools to automate managing multiple github repositories.
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/googleapis/github-repo-automation.svg)](https://greenkeeper.io/)
+
 **This is not an officially supported Google product.**
 
 As we publish Node.js client libraries to multiple repositories under
