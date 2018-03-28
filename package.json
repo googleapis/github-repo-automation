@@ -2,7 +2,7 @@
   "repository": "googleapis/github-repo-automation",
   "license": "Apache-2.0",
   "dependencies": {
-    "@octokit/rest": "^14.0.9",
+    "@octokit/rest": "^15.0.1",
     "axios": "^0.18.0",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.3",
@@ -24,7 +24,7 @@
     "nyc": "^11.4.1",
     "power-assert": "^1.4.4",
     "prettier": "^1.10.2",
-    "proxyquire": "^1.8.0",
+    "proxyquire": "^2.0.0",
     "sinon": "^4.4.1"
   },
   "scripts": {
