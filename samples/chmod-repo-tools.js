@@ -35,8 +35,15 @@ function process(text) {
   for (let name of Object.keys(jobs)) {
     for (let step of jobs[name]['steps']) {
       let run = step['run'];
-      if (run !== undefined && run['name'].match(/install/i) && !run['command'].match(/repo_tools=/)) {
-        run['command'] = run['command'].replace(/npm install/, 'npm install\nrepo_tools="node_modules/@google-cloud/nodejs-repo-tools/bin/tools"\nif ! test -x "$repo_tools"; then\n  chmod +x "$repo_tools"\nfi');
+      if (
+        run !== undefined &&
+        run['name'].match(/install/i) &&
+        !run['command'].match(/repo_tools=/)
+      ) {
+        run['command'] = run['command'].replace(
+          /npm install/,
+          'npm install\nrepo_tools="node_modules/@google-cloud/nodejs-repo-tools/bin/tools"\nif ! test -x "$repo_tools"; then\n  chmod +x "$repo_tools"\nfi'
+        );
       }
     }
   }
