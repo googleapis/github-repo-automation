@@ -30,7 +30,7 @@ workflows:
 jobs:
   node8:
     docker:
-      - image: node:8
+      - image: node:8@sha256:a95cbb8c0d34bb8c19cff50ec515672d95106299f8f2fc8ccde2079e3ba55702
         user: node
     steps: &unit_tests_steps
       - checkout
@@ -46,12 +46,12 @@ jobs:
           when: always
   node9:
     docker:
-      - image: node:9
+      - image: node:9@sha256:788512049d7b55da1fe6ca38c7a575d0dabdee29765fd7375f5bdee29f6235c1
         user: node
     steps: *unit_tests_steps
   lint:
     docker:
-      - image: node:8
+      - image: node:8@sha256:a95cbb8c0d34bb8c19cff50ec515672d95106299f8f2fc8ccde2079e3ba55702
         user: node
     steps:
       - checkout
@@ -62,7 +62,7 @@ jobs:
 
   docs:
     docker:
-      - image: node:8
+      - image: node:8@sha256:a95cbb8c0d34bb8c19cff50ec515672d95106299f8f2fc8ccde2079e3ba55702
         user: node
     steps:
       - checkout
