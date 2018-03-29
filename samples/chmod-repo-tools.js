@@ -33,13 +33,11 @@ function process(text) {
 
   let jobs = config['jobs'];
   for (let name of Object.keys(jobs)) {
-    let steps = jobs[name]['steps'];
-    let run = steps[2]['run'];
-    if (run['name'].match(/install/i) && !run['command'].match(/repo_tools=/)) {
-      run['command'] = run['command'].replace(
-        /npm install/,
-        'npm install\nrepo_tools="node_modules/@google-cloud/nodejs-repo-tools/bin/tools"\nif ! test -x "$repo_tools"; then\n  chmod +x "$repo_tools"\nfi'
-      );
+    for (let step of jobs[name]['steps']) {
+      let run = step['run'];
+      if (run !== undefined && run['name'].match(/install/i) && !run['command'].match(/repo_tools=/)) {
+        run['command'] = run['command'].replace(/npm install/, 'npm install\nrepo_tools="node_modules/@google-cloud/nodejs-repo-tools/bin/tools"\nif ! test -x "$repo_tools"; then\n  chmod +x "$repo_tools"\nfi');
+      }
     }
   }
 
@@ -47,6 +45,10 @@ function process(text) {
   newText = newText.replace(/ref_0/g, 'workflow_jobs');
   newText = newText.replace(/ref_1/g, 'unit_tests_steps');
   newText = newText.replace(/ref_2/g, 'remove_package_lock');
+
+  if (newText === text) {
+    return undefined;
+  }
   return newText;
 }
 
@@ -56,10 +58,10 @@ async function main() {
   await updateFile({
     path: '.circleci/config.yml',
     patchFunction: process,
-    branch: 'repo-tools-eperm-workaround',
-    message: 'chore: workaround for repo-tools EPERM',
+    branch: 'repo-tools-eperm-workaround-2',
+    message: 'chore: one more workaround for repo-tools EPERM',
     comment:
-      "Sometimes it just happens, only in CircleCI and never reproduced. Here is a proof that this `chmod` fixes the problem: https://circleci.com/gh/googleapis/nodejs-speech/1376 - let's apply this to all our repos and see if it fails or not.",
+      "Sometimes it just happens, only in CircleCI and never reproduced. Here is a proof that this `chmod` fixes the problem: https://circleci.com/gh/googleapis/nodejs-speech/1376 - let's apply this to all our repos and see if it fails or not.\n\nThis PR fixes system tests and sample tests which were missed by previous PR.",
     reviewers: ['stephenplusplus', 'callmehiphop'],
   });
 }
