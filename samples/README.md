@@ -23,6 +23,11 @@ removing a job called `node7` from the workflow and job descriptions.
 Since `.circleci/config.yml` is YaML, we parse it into object, then fix
 it and dump it back.
 
+### `chmod-repo-tools.js`
+
+Very similar example of changing CircleCI configuration by adding some
+extra command in one particular step.
+
 ### `update-branch-protection.js`
 
 Removes the given CI task (`node7` in this example) from the master branch
