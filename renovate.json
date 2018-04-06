@@ -13,5 +13,6 @@
     "schedule": [
       "before 10am on tuesday"
     ]
-  }
+  },
+  "gitAuthor": null
 }
