@@ -8,21 +8,21 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - node9:
+      - node10:
           filters:
             tags:
               only: /.*/
       - lint:
           requires:
             - node8
-            - node9
+            - node10
           filters:
             tags:
               only: /.*/
       - docs:
           requires:
             - node8
-            - node9
+            - node10
           filters:
             tags:
               only: /.*/
@@ -44,14 +44,14 @@ jobs:
           name: Submit coverage data to codecov.
           command: node_modules/.bin/codecov
           when: always
-  node9:
+  node10:
     docker:
-      - image: node:9@sha256:84defd39d4694815086f11e3f293b7dbc3bae0742ad9691824111420954920b1
+      - image: node:10
         user: node
     steps: *unit_tests_steps
   lint:
     docker:
-      - image: node:8@sha256:b802a02ee6496c34e2dc0eb0379eb1c738331414956d650c0dffdfa0866acb2f
+      - image: node:10
         user: node
     steps:
       - checkout
@@ -62,7 +62,7 @@ jobs:
 
   docs:
     docker:
-      - image: node:8@sha256:b802a02ee6496c34e2dc0eb0379eb1c738331414956d650c0dffdfa0866acb2f
+      - image: node:10
         user: node
     steps:
       - checkout
