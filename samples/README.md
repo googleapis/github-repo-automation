@@ -4,6 +4,13 @@ While we don't have a good documented samples (yet), this folder contains
 scripts that were used to solve some problems related to managing multiple
 repositories, and can be used as examples of using the library.
 
+### `lock-file-maintenance.sh`
+
+A sample shell script that can be passed to `apply-change.js`. This script
+updates `package-lock.json` and `samples/package-lock.json` (if the latter
+exists) to make the package use the latest dependencies. It also verifies that
+the samples package depends on the current version of the main package.
+
 ### `fix-samples-dependency.sh`
 
 A sample shell script that can be passed to `apply-change.js`. This particular
