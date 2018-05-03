@@ -29,8 +29,8 @@
     "sinon": "^5.0.0"
   },
   "scripts": {
-    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js",
-    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js samples/*.js",
+    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js samples/*/*.js",
+    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js samples/*.js samples/*/*.js",
     "docs": "jsdoc -c .jsdoc.js",
     "test": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report"
   }

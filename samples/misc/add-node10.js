@@ -41,23 +41,23 @@ function applyFix(circleConfigText) {
     let keys = Object.keys(job);
     let name = keys[0];
 
-    if (name === 'node9') {
-      node9position = jobIdx;
+    switch (name) {
+      case 'node9':
+        node9position = jobIdx;
+        break;
+      case 'node8':
+        node8 = job;
+        break;
+      case 'node10':
+        console.log('ERR: node10 is already defined, skipping this repo');
+        return undefined;
     }
 
-    if (name === 'node8') {
-      node8 = job;
-    }
-
-    if (name === 'node10') {
-      console.log('ERR: node10 is already defined, skipping this repo');
-      return undefined;
-    }
-
-    if (job[name]['requires'] !== undefined) {
-      if (job[name]['requires'].includes('node8')) {
-        job[name]['requires'].push('node10');
-      }
+    if (
+      job[name]['requires'] !== undefined &&
+      job[name]['requires'].includes('node8')
+    ) {
+      job[name]['requires'].push('node10');
     }
   }
 
@@ -79,16 +79,22 @@ function applyFix(circleConfigText) {
   let jobs = circleConfigYaml['jobs'];
   let installCmd;
   let linkSamplesCmd;
-  for (let name of Object.keys(jobs)) {
-    let job = jobs[name];
-
+  for (let [, job] of Object.entries(jobs)) {
     if (job['steps'] !== undefined) {
       for (let step of job['steps']) {
         if (step['run'] !== undefined) {
-          if (step['run']['name'].match(/Install and link/) && installCmd === undefined) {
+          if (
+            step['run']['name'].match(/Install and link/) &&
+            installCmd === undefined
+          ) {
             installCmd = step['run'];
           }
-          if (step['run']['name'].match(/Link the module being tested to the samples/) && linkSamplesCmd === undefined) {
+          if (
+            step['run']['name'].match(
+              /Link the module being tested to the samples/
+            ) &&
+            linkSamplesCmd === undefined
+          ) {
             linkSamplesCmd = step['run'];
           }
         }
@@ -97,16 +103,22 @@ function applyFix(circleConfigText) {
   }
 
   let node8def;
-  for (let name of Object.keys(jobs)) {
-    let job = jobs[name];
-
+  for (let [name, job] of Object.entries(jobs)) {
     if (job['steps'] !== undefined) {
       for (let step of job['steps']) {
         if (step['run'] !== undefined) {
-          if (step['run']['name'].match(/Install/) && installCmd !== undefined) {
+          if (
+            step['run']['name'].match(/Install/) &&
+            installCmd !== undefined
+          ) {
             step['run'] = installCmd;
           }
-          if (step['run']['name'].match(/Link the module being tested to the samples/) && linkSamplesCmd !== undefined) {
+          if (
+            step['run']['name'].match(
+              /Link the module being tested to the samples/
+            ) &&
+            linkSamplesCmd !== undefined
+          ) {
             step['run'] = linkSamplesCmd;
           }
         }
@@ -118,7 +130,9 @@ function applyFix(circleConfigText) {
     }
 
     if (name === 'node10') {
-      console.log('ERR: node10 job definition already exists, skipping this repo');
+      console.log(
+        'ERR: node10 job definition already exists, skipping this repo'
+      );
       return undefined;
     }
   }
@@ -158,8 +172,7 @@ async function main() {
     patchFunction: applyFix,
     branch: 'test-on-node10',
     message: 'chore: test on node10',
-    comment:
-`This PR brings an updated configuration file for CircleCI:
+    comment: `This PR brings an updated configuration file for CircleCI:
 
 - test on Node.js v10
 - more YAML references to make config more readable (at least I hope so)
