@@ -50,6 +50,7 @@ class OctokitReposStub {
   async getBranchProtection() {}
   async getProtectedBranchRequiredStatusChecks() {}
   async updateProtectedBranchRequiredStatusChecks() {}
+  async addCollaborator() {}
 }
 
 class OctokitPullRequestsStub {
@@ -400,6 +401,17 @@ describe('GitHubRepository', () => {
     );
     assert(stub.calledOnceWith({owner, repo, branch, strict, contexts}));
     assert.deepEqual(result, updatedResponse);
+    stub.restore();
+  });
+
+  it('should add collaborator', async () => {
+    let username = 'username';
+    let permission = 'permission';
+    let stub = sinon
+      .stub(octokit.repos, 'addCollaborator')
+      .returns(Promise.resolve({data: {}}));
+    await repository.addCollaborator(username, permission);
+    assert(stub.calledOnceWith({owner, repo, username, permission}));
     stub.restore();
   });
 });

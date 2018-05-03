@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.3",
+    "extend": "^3.0.1",
     "js-yaml": "^3.10.0",
     "tmp-promise": "^1.0.4"
   },
@@ -28,8 +29,8 @@
     "sinon": "^5.0.0"
   },
   "scripts": {
-    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js",
-    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js samples/*.js",
+    "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js samples/*/*.js",
+    "prettier": "prettier --write *.js lib/*.js test/*.js test/*/*.js samples/*.js samples/*/*.js",
     "docs": "jsdoc -c .jsdoc.js",
     "test": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report"
   }
