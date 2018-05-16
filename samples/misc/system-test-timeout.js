@@ -30,7 +30,10 @@ function applyFix(packageJson) {
   if (systemTestCmd === undefined) {
     return undefined;
   }
-  let newSystemTestCmd = systemTestCmd.replace(/--timeout\s+\d+|--no-timeouts/, '--timeout 600000');
+  let newSystemTestCmd = systemTestCmd.replace(
+    /--timeout\s+\d+|--no-timeouts/,
+    '--timeout 600000'
+  );
   if (newSystemTestCmd === systemTestCmd) {
     return undefined;
   }
