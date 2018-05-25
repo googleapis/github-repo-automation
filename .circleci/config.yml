@@ -30,7 +30,7 @@ workflows:
 jobs:
   node8:
     docker:
-      - image: node:8@sha256:ceb6e9e47ec034664e795d7b7e45f288e2b47a5a51cc6015dc7d672252900788
+      - image: node:8@sha256:bba8a9c445fefc3e53fb2dfdfa755b0c119ae9f9999637e3b96ea37fae89d5d0
         user: node
     steps: &unit_tests_steps
       - checkout
