@@ -26,7 +26,7 @@
     "power-assert": "^1.4.4",
     "prettier": "^1.10.2",
     "proxyquire": "^2.0.0",
-    "sinon": "^5.0.0"
+    "sinon": "^6.0.0"
   },
   "scripts": {
     "lint": "eslint -- *.js lib/*.js test/*.js test/*/*.js samples/*.js samples/*/*.js",
