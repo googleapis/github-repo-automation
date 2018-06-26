@@ -15,7 +15,8 @@
     "extend": "^3.0.1",
     "js-yaml": "^3.10.0",
     "meow": "^5.0.0",
-    "tmp-promise": "^1.0.4"
+    "tmp-promise": "^1.0.4",
+    "update-notifier": "^2.5.0"
   },
   "devDependencies": {
     "codecov": "^3.0.0",
