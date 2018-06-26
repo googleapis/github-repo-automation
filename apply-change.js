@@ -22,7 +22,6 @@
 const util = require('util');
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
-const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 const updateRepo = require('./lib/update-repo.js');
 const question = require('./lib/question.js');
@@ -114,7 +113,7 @@ async function getFilesToCommit() {
 
 /** Checks if options are valid and it's OK to continue.
  * Prints a message to stderr if not, and returns false.
- * @param {Object} options Options object, as returned by commandLineArgs().
+ * @param {Object} options Options object, as returned by meow.
  * @returns {Boolean} True if OK to continue, false otherwise.
  */
 function checkOptions(options) {
@@ -136,7 +135,7 @@ function checkOptions(options) {
     badOptions = true;
     console.error('Error: --comment is required.');
   }
-  if (options.execute === undefined) {
+  if (options.command === undefined) {
     badOptions = true;
     console.error('Error: command to execute is required.');
   }
@@ -154,8 +153,7 @@ function checkOptions(options) {
  * Executes the given command in the repository cloned into the given
  * location, should return a promise resolving to a list of files to
  * commit.
- * @param {Object} options Command-line options, as returned by
- * commandLineArgs().
+ * @param {Object} options Command-line options, as returned by meow.
  * @param {String} repoPath Path to a folder where the current repository is
  * cloned.
  * @returns {Promise<string[]>} A promise resolving to a list of files to
@@ -165,7 +163,7 @@ async function updateCallback(options, repoPath) {
   let cwd = process.cwd();
   try {
     process.chdir(repoPath);
-    let execResult = await exec(options.execute); // will throw an error if non-zero exit code
+    let execResult = await exec(options.command); // will throw an error if non-zero exit code
     if (execResult.stdout !== '') {
       console.log(execResult.stdout);
     }
@@ -199,8 +197,7 @@ async function updateCallback(options, repoPath) {
 
 /** Main function.
  */
-async function main() {
-  const options = commandLineArgs(commandLineOptions);
+async function main(options) {
   if (!checkOptions(options)) {
     return;
   }
@@ -216,6 +213,6 @@ async function main() {
   await updateRepo(updateRepoOptions);
 }
 
-main().catch(err => {
-  console.error(err.toString());
-});
+module.exports = {
+  main,
+};
