@@ -5,6 +5,10 @@ const apply = require('./apply-change');
 const approve = require('./approve-prs');
 const check = require('./repo-check');
 const meow = require('meow');
+const updateNotifier = require('update-notifier');
+const pkg = require('./package.json');
+
+updateNotifier({pkg}).notify();
 
 const cli = meow(
   `
