@@ -22,11 +22,20 @@ your `PATH`, and install the required dependencies:
 $ npm install -g @google/repo
 ```
 
-You need to make your own `config.yaml` and put your GitHub token there:
+You need to make your own [`config.yaml`](config.yaml.default) and put your GitHub token there. You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
+
 ```sh
-cp config.yaml.default config.yaml
-vim config.yaml
+$ cat /User/beckwith/.repo-config.yaml
+---
+auth:
+  github-token: your-github-token
+  circleci-token: your-circleci-token
+organization: googleapis
+repo-name-regex: 'nodejs-.*'
 ```
+
+$ echo $REPO_CONFIG_PATH
+/User/beckwith/.repo-config.yaml
 
 Now you are good to go!
 
