@@ -10,7 +10,7 @@ continuous integration setup, updating dependencies, and so on.
 This repository contains some scripts that may be useful for this kind
 of tasks.
 
-## List of tools included
+## Installation
 
 If you're not familiar with Node.js development you can still
 use the tools included as they don't require writing any Javascript
@@ -19,38 +19,47 @@ installed (e.g. from [here](https://nodejs.org/en/)) and available in
 your `PATH`, and install the required dependencies:
 
 ```sh
-npm install
+$ npm install -g @google/repo
 ```
 
-You need to make your own `config.yaml` and put your GitHub token there:
+You need to make your own [`config.yaml`](config.yaml.default) and put your GitHub token there. You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
+
 ```sh
-cp config.yaml.default config.yaml
-vim config.yaml
+$ cat /User/beckwith/.repo-config.yaml
+---
+auth:
+  github-token: your-github-token
+  circleci-token: your-circleci-token
+organization: googleapis
+repo-name-regex: 'nodejs-.*'
 ```
+
+$ echo $REPO_CONFIG_PATH
+/User/beckwith/.repo-config.yaml
 
 Now you are good to go!
 
-### `approve-prs.js`
+### approve
 
-`node approve-prs.js [regex]`
+`repo approve [regex]`
 
 Iterates over all open pull requests matching `regex` (all PRs if
 no regex is given) in all configured repositories.
 For each pull request, asks (in console) if it should be approved
 and merged. Useful for managing GreenKeeper's PRs:
 
-`node approve-prs.js 🚀`
+`repo approve 🚀`
 
 or all PRs with the word `test` in the title:
 
-`node approve-prs.js test`
+`repo approve test`
 
-### `apply-change.js`
+### apply
 
 ```sh
-node apply-change.js --branch branch --message message
-                     --comment comment [--reviewers username[,username...]]
-                     [--silent] command
+repo apply --branch branch --message message
+           --comment comment [--reviewers username[,username...]]
+           [--silent] command
 ```
 
 Iterates over all configured repositories, clones each of them into
@@ -67,9 +76,9 @@ changing this library to use the low-level
 [Git data API](https://developer.github.com/v3/git/),
 your contributions are welcome!
 
-### `repo-check.js`
+### check
 
-`node repo-check.js`
+`repo check`
 
 Iterates all configured repositories and checks that each repository
 is configured properly (branch protection, continuous integration,

@@ -129,9 +129,9 @@ async function processPullRequest(repository, pr) {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-async function main(args) {
-  if (args.length > 3 || args[2] === '--help') {
-    console.log(`Usage: ${process.argv0} ${args[1]} [regex]`);
+async function main(options) {
+  if (!options.regex) {
+    console.log(`Usage: repo approve [regex]`);
     console.log(
       'Will show all open PRs with title matching regex and allow to approve them.'
     );
@@ -141,7 +141,7 @@ async function main(args) {
   let github = new GitHub();
   await github.init();
 
-  let regex = new RegExp(args[2] || '.*');
+  let regex = new RegExp(options.regex || '.*');
   let repos = await github.getRepositories();
   for (let repository of repos) {
     console.log(repository.name);
@@ -162,6 +162,6 @@ async function main(args) {
   }
 }
 
-main(process.argv).catch(err => {
-  console.error(err.toString());
-});
+module.exports = {
+  main,
+};
