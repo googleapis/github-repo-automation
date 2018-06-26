@@ -330,6 +330,6 @@ async function main() {
   logger.info(`Total warnings: ${logger.warningCount}`);
 }
 
-main().catch(err => {
-  console.error(err.toString());
-});
+module.exports = {
+  main,
+};
