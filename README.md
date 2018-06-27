@@ -63,6 +63,17 @@ or all PRs with the word `test` in the title:
 
 `$ repo approve test`
 
+### repo reject
+
+```sh
+$ repo reject [regex]
+```
+
+Iterates over all open pull requests matching `regex`, and closes
+them. For example, close all PRs with the word `test` in the title:
+
+`$ repo reject test`
+
 ### repo apply
 
 ```sh
