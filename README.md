@@ -1,4 +1,7 @@
-## Tools to automate managing multiple github repositories.
+<img src="https://avatars0.githubusercontent.com/u/1342004?v=3&s=96" alt="Google Inc. logo" title="Google" align="right" height="96" width="96"/>
+
+# GitHub Repo Automation
+> A set of tools to automate multiple GitHub repository management.
 
 **This is not an officially supported Google product.**
 
@@ -34,32 +37,41 @@ organization: googleapis
 repo-name-regex: 'nodejs-.*'
 ```
 
+```sh
 $ echo $REPO_CONFIG_PATH
 /User/beckwith/.repo-config.yaml
+```
 
 Now you are good to go!
 
-### approve
+## Usage
 
-`repo approve [regex]`
+### repo approve
+
+```sh
+$ repo approve [regex]
+```
 
 Iterates over all open pull requests matching `regex` (all PRs if
 no regex is given) in all configured repositories.
 For each pull request, asks (in console) if it should be approved
 and merged. Useful for managing GreenKeeper's PRs:
 
-`repo approve 🚀`
+`$ repo approve 🚀`
 
 or all PRs with the word `test` in the title:
 
-`repo approve test`
+`$ repo approve test`
 
-### apply
+### repo apply
 
 ```sh
-repo apply --branch branch --message message
-           --comment comment [--reviewers username[,username...]]
-           [--silent] command
+$ repo apply --branch branch
+             --message message
+             --comment comment
+             [--reviewers username[,username...]]
+             [--silent]
+             command
 ```
 
 Iterates over all configured repositories, clones each of them into
@@ -76,9 +88,11 @@ changing this library to use the low-level
 [Git data API](https://developer.github.com/v3/git/),
 your contributions are welcome!
 
-### check
+### repo check
 
-`repo check`
+```sh
+$ repo check
+```
 
 Iterates all configured repositories and checks that each repository
 is configured properly (branch protection, continuous integration,
