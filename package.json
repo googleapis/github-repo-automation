@@ -59,7 +59,6 @@
     "compile": "tsc -p .",
     "fix": "gts fix",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
-    "posttest": "npm run check"
+    "pretest": "npm run compile"
   }
 }
