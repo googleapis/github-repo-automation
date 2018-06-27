@@ -19,10 +19,10 @@
 
 'use strict';
 
-const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
+import * as child_process from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
 const exec = util.promisify(child_process.exec);
 const readFile = util.promisify(fs.readFile);
 const tmp = require('tmp-promise');

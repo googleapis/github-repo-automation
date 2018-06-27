@@ -18,12 +18,15 @@
 
 'use strict';
 
-const OctoKit = require('@octokit/rest');
+import OctoKit from '@octokit/rest';
 const Config = require('./config.js');
 
 /** Wraps some octokit GitHub API calls.
  */
 class GitHub {
+  organization;
+  octokit;
+  config;
   /** Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */
@@ -52,7 +55,7 @@ class GitHub {
     let repoNameRegexConfig = this.config.get('repo-name-regex');
     let repoNameRegex = new RegExp(repoNameRegexConfig);
 
-    let repos = [];
+    let repos: GitHubRepository[] = [];
     for (let page = 1; ; ++page) {
       let result = await this.octokit.repos.getForOrg({org, type, page});
       let reposPage = result.data;
@@ -76,6 +79,9 @@ class GitHub {
 /** Wraps some octokit GitHub API calls for the given repository.
  */
 class GitHubRepository {
+  octokit;
+  repository;
+  organization;
   /** Creates an object to work with the given GitHub repository.
    * @constructor
    * @param {Object} octokit OctoKit instance.
@@ -135,7 +141,7 @@ class GitHubRepository {
     let repo = this.repository['name'];
     state = state || 'open';
 
-    let prs = [];
+    let prs: {}[] = [];
     for (let page = 1; ; ++page) {
       let result = await this.octokit.pullRequests.getAll({
         owner,

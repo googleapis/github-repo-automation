@@ -19,7 +19,7 @@
 
 'use strict';
 
-const util = require('util');
+import * as util from 'util';
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
 const commandLineUsage = require('command-line-usage');
@@ -101,7 +101,7 @@ const helpSections = [
 async function getFilesToCommit() {
   let gitStatus = await exec('git status --porcelain');
   let lines = gitStatus.stdout.split('\n').filter(line => line !== '');
-  let files = [];
+  let files: string[] = [];
   for (let line of lines) {
     let matchResult = line.match(/^(?: M|\?\?) (.*)$/);
     if (matchResult !== null) {

@@ -16,7 +16,7 @@
  * @fileoverview Promisified version of readline.question.
  */
 
-const readline = require('readline');
+import * as readline from 'readline';
 
 /** Promisified version of readline question. Prints a prompt and waits for
  * response.
