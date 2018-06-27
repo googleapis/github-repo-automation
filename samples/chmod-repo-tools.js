@@ -20,7 +20,7 @@
 'use strict';
 
 const yaml = require('js-yaml');
-const updateFile = require('../lib/update-file.js');
+const updateFile = require('../build/src/lib/update-file.js');
 
 /** Inserts a chmod command after npm install to workaround some bug
  * that happens only in CircleCI.

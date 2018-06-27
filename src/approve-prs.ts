@@ -20,7 +20,7 @@
 
 'use strict';
 
-const axios = require('axios');
+import axios from 'axios';
 const GitHub = require('./lib/github.js');
 const question = require('./lib/question.js');
 

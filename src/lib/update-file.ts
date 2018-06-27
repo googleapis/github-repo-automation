@@ -14,33 +14,38 @@
 
 /**
  * @fileoverview Performs a common tasks of applying the same change to one file
- * in the given branch in many GitHub repositories.
+ * in many GitHub repositories, and sends pull requests with the change.
  */
 
 'use strict';
 
 const GitHub = require('./github.js');
+import * as util from 'util';
 
-/** Updates and commits one existing file in the given branch of the given
- * repository.
+/** Updates one existing file in the repository and sends a pull request with
+ * this change.
  * @param {GitHubRepository} repository Repository to work with.
- * @param {string} branch Name of an existing branch to update.
  * @param {string} path Path to an existing file to update.
  * @param {patchFunction} patchFunction Callback function that should modify the
  * file.
- * @param {string} message Commit message.
+ * @param {string} branch Name for a new branch to use.
+ * @param {string} message Commit message and pull request title.
+ * @param {string} comment Pull request body.
+ * @param {string[]} reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
   repository,
-  branch,
   path,
   patchFunction,
-  message
+  branch,
+  message,
+  comment,
+  reviewers
 ) {
   let file;
   try {
-    file = await repository.getFileFromBranch(branch, path);
+    file = await repository.getFile(path);
   } catch (err) {
     console.warn(
       '  cannot get file, skipping this repository:',
@@ -64,6 +69,28 @@ async function processRepository(
   }
   let encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
 
+  let latestCommit;
+  try {
+    latestCommit = await repository.getLatestCommitToMaster();
+  } catch (err) {
+    console.warn(
+      '  cannot get sha of latest commit, skipping this repository:',
+      err.toString()
+    );
+    return;
+  }
+  let latestSha = latestCommit['sha'];
+
+  try {
+    await repository.createBranch(branch, latestSha);
+  } catch (err) {
+    console.warn(
+      `  cannot create branch ${branch}, skipping this repository:`,
+      err.toString()
+    );
+    return;
+  }
+
   try {
     await repository.updateFileInBranch(
       branch,
@@ -80,23 +107,49 @@ async function processRepository(
     return;
   }
 
-  console.log('  success!');
+  let pullRequest;
+  try {
+    pullRequest = await repository.createPullRequest(branch, message, comment);
+  } catch (err) {
+    console.warn(
+      `  cannot create pull request for branch ${branch}! Branch is still there.`,
+      err.toString()
+    );
+    return;
+  }
+  let pullRequestNumber = pullRequest['number'];
+  let pullRequestUrl = pullRequest['html_url'];
+
+  if (reviewers.length > 0) {
+    try {
+      await repository.requestReview(pullRequestNumber, reviewers);
+    } catch (err) {
+      console.warn(
+        `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
+        err.toString()
+      );
+      return;
+    }
+  }
+
+  console.log(`  success! ${pullRequestUrl}`);
 }
 
-/** Updates one existing file in the given branch of all the repositories.
+/** Updates one existing file in the repository and sends a pull request with
+ * this change.
  * @param {Object} options Options object, should contain the following fields:
  * @param {string} option.config Path to a configuration file. Will use default
  * `./config.yaml` if omitted.
- * @param {string} options.branch Name for a new branch to use.
  * @param {string} options.path Path to an existing file to update.
  * @param {patchFunction} options.patchFunction Callback function that should modify the
  * file.
+ * @param {string} options.branch Name for a new branch to use.
  * @param {string} options.message Commit message and pull request title.
  * @param {string} options.comment Pull request body.
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-async function updateFileInBranch(options) {
+async function updateFile(options) {
   let path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');
@@ -105,7 +158,7 @@ async function updateFileInBranch(options) {
 
   let patchFunction = options['patchFunction'];
   if (patchFunction === undefined) {
-    console.error('updateFile: path is required');
+    console.error('updateFile: patchFunction is required');
     return;
   }
 
@@ -121,13 +174,24 @@ async function updateFileInBranch(options) {
     return;
   }
 
+  let comment = options['comment'] || '';
+  let reviewers = options['reviewers'] || [];
+
   let github = new GitHub(options.config);
   await github.init();
 
   let repos = await github.getRepositories();
   for (let repository of repos) {
     console.log(repository.name);
-    await processRepository(repository, branch, path, patchFunction, message);
+    await processRepository(
+      repository,
+      path,
+      patchFunction,
+      branch,
+      message,
+      comment,
+      reviewers
+    );
   }
 }
 
@@ -140,4 +204,4 @@ async function updateFileInBranch(options) {
  * applied successfully, return the new contents of the file.
  */
 
-module.exports = updateFileInBranch;
+module.exports = updateFile;

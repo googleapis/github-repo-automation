@@ -8,3 +8,4 @@ out/
 test.js
 config.yaml
 ignored
+build

@@ -16,7 +16,7 @@
  * @fileoverview Fake GitHub and GitHubRepository implementations for tests.
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 function hash(string) {
   return crypto
@@ -26,6 +26,10 @@ function hash(string) {
 }
 
 class FakeGitHubRepository {
+  branches;
+  prs;
+  _name?: string;
+
   constructor(name) {
     this.name = name;
   }

@@ -18,9 +18,9 @@
 
 'use strict';
 
-const assert = require('assert');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
+import assert from 'assert';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const testConfig = {
   auth: {
@@ -31,6 +31,7 @@ const testConfig = {
 };
 
 class ConfigStub {
+  _config;
   async init() {
     this._config = testConfig;
   }
@@ -66,6 +67,9 @@ class OctokitGitdataStub {
 }
 
 class OctokitStub {
+  repos: OctokitReposStub;
+  pullRequests: OctokitPullRequestsStub;
+  gitdata: OctokitGitdataStub;
   constructor() {
     this.repos = new OctokitReposStub();
     this.pullRequests = new OctokitPullRequestsStub();
@@ -78,7 +82,7 @@ function getPage(arr, page, perPage) {
   return arr.slice((page - 1) * perPage, page * perPage);
 }
 
-const GitHub = proxyquire('../lib/github.js', {
+const GitHub = proxyquire('../src/lib/github.js', {
   './config.js': ConfigStub,
   '@octokit/rest': OctokitStub,
 });

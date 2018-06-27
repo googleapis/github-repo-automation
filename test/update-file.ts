@@ -13,27 +13,16 @@
 // limitations under the License.
 
 /**
- * @fileoverview Tests for lib/update-repo.js.
+ * @fileoverview Tests for lib/update-file.js.
  */
 
-const assert = require('assert');
-const mockFs = require('mock-fs');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
+import assert from 'assert';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const FakeGitHub = require('./fakes/fake-github.js');
-const FakeTmp = require('./fakes/fake-tmp.js');
-
-let execCallback = sinon.spy();
-const updateRepo = proxyquire('../lib/update-repo.js', {
+const updateFile = proxyquire('../src/lib/update-file.js', {
   './github.js': FakeGitHub,
-  'tmp-promise': FakeTmp,
-  child_process: {
-    exec: (command, callback) => {
-      execCallback(command);
-      callback();
-    },
-  },
 });
 
 async function suppressConsole(func) {
@@ -46,44 +35,36 @@ async function suppressConsole(func) {
   delete console.log;
 }
 
-describe('UpdateRepo', () => {
-  let pathExisting = 'file1.txt';
-  let pathNonExisting = 'file2.txt';
-  let originalContent = 'content';
+describe('UpdateFile', () => {
+  let path = '/path/to/file.txt';
+  let originalContent = 'content matches';
+  let badContent = 'content does not match';
   let changedContent = 'changed content';
-  let newContent = 'new content';
   let branch = 'test-branch';
   let message = 'test-message';
   let comment = 'test-comment';
   let reviewers = ['test-reviewer-1', 'test-reviewer-2'];
-  let tmpDir = FakeTmp.getDirName();
 
   beforeEach(() => {
-    execCallback.resetHistory();
     FakeGitHub.repository.reset();
     FakeGitHub.repository.testSetFile(
       'master',
-      pathExisting,
+      path,
       Buffer.from(originalContent).toString('base64')
     );
-
-    let mockFsObj = {};
-    mockFsObj[tmpDir] = {};
-    mockFsObj[tmpDir][pathExisting] = changedContent;
-    mockFsObj[tmpDir][pathNonExisting] = newContent;
-    mockFs(mockFsObj);
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
+  afterEach(() => {});
 
   let attemptUpdate = async () => {
     await suppressConsole(async () => {
-      await updateRepo({
-        updateCallback: path => {
-          assert.equal(path, tmpDir);
-          return Promise.resolve([pathExisting, pathNonExisting]);
+      await updateFile({
+        path,
+        patchFunction: str => {
+          if (str === originalContent) {
+            return changedContent;
+          }
+          return;
         },
         branch,
         message,
@@ -93,19 +74,15 @@ describe('UpdateRepo', () => {
     });
   };
 
-  it('should perform update', async () => {
+  it('should update one file if content matches', async () => {
     await attemptUpdate();
     assert.equal(
-      FakeGitHub.repository.branches['master'][pathExisting]['content'],
+      FakeGitHub.repository.branches['master'][path]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.equal(
-      FakeGitHub.repository.branches[branch][pathExisting]['content'],
+      FakeGitHub.repository.branches[branch][path]['content'],
       Buffer.from(changedContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][pathNonExisting]['content'],
-      Buffer.from(newContent).toString('base64')
     );
     assert.deepEqual(FakeGitHub.repository.prs[1], {
       number: 1,
@@ -115,18 +92,10 @@ describe('UpdateRepo', () => {
       reviewers,
       html_url: `http://example.com/pulls/1`,
     });
-    assert(
-      execCallback.calledOnceWith(
-        `git clone ${
-          FakeGitHub.repository.getRepository()['clone_url']
-        } ${tmpDir}`
-      )
-    );
   });
 
   it('should not update a file if it is not a file', async () => {
-    FakeGitHub.repository.branches['master'][pathExisting]['type'] =
-      'not-a-file';
+    FakeGitHub.repository.branches['master'][path]['type'] = 'not-a-file';
     try {
       await attemptUpdate();
       assert(false);
@@ -134,25 +103,41 @@ describe('UpdateRepo', () => {
       // ignore
     }
     assert.equal(
-      FakeGitHub.repository.branches['master'][pathExisting]['content'],
+      FakeGitHub.repository.branches['master'][path]['content'],
       Buffer.from(originalContent).toString('base64')
     );
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 
-  it('should not update a file if it cannot read it', async () => {
-    mockFs.restore();
-    let mockFsObj = {};
-    mockFsObj[tmpDir] = {};
-    mockFsObj[tmpDir][pathNonExisting] = newContent;
-    mockFs(mockFsObj);
-    mockFs(mockFsObj);
-
+  it('should not update a file if content does not match', async () => {
+    FakeGitHub.repository.testSetFile(
+      'master',
+      path,
+      Buffer.from(badContent).toString('base64')
+    );
     try {
       await attemptUpdate();
       assert(false);
     } catch (err) {
       // ignore
     }
+    assert.equal(
+      FakeGitHub.repository.branches['master'][path]['content'],
+      Buffer.from(badContent).toString('base64')
+    );
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+  });
+
+  it('should not update a file if it does not exist', async () => {
+    delete FakeGitHub.repository.branches['master'][path];
+    try {
+      await attemptUpdate();
+      assert(false);
+    } catch (err) {
+      // ignore
+    }
+    assert.equal(FakeGitHub.repository.branches['master'][path], undefined);
+    assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not update a file if cannot get master latest sha', async () => {
@@ -166,6 +151,10 @@ describe('UpdateRepo', () => {
       // ignore
     }
     stub.restore();
+    assert.equal(
+      FakeGitHub.repository.branches['master'][path]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
     assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 
@@ -180,6 +169,10 @@ describe('UpdateRepo', () => {
       // ignore
     }
     stub.restore();
+    assert.equal(
+      FakeGitHub.repository.branches['master'][path]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
     assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 
@@ -194,6 +187,14 @@ describe('UpdateRepo', () => {
       // ignore
     }
     stub.restore();
+    assert.equal(
+      FakeGitHub.repository.branches['master'][path]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
+    assert.equal(
+      FakeGitHub.repository.branches[branch][path]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
     assert.equal(FakeGitHub.repository.prs[1], undefined);
   });
 
@@ -209,16 +210,12 @@ describe('UpdateRepo', () => {
     }
     stub.restore();
     assert.equal(
-      FakeGitHub.repository.branches['master'][pathExisting]['content'],
+      FakeGitHub.repository.branches['master'][path]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.equal(
-      FakeGitHub.repository.branches[branch][pathExisting]['content'],
+      FakeGitHub.repository.branches[branch][path]['content'],
       Buffer.from(changedContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][pathNonExisting]['content'],
-      Buffer.from(newContent).toString('base64')
     );
   });
 
@@ -233,16 +230,12 @@ describe('UpdateRepo', () => {
       // ignore
     }
     assert.equal(
-      FakeGitHub.repository.branches['master'][pathExisting]['content'],
+      FakeGitHub.repository.branches['master'][path]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.equal(
-      FakeGitHub.repository.branches[branch][pathExisting]['content'],
+      FakeGitHub.repository.branches[branch][path]['content'],
       Buffer.from(changedContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][pathNonExisting]['content'],
-      Buffer.from(newContent).toString('base64')
     );
     assert.deepEqual(FakeGitHub.repository.prs[1], {
       number: 1,
@@ -254,10 +247,33 @@ describe('UpdateRepo', () => {
     stub.restore();
   });
 
-  it('should require updateCallback parameter', async () => {
+  it('should require path parameter', async () => {
     try {
       await suppressConsole(async () => {
-        await updateRepo({
+        await updateFile({
+          patchFunction: str => {
+            if (str === originalContent) {
+              return changedContent;
+            }
+            return;
+          },
+          branch,
+          message,
+          comment,
+          reviewers,
+        });
+      });
+      assert(false);
+    } catch (err) {
+      // ignore
+    }
+  });
+
+  it('should require patchFunction parameter', async () => {
+    try {
+      await suppressConsole(async () => {
+        await updateFile({
+          path,
           branch,
           message,
           comment,
@@ -273,9 +289,13 @@ describe('UpdateRepo', () => {
   it('should require branch parameter', async () => {
     try {
       await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve();
+        await updateFile({
+          path,
+          patchFunction: str => {
+            if (str === originalContent) {
+              return changedContent;
+            }
+            return;
           },
           message,
           comment,
@@ -291,8 +311,12 @@ describe('UpdateRepo', () => {
   it('should require message parameter', async () => {
     try {
       await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
+        await updateFile({
+          path,
+          patchFunction: str => {
+            if (str === originalContent) {
+              return changedContent;
+            }
             return;
           },
           branch,
@@ -309,9 +333,13 @@ describe('UpdateRepo', () => {
   it('should require comment parameter', async () => {
     try {
       await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve();
+        await updateFile({
+          path,
+          patchFunction: str => {
+            if (str === originalContent) {
+              return changedContent;
+            }
+            return;
           },
           branch,
           message,
@@ -326,9 +354,13 @@ describe('UpdateRepo', () => {
 
   it('should not send review if no reviewers', async () => {
     await suppressConsole(async () => {
-      await updateRepo({
-        updateCallback: () => {
-          return Promise.resolve([pathExisting, pathNonExisting]);
+      await updateFile({
+        path,
+        patchFunction: str => {
+          if (str === originalContent) {
+            return changedContent;
+          }
+          return;
         },
         branch,
         message,
@@ -336,16 +368,12 @@ describe('UpdateRepo', () => {
       });
     });
     assert.equal(
-      FakeGitHub.repository.branches['master'][pathExisting]['content'],
+      FakeGitHub.repository.branches['master'][path]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.equal(
-      FakeGitHub.repository.branches[branch][pathExisting]['content'],
+      FakeGitHub.repository.branches[branch][path]['content'],
       Buffer.from(changedContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][pathNonExisting]['content'],
-      Buffer.from(newContent).toString('base64')
     );
     assert.deepEqual(FakeGitHub.repository.prs[1], {
       number: 1,
@@ -354,62 +382,5 @@ describe('UpdateRepo', () => {
       comment,
       html_url: `http://example.com/pulls/1`,
     });
-  });
-
-  it('should not perform update if updateCallback returned undefined value', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve(undefined);
-          },
-          branch,
-          message,
-          comment,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
-  });
-
-  it('should not perform update if updateCallback returned empty list', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve([]);
-          },
-          branch,
-          message,
-          comment,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
-  });
-
-  it('should not perform update if updateCallback promise was rejected', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.reject();
-          },
-          branch,
-          message,
-          comment,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
   });
 });

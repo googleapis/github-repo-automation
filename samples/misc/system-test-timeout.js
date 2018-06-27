@@ -19,7 +19,7 @@
 
 'use strict';
 
-const updateFile = require('../../lib/update-file.js');
+const updateFile = require('../../build/src/lib/update-file.js');
 
 /** Updates system test script in package.json and sets timeout to 600000 (10
  * minutes).
