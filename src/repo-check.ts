@@ -19,13 +19,15 @@
 
 'use strict';
 
-const axios = require('axios');
+import axios from 'axios';
 const GitHub = require('./lib/github.js');
 const CircleCI = require('./lib/circleci.js');
 
 /** Logs and counts errors and warnings to console with fancy coloring.
  */
 class Logger {
+  errorCount: number;
+  warningCount: number;
   constructor() {
     this.errorCount = 0;
     this.warningCount = 0;
@@ -246,7 +248,7 @@ async function checkReadmeLinks(logger, repository) {
   }
   let readme = response.data;
 
-  let links = [];
+  let links: string[] = [];
   let reflinksRegex = /\[[^[\]]*?\]: (http.*)/g;
   let reflinksMatch;
   while (null !== (reflinksMatch = reflinksRegex.exec(readme))) {

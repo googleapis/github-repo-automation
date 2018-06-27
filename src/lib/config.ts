@@ -18,15 +18,17 @@
 
 'use strict';
 
-const fs = require('fs');
-const util = require('util');
+import * as fs from 'fs';
+import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
-const yaml = require('js-yaml');
+import * as yaml from 'js-yaml';
 
 /** Configuration object. Contains GitHub token, organization and repository
  * filter regex.
  */
 class Config {
+  filename: string;
+  _config;
   /** Constructs a configuration object.
    * @constructor
    * @param {string} configFilename Path to a configuration file. If not given,
@@ -44,7 +46,7 @@ class Config {
   async init() {
     try {
       const yamlContent = await readFile(this.filename);
-      this.config = yaml.load(yamlContent);
+      this.config = yaml.load(yamlContent as {} as string);
     } catch (err) {
       console.error(
         `Cannot read configuration file ${

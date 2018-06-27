@@ -19,11 +19,15 @@
 'use strict';
 
 const Config = require('./config.js');
-const axios = require('axios');
+import axios from 'axios';
 
 /** Wraps some CircleCI API calls.
  */
 class CircleCI {
+
+  circleToken?: string;
+  config;
+
   /** Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */

@@ -16,16 +16,16 @@
  * @fileoverview Tests for lib/update-repo.js.
  */
 
-const assert = require('assert');
-const mockFs = require('mock-fs');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
+import assert from 'assert';
+import mockFs from 'mock-fs';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const FakeGitHub = require('./fakes/fake-github.js');
 const FakeTmp = require('./fakes/fake-tmp.js');
 
 let execCallback = sinon.spy();
-const updateRepo = proxyquire('../lib/update-repo.js', {
+const updateRepo = proxyquire('../src/lib/update-repo.js', {
   './github.js': FakeGitHub,
   'tmp-promise': FakeTmp,
   child_process: {

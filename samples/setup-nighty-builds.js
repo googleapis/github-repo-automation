@@ -20,9 +20,9 @@
 'use strict';
 
 const path = require('path');
-const yaml = require('js-yaml');
-const fs = require('fs');
-const util = require('util');
+import * as yaml from 'js-yaml';
+import * as fs from 'fs';
+import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const updateRepo = require('../lib/update-repo.js');

@@ -21,7 +21,7 @@
 
 const updateRepo = require('../lib/update-repo.js');
 const child_process = require('child_process');
-const util = require('util');
+import * as util from 'util';
 const exec = util.promisify(child_process.exec);
 
 /** Runs npm install, removes line `*-lock.js*` from `.gitignore`, and prepares

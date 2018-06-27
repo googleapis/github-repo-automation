@@ -16,12 +16,12 @@
  * @fileoverview Tests for lib/update-file.js.
  */
 
-const assert = require('assert');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
+import assert from 'assert';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const FakeGitHub = require('./fakes/fake-github.js');
-const updateFile = proxyquire('../lib/update-file.js', {
+const updateFile = proxyquire('../src/lib/update-file.js', {
   './github.js': FakeGitHub,
 });
 

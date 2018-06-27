@@ -18,10 +18,10 @@
 
 'use strict';
 
-const assert = require('assert');
-const mockFs = require('mock-fs');
-const yaml = require('js-yaml');
-const Config = require('../lib/config.js');
+import assert from 'assert';
+import mockFs from 'mock-fs';
+import yaml from 'js-yaml';
+const Config = require('../src/lib/config.js');
 
 const configObject1 = {
   auth: {

@@ -18,9 +18,9 @@
 
 'use strict';
 
-const assert = require('assert');
-const proxyquire = require('proxyquire');
-const nock = require('nock');
+import assert from 'assert';
+import proxyquire from 'proxyquire';
+import nock from 'nock';
 
 const testConfig = {
   auth: {
@@ -31,6 +31,7 @@ const testConfig = {
 };
 
 class ConfigStub {
+  _config;
   async init() {
     this._config = testConfig;
   }
@@ -39,7 +40,7 @@ class ConfigStub {
   }
 }
 
-const CircleCI = proxyquire('../lib/circleci.js', {
+const CircleCI = proxyquire('../src/lib/circleci.js', {
   './config.js': ConfigStub,
 });
 

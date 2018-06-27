@@ -19,7 +19,7 @@
 
 'use strict';
 
-const yaml = require('js-yaml');
+import * as yaml from 'js-yaml';
 const updateFile = require('../../lib/update-file.js');
 const extend = require('extend');
 

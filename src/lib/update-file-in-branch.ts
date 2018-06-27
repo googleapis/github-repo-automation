@@ -20,6 +20,7 @@
 'use strict';
 
 const GitHub = require('./github.js');
+import * as util from 'util';
 
 /** Updates and commits one existing file in the given branch of the given
  * repository.
