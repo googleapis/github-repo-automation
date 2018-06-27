@@ -7,7 +7,7 @@ const reject = require('./reject-prs');
 const check = require('./repo-check');
 import meow from 'meow';
 const updateNotifier = require('update-notifier');
-const pkg = require('./package.json');
+const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();
 
