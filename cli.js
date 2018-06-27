@@ -3,6 +3,7 @@
 
 const apply = require('./apply-change');
 const approve = require('./approve-prs');
+const reject = require('./reject-prs');
 const check = require('./repo-check');
 const meow = require('meow');
 const updateNotifier = require('update-notifier');
@@ -17,6 +18,7 @@ const cli = meow(
 
 	Examples
     $ repo approve /regex/
+    $ repo reject /regex/
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
 `,
@@ -54,6 +56,11 @@ let p;
 switch (cli.input[0]) {
   case 'approve':
     p = approve.main({
+      regex: cli.input[1],
+    });
+    break;
+  case 'reject':
+    p = reject.main({
       regex: cli.input[1],
     });
     break;
