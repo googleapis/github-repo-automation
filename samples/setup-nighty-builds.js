@@ -20,12 +20,12 @@
 'use strict';
 
 const path = require('path');
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
-import * as util from 'util';
+const yaml = require('js-yaml');
+const fs = require('fs');
+const util = require('util');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-const updateRepo = require('../lib/update-repo.js');
+const updateRepo = require('../build/src/lib/update-repo.js');
 
 /** Copies `test` workflow to a `nightly` workflow running every night
  * at 7am UTC.

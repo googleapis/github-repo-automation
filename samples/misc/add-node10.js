@@ -19,8 +19,8 @@
 
 'use strict';
 
-import * as yaml from 'js-yaml';
-const updateFile = require('../../lib/update-file.js');
+const yaml = require('js-yaml');
+const updateFile = require('../../build/src/lib/update-file.js');
 const extend = require('extend');
 
 /** Copies 'node8' task to 'node10', make all tasks working on 'node8' work on

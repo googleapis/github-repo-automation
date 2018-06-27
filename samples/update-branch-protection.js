@@ -19,7 +19,7 @@
 
 'use strict';
 
-const GitHub = require('../lib/github.js');
+const GitHub = require('../build/src/lib/github.js');
 
 async function main() {
   const toRemove = 'ci/circleci: node7';

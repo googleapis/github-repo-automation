@@ -19,8 +19,8 @@
 
 'use strict';
 
-import * as yaml from 'js-yaml';
-const updateFile = require('../lib/update-file.js');
+const yaml = require('js-yaml');
+const updateFile = require('../build/src/lib/update-file.js');
 
 /** A helper function to remove a job from CirleCI job array.
  * @param {Object[]} jobArray Jobs, as written in CircleCI config yaml.

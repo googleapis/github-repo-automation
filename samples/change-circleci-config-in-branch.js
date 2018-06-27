@@ -18,7 +18,7 @@
 
 'use strict';
 
-const updateFileInBranch = require('../lib/update-file-in-branch.js');
+const updateFileInBranch = require('../build/src/lib/update-file-in-branch.js');
 
 /** Renames incorrectly named yaml reference in the CircleCI config file.
  * @param {string} circleConfigText CircleCI configuration yaml file.

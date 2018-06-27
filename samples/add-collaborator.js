@@ -18,8 +18,8 @@
 
 'use strict';
 
-const GitHub = require('../lib/github.js');
-const question = require('../lib/question.js');
+const GitHub = require('../build/src/lib/github.js');
+const question = require('../build/src/lib/question.js');
 
 /** Main function.
  */

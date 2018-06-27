@@ -19,9 +19,9 @@
 
 'use strict';
 
-const updateRepo = require('../lib/update-repo.js');
+const updateRepo = require('../build/src/lib/update-repo.js');
 const child_process = require('child_process');
-import * as util from 'util';
+const util = require('util');
 const exec = util.promisify(child_process.exec);
 
 /** Runs npm install, removes line `*-lock.js*` from `.gitignore`, and prepares
