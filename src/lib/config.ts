@@ -26,7 +26,7 @@ import * as yaml from 'js-yaml';
 /** Configuration object. Contains GitHub token, organization and repository
  * filter regex.
  */
-class Config {
+export class Config {
   filename: string;
   _config;
   /** Constructs a configuration object.
@@ -34,7 +34,7 @@ class Config {
    * @param {string} configFilename Path to a configuration file. If not given,
    * uses `./config.yaml`.
    */
-  constructor(configFilename) {
+  constructor(configFilename?: string) {
     this.filename = configFilename || './config.yaml';
     if (process.env.REPO_CONFIG_PATH) {
       this.filename = process.env.REPO_CONFIG_PATH;
@@ -79,5 +79,3 @@ class Config {
     this._config = config;
   }
 }
-
-module.exports = Config;

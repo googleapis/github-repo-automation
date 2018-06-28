@@ -27,7 +27,7 @@ const exec = util.promisify(child_process.exec);
 const readFile = util.promisify(fs.readFile);
 const tmp = require('tmp-promise');
 
-const GitHub = require('./github.js');
+import {GitHub} from './github';
 
 /** Updates files in the cloned repository and sends a pull request with
  * this change.
@@ -192,7 +192,7 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-async function updateRepo(options) {
+export async function updateRepo(options) {
   let updateCallback = options['updateCallback'];
   if (updateCallback === undefined) {
     console.error('updateRepo: updateCallback is required');
@@ -240,5 +240,3 @@ async function updateRepo(options) {
  * Must resolve to `undefined` if the change was not applied for
  * any reason. In this case, no change will be committed.
  */
-
-module.exports = updateRepo;

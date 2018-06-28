@@ -19,18 +19,24 @@
 'use strict';
 
 import OctoKit from '@octokit/rest';
-const Config = require('./config.js');
+import {Config} from './config';
 
-/** Wraps some octokit GitHub API calls.
+/**
+ * Wraps some octokit GitHub API calls.
  */
-class GitHub {
+export class GitHub {
   organization;
   octokit;
   config;
+
+  constructor(options?) {
+
+  }
+
   /** Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */
-  async init(configFilename) {
+  async init(configFilename?: string) {
     let config = new Config(configFilename);
     await config.init();
 
@@ -78,7 +84,7 @@ class GitHub {
 
 /** Wraps some octokit GitHub API calls for the given repository.
  */
-class GitHubRepository {
+export class GitHubRepository {
   octokit;
   repository;
   organization;
@@ -136,7 +142,7 @@ class GitHubRepository {
    * @param {string} state Pull request state (open, closed), defaults to open.
    * @returns {Object[]} Pull request objects, as returned by GitHub API.
    */
-  async listPullRequests(state) {
+  async listPullRequests(state?: string) {
     let owner = this.repository['owner']['login'];
     let repo = this.repository['name'];
     state = state || 'open';
@@ -424,6 +430,3 @@ class GitHubRepository {
     return result.data;
   }
 }
-
-module.exports = GitHub;
-module.exports.GitHubRepository = GitHubRepository;

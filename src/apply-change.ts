@@ -23,8 +23,8 @@ import * as util from 'util';
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
 const commandLineUsage = require('command-line-usage');
-const updateRepo = require('./lib/update-repo.js');
-const question = require('./lib/question.js');
+import {updateRepo} from './lib/update-repo';
+import {question} from './lib/question';
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},
@@ -197,7 +197,7 @@ async function updateCallback(options, repoPath) {
 
 /** Main function.
  */
-async function main(options) {
+export async function main(options) {
   if (!checkOptions(options)) {
     return;
   }
@@ -212,7 +212,3 @@ async function main(options) {
   }
   await updateRepo(updateRepoOptions);
 }
-
-module.exports = {
-  main,
-};
