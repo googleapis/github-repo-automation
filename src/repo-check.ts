@@ -23,7 +23,8 @@ import axios from 'axios';
 import {GitHub} from './lib/github';
 import {CircleCI} from './lib/circleci';
 
-/** Logs and counts errors and warnings to console with fancy coloring.
+/**
+ * Logs and counts errors and warnings to console with fancy coloring.
  */
 class Logger {
   errorCount: number;
@@ -33,31 +34,35 @@ class Logger {
     this.warningCount = 0;
   }
 
-  /** Log error to console.
-   * @param {string} Error message.
+  /**
+   * Log error to console.
+   * @param {text} Error message.
    */
-  error(string) {
+  error(text) {
     ++this.errorCount;
-    console.log(string);
+    console.log(text);
   }
 
-  /** Log warning to console.
-   * @param {string} Warning message.
+  /**
+   * Log warning to console.
+   * @param {text} Warning message.
    */
-  warning(string) {
+  warning(text) {
     ++this.warningCount;
-    console.log(`\x1b[2m${string}\x1b[0m`);
+    console.log(`\x1b[2m${text}\x1b[0m`);
   }
 
-  /** Log information to console.
-   * @param {string} Message.
+  /**
+   * Log information to console.
+   * @param {text} Message.
    */
-  info(string) {
-    console.log(`\x1b[2m${string}\x1b[0m`);
+  info(text) {
+    console.log(`\x1b[2m${text}\x1b[0m`);
   }
 }
 
-/** Checks GitHub master branch protection settings.
+/**
+ * Checks GitHub master branch protection settings.
  * Logs all errors and warnings.
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
@@ -65,62 +70,58 @@ class Logger {
 async function checkGithubMasterBranchProtection(logger, repository) {
   let response = await repository.getBranch('master');
   if (!response['protected']) {
-    logger.error(
-      `${repository.name}: [!] branch protection for master branch is disabled`
-    );
+    logger.error(`${
+        repository.name}: [!] branch protection for master branch is disabled`);
     return;
   }
 
   response = await repository.getRequiredMasterBranchProtection();
   if (response['required_pull_request_reviews'] === undefined) {
-    logger.error(
-      `${
-        repository.name
-      }: [!] branch protection for master branch - pull request reviews are not required`
-    );
+    logger.error(`${
+        repository
+            .name}: [!] branch protection for master branch - pull request reviews are not required`);
   }
 
   if (response['required_status_checks'] !== undefined) {
-    let requiredStatusChecks = [
+    const requiredStatusChecks = [
       'ci/circleci: node4',
       'ci/circleci: node6',
       'ci/circleci: node8',
       'ci/circleci: node9',
     ];
-    for (let check of requiredStatusChecks) {
+    for (const check of requiredStatusChecks) {
       let enabled = false;
-      for (let enabledCheck of response['required_status_checks']['contexts']) {
+      for (const enabledCheck of
+               response['required_status_checks']['contexts']) {
         if (enabledCheck === check) {
           enabled = true;
         }
       }
       if (!enabled) {
-        logger.error(
-          `${
-            repository.name
-          }: [!] branch protection for master branch - status check ${check} is not required`
-        );
+        logger.error(`${
+            repository
+                .name}: [!] branch protection for master branch - status check ${
+            check} is not required`);
       }
     }
   } else {
-    logger.error(
-      `${
-        repository.name
-      }: [!] branch protection for master branch - status checks are not enabled`
-    );
+    logger.error(`${
+        repository
+            .name}: [!] branch protection for master branch - status checks are not enabled`);
   }
 }
 
-/** Checks if Greenkeeper is enabled for GitHub repository.
+/**
+ * Checks if Greenkeeper is enabled for GitHub repository.
  * Logs all errors and warnings.
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
 async function checkGreenkeeper(logger, repository) {
-  let response = await repository.listPullRequests('closed');
+  const response = await repository.listPullRequests('closed');
 
   let greenkeeperFound = false;
-  for (let pullRequest of response) {
+  for (const pullRequest of response) {
     if (pullRequest['user']['login'] === 'greenkeeper[bot]') {
       greenkeeperFound = true;
       break;
@@ -132,7 +133,8 @@ async function checkGreenkeeper(logger, repository) {
   }
 }
 
-/** Checks if CircleCI is enabled for the repository, and how many recent builds
+/**
+ * Checks if CircleCI is enabled for the repository, and how many recent builds
  * failed on master branch.
  * Logs all errors and warnings.
  * @param {Logger} logger Logger object.
@@ -141,39 +143,34 @@ async function checkGreenkeeper(logger, repository) {
  */
 async function checkCircleSettings(logger, circleci, repository) {
   try {
-    let recentBuilds = await circleci.getBuildsForProject(repository.name);
-    let recentBuildsMaster = recentBuilds.filter(b => b['branch'] === 'master');
+    const recentBuilds = await circleci.getBuildsForProject(repository.name);
+    const recentBuildsMaster =
+        recentBuilds.filter(b => b['branch'] === 'master');
     let failedCount = 0;
-    for (let recentBuild of recentBuildsMaster) {
+    for (const recentBuild of recentBuildsMaster) {
       if (recentBuild['outcome'] === 'failed') {
         ++failedCount;
       }
     }
     if (failedCount > 0) {
       if (failedCount === recentBuildsMaster.length) {
-        logger.error(
-          `${
-            repository.name
-          }: [!] all ${failedCount} recent circleci build(s) for master branch failed`
-        );
+        logger.error(`${repository.name}: [!] all ${
+            failedCount} recent circleci build(s) for master branch failed`);
       } else {
         logger.warning(
-          `${
-            repository.name
-          }: [w] circleci builds for master branch: ${failedCount} of ${
-            recentBuildsMaster.length
-          } recent build(s) failed`
-        );
+            `${repository.name}: [w] circleci builds for master branch: ${
+                failedCount} of ${
+                recentBuildsMaster.length} recent build(s) failed`);
       }
     }
   } catch (err) {
-    logger.error(
-      `${repository.name}: [!] circleci builds for master branch - not found`
-    );
+    logger.error(`${
+        repository.name}: [!] circleci builds for master branch - not found`);
   }
 }
 
-/** Checks that the version of the dependency in samples/package.json
+/**
+ * Checks that the version of the dependency in samples/package.json
  * matches the version of the package defined in package.json.
  * E.g. if the package is "@google-cloud/example" version "1.2.3",
  * samples must depend on exactly "@google-cloud/example": "1.2.3".
@@ -184,50 +181,40 @@ async function checkCircleSettings(logger, circleci, repository) {
 async function checkSamplesPackageDependency(logger, repository) {
   let response;
   try {
-    response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/package.json`
-    );
+    response = await axios.get(`https://raw.githubusercontent.com/${
+        repository.organization}/${repository.name}/master/package.json`);
   } catch (err) {
-    logger.error(
-      `${repository.name}: [!] cannot download package.json: ${err.toString()}`
-    );
+    logger.error(`${repository.name}: [!] cannot download package.json: ${
+        err.toString()}`);
     return;
   }
-  let packageJson = response.data;
+  const packageJson = response.data;
   try {
     response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/samples/package.json`
-    );
+        `https://raw.githubusercontent.com/${repository.organization}/${
+            repository.name}/master/samples/package.json`);
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
     return;
   }
-  let samplesPackageJson = response.data;
+  const samplesPackageJson = response.data;
   try {
-    let mainVersion = packageJson['version'];
-    let mainName = packageJson['name'];
-    let samplesDependency = samplesPackageJson['dependencies'][mainName];
+    const mainVersion = packageJson['version'];
+    const mainName = packageJson['name'];
+    const samplesDependency = samplesPackageJson['dependencies'][mainName];
     if (samplesDependency !== mainVersion) {
-      logger.error(
-        `${
-          repository.name
-        }: [!] main package version ${mainVersion} does not match samples dependency ${samplesDependency}`
-      );
+      logger.error(`${repository.name}: [!] main package version ${
+          mainVersion} does not match samples dependency ${samplesDependency}`);
     }
   } catch (err) {
     logger.error(
-      `${
-        repository.name
-      }: cannot check samples package dependencies: ${err.toString()}`
-    );
+        `${repository.name}: cannot check samples package dependencies: ${
+            err.toString()}`);
   }
 }
 
-/** Checks if README.md contains any broken links.
+/**
+ * Checks if README.md contains any broken links.
  * Logs all errors and warnings.
  * @param {Logger} logger Logger object.
  * @param {GitHubRepository} repository Repository object.
@@ -235,50 +222,48 @@ async function checkSamplesPackageDependency(logger, repository) {
 async function checkReadmeLinks(logger, repository) {
   let response;
   try {
-    response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/README.md`
-    );
+    response = await axios.get(`https://raw.githubusercontent.com/${
+        repository.organization}/${repository.name}/master/README.md`);
   } catch (err) {
     logger.error(
-      `${repository.name}: [!] cannot download README.md: ${err.toString()}`
-    );
+        `${repository.name}: [!] cannot download README.md: ${err.toString()}`);
     return;
   }
-  let readme = response.data;
+  const readme = response.data;
 
-  let links: string[] = [];
-  let reflinksRegex = /\[[^[\]]*?\]: (http.*)/g;
-  let reflinksMatch;
-  while (null !== (reflinksMatch = reflinksRegex.exec(readme))) {
+  const links: string[] = [];
+  const reflinksRegex = /\[[^[\]]*?\]: (http.*)/g;
+  for (;;) {
+    const reflinksMatch = reflinksRegex.exec(readme);
+    if (reflinksMatch === null) {
+      break;
+    }
     links.push(reflinksMatch[1]);
   }
 
-  let linksRegex = /\[[^[\]]*?\]\((http.*?)\)/g;
-  let linksMatch;
-  while (null !== (linksMatch = linksRegex.exec(readme))) {
+  const linksRegex = /\[[^[\]]*?\]\((http.*?)\)/g;
+  for (;;) {
+    const linksMatch = linksRegex.exec(readme);
+    if (linksMatch === null) {
+      break;
+    }
     links.push(linksMatch[1]);
   }
 
-  for (let link of links) {
-    let regex = /^(https?):\/\/([^/]+)(\/.*?)?(?:#.*)?$/;
-    let match = regex.exec(link);
+  for (const link of links) {
+    const regex = /^(https?):\/\/([^/]+)(\/.*?)?(?:#.*)?$/;
+    const match = regex.exec(link);
     if (!match) {
-      logger.error(
-        `${
-          repository.name
-        }: [!] README.md has link ${link} which does not look valid`
-      );
+      logger.error(`${repository.name}: [!] README.md has link ${
+          link} which does not look valid`);
       continue;
     }
 
     try {
       await axios.get(link);
     } catch (err) {
-      logger.error(
-        `${repository.name}: [!] README.md has link ${link} which does not work`
-      );
+      logger.error(`${repository.name}: [!] README.md has link ${
+          link} which does not work`);
     }
   }
 }
@@ -289,34 +274,30 @@ async function checkReadmeLinks(logger, repository) {
  * @param {Logger} logger Logger object.
  */
 async function checkAllRepositories(logger) {
-  let github = new GitHub();
+  const github = new GitHub();
   await github.init();
 
-  let circleci = new CircleCI();
+  const circleci = new CircleCI();
   await circleci.init();
 
-  let repos = await github.getRepositories();
+  const repos = await github.getRepositories();
   let index = 0;
-  for (let repository of repos) {
-    logger.info(
-      `${repository.name}: [.] checking repository (${index} of ${
-        repos.length
-      } repositories completed)`
-    );
+  for (const repository of repos) {
+    logger.info(`${repository.name}: [.] checking repository (${index} of ${
+        repos.length} repositories completed)`);
 
-    let errorCounter = logger.errorCount;
+    const errorCounter = logger.errorCount;
     await checkGithubMasterBranchProtection(logger, repository);
     await checkGreenkeeper(logger, repository);
     await checkCircleSettings(logger, circleci, repository);
     await checkSamplesPackageDependency(logger, repository);
     await checkReadmeLinks(logger, repository);
 
-    let foundErrors = logger.errorCount - errorCounter;
-    logger.info(
-      `${repository.name}: [.] ${foundErrors === 0 ? 'no' : foundErrors} error${
-        foundErrors === 1 ? '' : 's'
-      } found`
-    );
+    const foundErrors = logger.errorCount - errorCounter;
+    logger.info(`${repository.name}: [.] ${
+        foundErrors === 0 ?
+            'no' :
+            foundErrors} error${foundErrors === 1 ? '' : 's'} found`);
 
     ++index;
   }
@@ -327,7 +308,7 @@ async function checkAllRepositories(logger) {
  * Main function.
  */
 export async function main() {
-  let logger = new Logger();
+  const logger = new Logger();
   await checkAllRepositories(logger);
   process.exitCode = logger.errorCount;
   logger.info(`Total errors: ${logger.errorCount}`);

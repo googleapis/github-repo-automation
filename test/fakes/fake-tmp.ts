@@ -22,7 +22,7 @@ function getDirName() {
 
 async function dir() {
   return new Promise(resolve => {
-    let dir = getDirName();
+    const dir = getDirName();
     resolve({path: dir});
   });
 }

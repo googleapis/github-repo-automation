@@ -35,22 +35,13 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-  repository,
-  path,
-  patchFunction,
-  branch,
-  message,
-  comment,
-  reviewers
-) {
+    repository, path, patchFunction, branch, message, comment, reviewers) {
   let file;
   try {
     file = await repository.getFile(path);
   } catch (err) {
     console.warn(
-      '  cannot get file, skipping this repository:',
-      err.toString()
-    );
+        '  cannot get file, skipping this repository:', err.toString());
     return;
   }
   if (file['type'] !== 'file') {
@@ -58,52 +49,44 @@ async function processRepository(
     return;
   }
 
-  let oldFileSha = file['sha'];
-  let decodedContent = Buffer.from(file['content'], 'base64').toString();
-  let patchedContent = patchFunction(decodedContent);
+  const oldFileSha = file['sha'];
+  const decodedContent = Buffer.from(file['content'], 'base64').toString();
+  const patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(
-      '  patch function returned undefined value, skipping this repository'
-    );
+        '  patch function returned undefined value, skipping this repository');
     return;
   }
-  let encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
+  const encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
 
   let latestCommit;
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-      '  cannot get sha of latest commit, skipping this repository:',
-      err.toString()
-    );
+        '  cannot get sha of latest commit, skipping this repository:',
+        err.toString());
     return;
   }
-  let latestSha = latestCommit['sha'];
+  const latestSha = latestCommit['sha'];
 
   try {
     await repository.createBranch(branch, latestSha);
   } catch (err) {
     console.warn(
-      `  cannot create branch ${branch}, skipping this repository:`,
-      err.toString()
-    );
+        `  cannot create branch ${branch}, skipping this repository:`,
+        err.toString());
     return;
   }
 
   try {
     await repository.updateFileInBranch(
-      branch,
-      path,
-      message,
-      encodedPatchedContent,
-      oldFileSha
-    );
+        branch, path, message, encodedPatchedContent, oldFileSha);
   } catch (err) {
     console.warn(
-      `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
-      err.toString()
-    );
+        `  cannot commit file ${path} to branch ${
+            branch}, skipping this repository:`,
+        err.toString());
     return;
   }
 
@@ -112,22 +95,22 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-      `  cannot create pull request for branch ${branch}! Branch is still there.`,
-      err.toString()
-    );
+        `  cannot create pull request for branch ${
+            branch}! Branch is still there.`,
+        err.toString());
     return;
   }
-  let pullRequestNumber = pullRequest['number'];
-  let pullRequestUrl = pullRequest['html_url'];
+  const pullRequestNumber = pullRequest['number'];
+  const pullRequestUrl = pullRequest['html_url'];
 
   if (reviewers.length > 0) {
     try {
       await repository.requestReview(pullRequestNumber, reviewers);
     } catch (err) {
       console.warn(
-        `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
-        err.toString()
-      );
+          `  cannot request review for pull request #${
+              pullRequestNumber}! Pull request is still there.`,
+          err.toString());
       return;
     }
   }
@@ -135,7 +118,8 @@ async function processRepository(
   console.log(`  success! ${pullRequestUrl}`);
 }
 
-/** Updates one existing file in the repository and sends a pull request with
+/**
+ * Updates one existing file in the repository and sends a pull request with
  * this change.
  * @param {Object} options Options object, should contain the following fields:
  * @param {string} option.config Path to a configuration file. Will use default
@@ -150,52 +134,46 @@ async function processRepository(
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 export async function updateFile(options) {
-  let path = options['path'];
+  const path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');
     return;
   }
 
-  let patchFunction = options['patchFunction'];
+  const patchFunction = options['patchFunction'];
   if (patchFunction === undefined) {
     console.error('updateFile: patchFunction is required');
     return;
   }
 
-  let branch = options['branch'];
+  const branch = options['branch'];
   if (branch === undefined) {
     console.error('updateFile: branch is required');
     return;
   }
 
-  let message = options['message'];
+  const message = options['message'];
   if (message === undefined) {
     console.error('updateFile: message is required');
     return;
   }
 
-  let comment = options['comment'] || '';
-  let reviewers = options['reviewers'] || [];
+  const comment = options['comment'] || '';
+  const reviewers = options['reviewers'] || [];
 
-  let github = new GitHub(options.config);
+  const github = new GitHub(options.config);
   await github.init();
 
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-      repository,
-      path,
-      patchFunction,
-      branch,
-      message,
-      comment,
-      reviewers
-    );
+        repository, path, patchFunction, branch, message, comment, reviewers);
   }
 }
 
-/** Callback function that performs required change to the file. The function
+/**
+ * Callback function that performs required change to the file. The function
  * may apply a patch, or parse and change the file, or do whatever it needs.
  * @callback patchFunction
  * @param {string} content Contents of the file to update.

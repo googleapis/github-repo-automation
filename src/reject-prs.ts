@@ -22,15 +22,16 @@
 
 import {GitHub} from './lib/github';
 
-/** Process one pull request: close it
+/**
+ * Process one pull request: close it
  * @param {GitHubRepository} repository GitHub repository for this pull request.
  * @param {Object} pr Pull request object, as returned by GitHub API.
  */
 async function processPullRequest(repository, pr) {
   const title = pr['title'];
-  const html_url = pr['html_url'];
+  const htmlUrl = pr['html_url'];
   const author = pr['user']['login'];
-  console.log(`  [${author}] ${html_url}: ${title}`);
+  console.log(`  [${author}] ${htmlUrl}: ${title}`);
   try {
     await repository.closePullRequest(pr);
   } catch (err) {
@@ -38,7 +39,8 @@ async function processPullRequest(repository, pr) {
   }
 }
 
-/** Main function. Iterates all open pull request in the repositories of the
+/**
+ * Main function. Iterates all open pull request in the repositories of the
  * given organization matching given filters. Organization, filters, and GitHub
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
@@ -50,12 +52,12 @@ export async function main(options) {
     return;
   }
 
-  let github = new GitHub();
+  const github = new GitHub();
   await github.init();
 
-  let regex = new RegExp(options.regex);
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const regex = new RegExp(options.regex);
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.name);
     let prs;
     try {
@@ -65,8 +67,8 @@ export async function main(options) {
       continue;
     }
 
-    for (let pr of prs) {
-      let title = pr['title'];
+    for (const pr of prs) {
+      const title = pr['title'];
       if (title.match(regex)) {
         console.log(`deleting un...`);
         await processPullRequest(repository, pr);

@@ -21,61 +21,61 @@
 import {Config} from './config';
 import axios from 'axios';
 
-/** Wraps some CircleCI API calls.
+/**
+ * Wraps some CircleCI API calls.
  */
 export class CircleCI {
-
   circleToken?: string;
   config;
 
-  /** Reads configuration file and sets up GitHub authentication.
+  /**
+   * Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */
   async init(configFilename?: string) {
-    let config = new Config(configFilename);
+    const config = new Config(configFilename);
     await config.init();
 
     this.circleToken = config.get('auth')['circleci-token'];
     this.config = config;
   }
 
-  /** List all projects enabled in CircleCI for the given organization,
+  /**
+   * List all projects enabled in CircleCI for the given organization,
    * matching the regex (organization and regex are set in the configuration
    * file).
    * @returns {Object[]} Projects, as returned by CircleCI API.
    */
   async getProjects() {
-    let repoNameRegexConfig = this.config.get('repo-name-regex');
-    let repoNameRegex = new RegExp(repoNameRegexConfig);
+    const repoNameRegexConfig = this.config.get('repo-name-regex');
+    const repoNameRegex = new RegExp(repoNameRegexConfig);
 
-    let result = await axios.get('https://circleci.com/api/v1.1/projects', {
+    const result = await axios.get('https://circleci.com/api/v1.1/projects', {
       params: {
         'circle-token': this.circleToken,
       },
     });
 
-    let filtered = result.data.filter(project =>
-      project['reponame'].match(repoNameRegex)
-    );
+    const filtered =
+        result.data.filter(project => project['reponame'].match(repoNameRegex));
     return filtered;
   }
 
-  /** Get information about one project.
+  /**
+   * Get information about one project.
    * @param {string} project Name of project (without organization name).
    * @param {string} vcs Name of VCS, defaults to github.
    * @returns {Object[]} Array of CircleCI builds executed for the given project.
    */
   async getBuildsForProject(project, vcs) {
-    let org = this.config.get('organization');
+    const org = this.config.get('organization');
     vcs = vcs || 'github';
-    let result = await axios.get(
-      `https://circleci.com/api/v1.1/project/${vcs}/${org}/${project}`,
-      {
-        params: {
-          'circle-token': this.circleToken,
-        },
-      }
-    );
+    const result = await axios.get(
+        `https://circleci.com/api/v1.1/project/${vcs}/${org}/${project}`, {
+          params: {
+            'circle-token': this.circleToken,
+          },
+        });
     return result.data;
   }
 }

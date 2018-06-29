@@ -21,7 +21,8 @@
 
 import {GitHub} from './github';
 
-/** Updates and commits one existing file in the given branch of the given
+/**
+ * Updates and commits one existing file in the given branch of the given
  * repository.
  * @param {GitHubRepository} repository Repository to work with.
  * @param {string} branch Name of an existing branch to update.
@@ -32,20 +33,13 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-  repository,
-  branch,
-  path,
-  patchFunction,
-  message
-) {
+    repository, branch, path, patchFunction, message) {
   let file;
   try {
     file = await repository.getFileFromBranch(branch, path);
   } catch (err) {
     console.warn(
-      '  cannot get file, skipping this repository:',
-      err.toString()
-    );
+        '  cannot get file, skipping this repository:', err.toString());
     return;
   }
   if (file['type'] !== 'file') {
@@ -53,30 +47,24 @@ async function processRepository(
     return;
   }
 
-  let oldFileSha = file['sha'];
-  let decodedContent = Buffer.from(file['content'], 'base64').toString();
-  let patchedContent = patchFunction(decodedContent);
+  const oldFileSha = file['sha'];
+  const decodedContent = Buffer.from(file['content'], 'base64').toString();
+  const patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(
-      '  patch function returned undefined value, skipping this repository'
-    );
+        '  patch function returned undefined value, skipping this repository');
     return;
   }
-  let encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
+  const encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
 
   try {
     await repository.updateFileInBranch(
-      branch,
-      path,
-      message,
-      encodedPatchedContent,
-      oldFileSha
-    );
+        branch, path, message, encodedPatchedContent, oldFileSha);
   } catch (err) {
     console.warn(
-      `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
-      err.toString()
-    );
+        `  cannot commit file ${path} to branch ${
+            branch}, skipping this repository:`,
+        err.toString());
     return;
   }
 
@@ -104,29 +92,29 @@ export async function updateFileInBranch(options) {
     return;
   }
 
-  let patchFunction = options['patchFunction'];
+  const patchFunction = options['patchFunction'];
   if (patchFunction === undefined) {
     console.error('updateFile: path is required');
     return;
   }
 
-  let branch = options['branch'];
+  const branch = options['branch'];
   if (branch === undefined) {
     console.error('updateFile: branch is required');
     return;
   }
 
-  let message = options['message'];
+  const message = options['message'];
   if (message === undefined) {
     console.error('updateFile: message is required');
     return;
   }
 
-  let github = new GitHub(options.config);
+  const github = new GitHub(options.config);
   await github.init();
 
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.name);
     await processRepository(repository, branch, path, patchFunction, message);
   }
