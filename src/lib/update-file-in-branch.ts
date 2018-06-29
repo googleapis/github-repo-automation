@@ -19,8 +19,7 @@
 
 'use strict';
 
-const GitHub = require('./github.js');
-import * as util from 'util';
+import {GitHub} from './github';
 
 /** Updates and commits one existing file in the given branch of the given
  * repository.
@@ -84,7 +83,8 @@ async function processRepository(
   console.log('  success!');
 }
 
-/** Updates one existing file in the given branch of all the repositories.
+/**
+ * Updates one existing file in the given branch of all the repositories.
  * @param {Object} options Options object, should contain the following fields:
  * @param {string} option.config Path to a configuration file. Will use default
  * `./config.yaml` if omitted.
@@ -97,8 +97,8 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-async function updateFileInBranch(options) {
-  let path = options['path'];
+export async function updateFileInBranch(options) {
+  const path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');
     return;
@@ -131,14 +131,3 @@ async function updateFileInBranch(options) {
     await processRepository(repository, branch, path, patchFunction, message);
   }
 }
-
-/** Callback function that performs required change to the file. The function
- * may apply a patch, or parse and change the file, or do whatever it needs.
- * @callback patchFunction
- * @param {string} content Contents of the file to update.
- * @returns {string} Must return `undefined` if the change was not applied for
- * any reason. In this case, no change will be committed. If the change was
- * applied successfully, return the new contents of the file.
- */
-
-module.exports = updateFileInBranch;

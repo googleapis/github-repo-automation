@@ -20,8 +20,8 @@
 'use strict';
 
 import axios from 'axios';
-const GitHub = require('./lib/github.js');
-const CircleCI = require('./lib/circleci.js');
+import {GitHub} from './lib/github';
+import {CircleCI} from './lib/circleci';
 
 /** Logs and counts errors and warnings to console with fancy coloring.
  */
@@ -283,7 +283,8 @@ async function checkReadmeLinks(logger, repository) {
   }
 }
 
-/** Iterates over all repositories according to the configuration file and runs
+/**
+ * Iterates over all repositories according to the configuration file and runs
  * all checks for each of them. Logs errors and warnings.
  * @param {Logger} logger Logger object.
  */
@@ -322,16 +323,13 @@ async function checkAllRepositories(logger) {
   logger.info(`${repos.length} repositories completed`);
 }
 
-/** Main function.
+/**
+ * Main function.
  */
-async function main() {
+export async function main() {
   let logger = new Logger();
   await checkAllRepositories(logger);
   process.exitCode = logger.errorCount;
   logger.info(`Total errors: ${logger.errorCount}`);
   logger.info(`Total warnings: ${logger.warningCount}`);
 }
-
-module.exports = {
-  main,
-};

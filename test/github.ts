@@ -82,8 +82,10 @@ function getPage(arr, page, perPage) {
   return arr.slice((page - 1) * perPage, page * perPage);
 }
 
-const GitHub = proxyquire('../src/lib/github.js', {
-  './config.js': ConfigStub,
+const {GitHub, GitHubRepository} = proxyquire('../src/lib/github', {
+  './config': {
+    Config: ConfigStub,
+  },
   '@octokit/rest': OctokitStub,
 });
 
@@ -135,7 +137,7 @@ describe('GitHubRepository', () => {
   let repositoryObject = {name: repo, owner: {login: owner}};
   let octokit = new OctokitStub();
   let organization = 'test-organization';
-  let repository = new GitHub.GitHubRepository(
+  let repository = new GitHubRepository(
     octokit,
     repositoryObject,
     organization
