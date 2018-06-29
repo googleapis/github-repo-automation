@@ -21,8 +21,8 @@
 'use strict';
 
 import axios from 'axios';
-const GitHub = require('./lib/github.js');
-const question = require('./lib/question.js');
+import {GitHub} from './lib/github';
+import {question} from './lib/question';
 
 /** Downloads and prints patch file (well, actually, any file) to a console.
  * @param {string} patch_url URL to download.
@@ -129,7 +129,7 @@ async function processPullRequest(repository, pr) {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-async function main(options) {
+export async function main(options) {
   if (!options.regex) {
     console.log(`Usage: repo approve [regex]`);
     console.log(
@@ -161,7 +161,3 @@ async function main(options) {
     }
   }
 }
-
-module.exports = {
-  main,
-};

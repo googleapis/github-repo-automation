@@ -20,7 +20,7 @@
 
 'use strict';
 
-const GitHub = require('./lib/github.js');
+import {GitHub} from './lib/github';
 
 /** Process one pull request: close it
  * @param {GitHubRepository} repository GitHub repository for this pull request.
@@ -43,7 +43,7 @@ async function processPullRequest(repository, pr) {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-async function main(options) {
+export async function main(options) {
   if (!options.regex) {
     console.log(`Usage: repo reject [regex]`);
     console.log('Automatically reject all PRs that match a given filter.');
@@ -74,7 +74,3 @@ async function main(options) {
     }
   }
 }
-
-module.exports = {
-  main,
-};

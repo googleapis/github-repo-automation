@@ -40,9 +40,11 @@ class ConfigStub {
   }
 }
 
-const CircleCI = proxyquire('../src/lib/circleci.js', {
-  './config.js': ConfigStub,
-});
+const CircleCI = proxyquire('../src/lib/circleci', {
+  './config': {
+    Config: ConfigStub,
+  }
+}).CircleCI;
 
 describe('CircleCI', () => {
   let token = testConfig['auth']['circleci-token'];

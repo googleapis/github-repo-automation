@@ -18,12 +18,12 @@
 
 'use strict';
 
-const Config = require('./config.js');
+import {Config} from './config';
 import axios from 'axios';
 
 /** Wraps some CircleCI API calls.
  */
-class CircleCI {
+export class CircleCI {
 
   circleToken?: string;
   config;
@@ -31,7 +31,7 @@ class CircleCI {
   /** Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */
-  async init(configFilename) {
+  async init(configFilename?: string) {
     let config = new Config(configFilename);
     await config.init();
 
@@ -79,5 +79,3 @@ class CircleCI {
     return result.data;
   }
 }
-
-module.exports = CircleCI;

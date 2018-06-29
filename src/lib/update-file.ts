@@ -19,10 +19,10 @@
 
 'use strict';
 
-const GitHub = require('./github.js');
-import * as util from 'util';
+import {GitHub} from './github';
 
-/** Updates one existing file in the repository and sends a pull request with
+/**
+ * Updates one existing file in the repository and sends a pull request with
  * this change.
  * @param {GitHubRepository} repository Repository to work with.
  * @param {string} path Path to an existing file to update.
@@ -149,7 +149,7 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-async function updateFile(options) {
+export async function updateFile(options) {
   let path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');
@@ -203,5 +203,3 @@ async function updateFile(options) {
  * any reason. In this case, no change will be committed. If the change was
  * applied successfully, return the new contents of the file.
  */
-
-module.exports = updateFile;

@@ -21,7 +21,7 @@
 import assert from 'assert';
 import mockFs from 'mock-fs';
 import yaml from 'js-yaml';
-const Config = require('../src/lib/config.js');
+import {Config} from '../src/lib/config';
 
 const configObject1 = {
   auth: {
@@ -42,9 +42,11 @@ const configObject2 = {
 };
 
 describe('Config', () => {
+  const envCache = process.env.REPO_CONFIG_PATH;
   before(() => {
-    let configYaml1 = yaml.dump(configObject1);
-    let configYaml2 = yaml.dump(configObject2);
+    const configYaml1 = yaml.dump(configObject1);
+    const configYaml2 = yaml.dump(configObject2);
+    process.env.REPO_CONFIG_PATH = undefined;
     mockFs({
       './config.yaml': configYaml1,
       './config2.yaml': configYaml2,
@@ -52,10 +54,11 @@ describe('Config', () => {
   });
   after(() => {
     mockFs.restore();
+    process.env.REPO_CONFIG_PATH = envCache;
   });
 
   it('should read default configuration file', async () => {
-    let config = new Config();
+    const config = new Config();
     await config.init();
     assert.deepEqual(config.config, configObject1);
   });

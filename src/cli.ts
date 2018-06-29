@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 
-const apply = require('./apply-change');
-const approve = require('./approve-prs');
-const reject = require('./reject-prs');
-const check = require('./repo-check');
+import {main as apply} from './apply-change';
+import {main as approve} from './approve-prs';
+import {main as reject} from './reject-prs';
+import {main as check} from './repo-check';
 import meow from 'meow';
-const updateNotifier = require('update-notifier');
+import updateNotifier from 'update-notifier';
 const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();
@@ -55,17 +55,17 @@ if (cli.input.length < 1) {
 let p;
 switch (cli.input[0]) {
   case 'approve':
-    p = approve.main({
+    p = approve({
       regex: cli.input[1],
     });
     break;
   case 'reject':
-    p = reject.main({
+    p = reject({
       regex: cli.input[1],
     });
     break;
   case 'apply':
-    p = apply.main({
+    p = apply({
       branch: cli.flags.branch,
       message: cli.flags.message,
       comment: cli.flags.comment,
@@ -75,7 +75,7 @@ switch (cli.input[0]) {
     });
     break;
   case 'check':
-    p = check.main();
+    p = check();
     break;
   default:
     cli.showHelp(-1);
