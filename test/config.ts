@@ -19,9 +19,10 @@
 'use strict';
 
 import assert from 'assert';
-import mockFs from 'mock-fs';
+import fs from 'fs';
 import yaml from 'js-yaml';
 import {Config} from '../src/lib/config';
+const tmp = require('tmp-promise');
 
 const configObject1 = {
   auth: {
@@ -43,18 +44,20 @@ const configObject2 = {
 
 describe('Config', () => {
   const envCache = process.env.REPO_CONFIG_PATH;
-  before(() => {
+  const cwd = process.cwd();
+  let tmpDir;
+  before(async () => {
+    tmpDir = await tmp.dir({unsafeCleanup: true});
+    process.chdir(tmpDir.path);
     const configYaml1 = yaml.dump(configObject1);
     const configYaml2 = yaml.dump(configObject2);
     delete process.env['REPO_CONFIG_PATH'];
-    mockFs({
-      './config.yaml': configYaml1,
-      './config2.yaml': configYaml2,
-    });
+    fs.writeFileSync('./config.yaml', configYaml1);
+    fs.writeFileSync('./config2.yaml', configYaml2);
   });
   after(() => {
-    mockFs.restore();
     process.env.REPO_CONFIG_PATH = envCache;
+    process.chdir(cwd);
   });
 
   it('should read default configuration file', async () => {

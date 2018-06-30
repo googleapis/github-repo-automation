@@ -17,12 +17,14 @@
  */
 
 import assert from 'assert';
-import mockFs from 'mock-fs';
+import fs from 'fs';
+import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const fakeGitHub = require('./fakes/fake-github.js');
 const fakeTmp = require('./fakes/fake-tmp.js');
+const tmp = require('tmp-promise');
 
 const execCallback = sinon.spy();
 const updateRepo = proxyquire('../src/lib/update-repo.js', {
@@ -49,6 +51,7 @@ async function suppressConsole(func) {
 describe('UpdateRepo', () => {
   const pathExisting = 'file1.txt';
   const pathNonExisting = 'file2.txt';
+  const pathFailed = 'failed.txt';
   const originalContent = 'content';
   const changedContent = 'changed content';
   const newContent = 'new content';
@@ -56,7 +59,14 @@ describe('UpdateRepo', () => {
   const message = 'test-message';
   const comment = 'test-comment';
   const reviewers = ['test-reviewer-1', 'test-reviewer-2'];
-  const tmpDir = fakeTmp.getDirName();
+  let realTmpDir;
+  let tmpDir;
+
+  before(async () => {
+    realTmpDir = await tmp.dir({unsafeCleanup: true});
+    fakeTmp.setDirName(realTmpDir.path);
+    tmpDir = fakeTmp.getDirName();
+  });
 
   beforeEach(() => {
     execCallback.resetHistory();
@@ -64,24 +74,19 @@ describe('UpdateRepo', () => {
     fakeGitHub.repository.testSetFile(
         'master', pathExisting,
         Buffer.from(originalContent).toString('base64'));
-
-    const mockFsObj = {};
-    mockFsObj[tmpDir] = {};
-    mockFsObj[tmpDir][pathExisting] = changedContent;
-    mockFsObj[tmpDir][pathNonExisting] = newContent;
-    mockFs(mockFsObj);
+    fs.writeFileSync(path.join(tmpDir, pathExisting), changedContent);
+    fs.writeFileSync(path.join(tmpDir, pathNonExisting), newContent);
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
-
-  const attemptUpdate = async () => {
+  const attemptUpdate = async (files?) => {
+    if (files === undefined) {
+      files = [pathExisting, pathNonExisting];
+    }
     await suppressConsole(async () => {
       await updateRepo({
         updateCallback: path => {
           assert.equal(path, tmpDir);
-          return Promise.resolve([pathExisting, pathNonExisting]);
+          return Promise.resolve(files);
         },
         branch,
         message,
@@ -129,15 +134,8 @@ describe('UpdateRepo', () => {
   });
 
   it('should not update a file if it cannot read it', async () => {
-    mockFs.restore();
-    const mockFsObj = {};
-    mockFsObj[tmpDir] = {};
-    mockFsObj[tmpDir][pathNonExisting] = newContent;
-    mockFs(mockFsObj);
-    mockFs(mockFsObj);
-
     try {
-      await attemptUpdate();
+      await attemptUpdate([pathFailed]);
       assert(false);
     } catch (err) {
       // ignore
