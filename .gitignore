@@ -9,3 +9,4 @@ test.js
 config.yaml
 ignored
 build
+.vscode

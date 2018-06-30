@@ -28,6 +28,7 @@ const readFile = util.promisify(fs.readFile);
 const tmp = require('tmp-promise');
 
 import {GitHub, GitHubRepository} from './github';
+import {getConfig} from './config';
 
 /**
  * Updates files in the cloned repository and sends a pull request with
@@ -185,35 +186,29 @@ export interface UpdateRepoOptions {
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 export async function updateRepo(options: UpdateRepoOptions) {
-  const updateCallback = options.updateCallback;
-  if (updateCallback === undefined) {
-    console.error('updateRepo: updateCallback is required');
-    return;
+  if (options.updateCallback === undefined) {
+    throw new Error('updateRepo: updateCallback is required');
   }
 
-  const branch = options.branch;
-  if (branch === undefined) {
-    console.error('updateRepo: branch is required');
-    return;
+  if (options.branch === undefined) {
+    throw new Error('updateRepo: branch is required');
   }
 
-  const message = options.message;
-  if (message === undefined) {
-    console.error('updateRepo: message is required');
-    return;
+  if (options.message === undefined) {
+    throw new Error('updateRepo: message is required');
   }
 
   const comment = options.comment || '';
   const reviewers = options.reviewers || [];
 
-  const github = new GitHub(options.config);
-  await github.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-        repository, updateCallback, branch, message, comment, reviewers);
+        repository, options.updateCallback, options.branch, options.message,
+        comment, reviewers);
   }
 }
 

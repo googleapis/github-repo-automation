@@ -21,25 +21,12 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-import {ConfigSettings} from '../src/lib/config';
 
 const testConfig = {
-  auth: {
-    'github-token': 'test-github-token',
-  },
+  githubToken: 'test-github-token',
   organization: 'test-organization',
-  'repo-name-regex': 'matches',
+  repoNameRegex: 'matches'
 };
-
-class ConfigStub {
-  _config?: ConfigSettings;
-  async init() {
-    this._config = testConfig;
-  }
-  get(field: string) {
-    return this._config![field];
-  }
-}
 
 class OctokitReposStub {
   async getForOrg() {}
@@ -86,9 +73,6 @@ function getPage(arr: any[], page: number, perPage: number) {
 }
 
 const {GitHub, GitHubRepository} = proxyquire('../src/lib/github', {
-  './config': {
-    Config: ConfigStub,
-  },
   '@octokit/rest': OctokitStub,
 });
 
@@ -97,16 +81,15 @@ describe('GitHub', () => {
     const spy = sinon.spy(OctokitStub.prototype, 'authenticate');
     const expectedAuthParam = {
       type: 'token',
-      token: testConfig['auth']['github-token'],
+      token: testConfig.githubToken,
     };
-    const github = new GitHub();
-    await github.init();
+    const github = new GitHub(testConfig);
     assert(spy.calledOnce);
     assert(spy.calledWith(expectedAuthParam));
   });
 
   it('should get repositories', async () => {
-    const testOrg = testConfig['organization'];
+    const testOrg = testConfig.organization;
     const testType = 'public';
     const repositories = [
       {name: 'matches-1'},
@@ -114,8 +97,7 @@ describe('GitHub', () => {
       {name: '2-matches'},
       {name: '2-does-not-match'},
     ];
-    const github = new GitHub();
-    await github.init();
+    const github = new GitHub(testConfig);
     const stub = sinon.stub(github.octokit.repos, 'getForOrg');
     stub.callsFake(({org, type, page, per_page}) => {
       assert.equal(org, testOrg);

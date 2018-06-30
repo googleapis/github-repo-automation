@@ -22,6 +22,7 @@
 
 import {GitHub, GitHubRepository, PullRequest} from './lib/github';
 import meow from 'meow';
+import {getConfig} from './lib/config';
 
 /**
  * Process one pull request: close it
@@ -53,10 +54,8 @@ export async function main(options: meow.Result) {
     console.log('Automatically reject all PRs that match a given filter.');
     return;
   }
-
-  const github = new GitHub();
-  await github.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
   const regex = new RegExp(options.input[1]);
   const repos = await github.getRepositories();
   for (const repository of repos) {

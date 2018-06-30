@@ -20,6 +20,7 @@
 'use strict';
 
 import {GitHub, Repository, GitHubRepository} from './github';
+import {getConfig} from './config';
 
 /**
  * Updates and commits one existing file in the given branch of the given
@@ -97,36 +98,29 @@ export interface UpdateFileInBranchOptions {
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 export async function updateFileInBranch(options: UpdateFileInBranchOptions) {
-  const path = options['path'];
-  if (path === undefined) {
-    console.error('updateFile: path is required');
-    return;
+  if (options.path === undefined) {
+    throw new Error('updateFile: path is required');
   }
 
-  const patchFunction = options['patchFunction'];
-  if (patchFunction === undefined) {
-    console.error('updateFile: path is required');
-    return;
+  if (options.patchFunction === undefined) {
+    throw new Error('updateFile: patchFunction is required');
   }
 
-  const branch = options['branch'];
-  if (branch === undefined) {
-    console.error('updateFile: branch is required');
-    return;
+  if (options.branch === undefined) {
+    throw new Error('updateFile: branch is required');
   }
 
-  const message = options['message'];
-  if (message === undefined) {
-    console.error('updateFile: message is required');
-    return;
+  if (options.message === undefined) {
+    throw new Error('updateFile: message is required');
   }
 
-  const github = new GitHub(options.config);
-  await github.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);
-    await processRepository(repository, branch, path, patchFunction, message);
+    await processRepository(
+        repository, options.branch, options.path, options.patchFunction,
+        options.message);
   }
 }

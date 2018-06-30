@@ -19,35 +19,22 @@
 'use strict';
 
 import OctoKit from '@octokit/rest';
-import {Config} from './config';
+import {ConfigSettings} from './config';
 
 /**
  * Wraps some octokit GitHub API calls.
  */
 export class GitHub {
-  organization?: string;
-  octokit?: OctoKit;
-  config?: Config;
+  protected organization?: string;
+  protected octokit?: OctoKit;
+  protected config: ConfigSettings;
 
-  constructor(options?: {}) {}
-
-  /**
-   * Reads configuration file and sets up GitHub authentication.
-   * @param {string} configFileName Path to configuration yaml file.
-   */
-  async init(configFilename?: string) {
-    const config = new Config(configFilename);
-    await config.init();
-
-    const octokit = new OctoKit();
-    octokit.authenticate({
-      type: 'token',
-      token: config.get('auth')['github-token'],
-    });
-
-    this.organization = config.get('organization') as string;
-    this.octokit = octokit;
+  constructor(config: ConfigSettings) {
     this.config = config;
+    const octokit = new OctoKit();
+    octokit.authenticate({type: 'token', token: config.githubToken});
+    this.organization = config.organization;
+    this.octokit = octokit;
   }
 
   /**
@@ -58,7 +45,7 @@ export class GitHub {
   async getRepositories() {
     const org = this.organization!;
     const type = 'public';
-    const repoNameRegexConfig = this.config!.get('repo-name-regex') as string;
+    const repoNameRegexConfig = this.config.repoNameRegex;
     const repoNameRegex = new RegExp(repoNameRegexConfig);
 
     const repos: GitHubRepository[] = [];

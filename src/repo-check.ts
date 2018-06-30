@@ -22,6 +22,7 @@
 import axios from 'axios';
 import {GitHub, GitHubRepository} from './lib/github';
 import {CircleCI} from './lib/circleci';
+import {getConfig} from './lib/config';
 
 /**
  * Logs and counts errors and warnings to console with fancy coloring.
@@ -277,12 +278,9 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
  * @param {Logger} logger Logger object.
  */
 async function checkAllRepositories(logger: Logger) {
-  const github = new GitHub();
-  await github.init();
-
-  const circleci = new CircleCI();
-  await circleci.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
+  const circleci = new CircleCI(config);
   const repos = await github.getRepositories();
   let index = 0;
   for (const repository of repos) {
