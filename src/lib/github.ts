@@ -19,7 +19,7 @@
 'use strict';
 
 import OctoKit from '@octokit/rest';
-import {ConfigSettings} from './config';
+import {Config} from './config';
 
 /**
  * Wraps some octokit GitHub API calls.
@@ -27,9 +27,9 @@ import {ConfigSettings} from './config';
 export class GitHub {
   protected organization?: string;
   protected octokit?: OctoKit;
-  protected config: ConfigSettings;
+  protected config: Config;
 
-  constructor(config: ConfigSettings) {
+  constructor(config: Config) {
     this.config = config;
     const octokit = new OctoKit();
     octokit.authenticate({type: 'token', token: config.githubToken});

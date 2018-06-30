@@ -23,7 +23,7 @@ import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
 import * as yaml from 'js-yaml';
 
-const cache = new Map<string, ConfigSettings>();
+const cache = new Map<string, Config>();
 
 export async function getConfig(configFilename?: string) {
   let filename: string;
@@ -41,7 +41,7 @@ export async function getConfig(configFilename?: string) {
 
   try {
     const yamlContent = await readFile(filename, {encoding: 'utf8'});
-    const config = yaml.safeLoad(yamlContent) as ConfigSettings;
+    const config = yaml.safeLoad(yamlContent) as Config;
     cache.set(filename, config);
     return config;
   } catch (err) {
@@ -51,7 +51,7 @@ export async function getConfig(configFilename?: string) {
   }
 }
 
-export interface ConfigSettings {
+export interface Config {
   githubToken: string;
   organization: string;
   repoNameRegex: string;

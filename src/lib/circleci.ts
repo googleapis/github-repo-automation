@@ -18,7 +18,7 @@
 
 'use strict';
 
-import {ConfigSettings} from './config';
+import {Config} from './config';
 import axios from 'axios';
 
 /**
@@ -26,13 +26,13 @@ import axios from 'axios';
  */
 export class CircleCI {
   circleToken?: string;
-  config: ConfigSettings;
+  config: Config;
 
   /**
    * Reads configuration file and sets up GitHub authentication.
    * @param {string} configFileName Path to configuration yaml file.
    */
-  constructor(config: ConfigSettings) {
+  constructor(config: Config) {
     this.circleToken = config.circleciToken;
     this.config = config;
   }

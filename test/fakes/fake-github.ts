@@ -17,7 +17,7 @@
  */
 
 import crypto from 'crypto';
-import {ConfigSettings} from '../../src/lib/config';
+import {Config} from '../../src/lib/config';
 
 function hash(input: string) {
   return crypto.createHash('md5').update(input).digest('hex');
@@ -154,8 +154,8 @@ export class FakeGitHubRepository {
 export const repository = new FakeGitHubRepository('test-repository');
 
 export class FakeGitHub {
-  protected config: ConfigSettings;
-  constructor(config: ConfigSettings) {
+  protected config: Config;
+  constructor(config: Config) {
     this.config = config;
   }
 

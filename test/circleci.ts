@@ -21,13 +21,13 @@
 import assert from 'assert';
 import {CircleCI} from '../src/lib/circleci';
 import nock from 'nock';
-import {ConfigSettings} from '../src/lib/config';
+import {Config} from '../src/lib/config';
 
 const testConfig = {
   circleciToken: 'test-circleci-token',
   organization: 'test-organization',
   repoNameRegex: 'matches'
-} as ConfigSettings;
+} as Config;
 
 describe('CircleCI', () => {
   const token = testConfig.circleciToken;
