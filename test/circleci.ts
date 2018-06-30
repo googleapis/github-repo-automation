@@ -21,6 +21,7 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import nock from 'nock';
+import {ConfigSettings} from '../src/lib/config';
 
 const testConfig = {
   auth: {
@@ -31,12 +32,12 @@ const testConfig = {
 };
 
 class ConfigStub {
-  _config;
+  _config?: ConfigSettings;
   async init() {
     this._config = testConfig;
   }
-  get(field) {
-    return this._config[field];
+  get(field: string) {
+    return this._config![field];
   }
 }
 

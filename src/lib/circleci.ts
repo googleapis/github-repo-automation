@@ -26,7 +26,7 @@ import axios from 'axios';
  */
 export class CircleCI {
   circleToken?: string;
-  config;
+  config?: Config;
 
   /**
    * Reads configuration file and sets up GitHub authentication.
@@ -36,7 +36,8 @@ export class CircleCI {
     const config = new Config(configFilename);
     await config.init();
 
-    this.circleToken = config.get('auth')['circleci-token'];
+    this.circleToken =
+        (config.get('auth') as {[index: string]: string})['circleci-token'];
     this.config = config;
   }
 
@@ -47,14 +48,15 @@ export class CircleCI {
    * @returns {Object[]} Projects, as returned by CircleCI API.
    */
   async getProjects() {
-    const repoNameRegexConfig = this.config.get('repo-name-regex');
+    const repoNameRegexConfig = this.config!.get('repo-name-regex') as string;
     const repoNameRegex = new RegExp(repoNameRegexConfig);
 
-    const result = await axios.get('https://circleci.com/api/v1.1/projects', {
-      params: {
-        'circle-token': this.circleToken,
-      },
-    });
+    const result = await axios.get<CircleProject[]>(
+        'https://circleci.com/api/v1.1/projects', {
+          params: {
+            'circle-token': this.circleToken,
+          },
+        });
 
     const filtered =
         result.data.filter(project => project['reponame'].match(repoNameRegex));
@@ -67,8 +69,8 @@ export class CircleCI {
    * @param {string} vcs Name of VCS, defaults to github.
    * @returns {Object[]} Array of CircleCI builds executed for the given project.
    */
-  async getBuildsForProject(project, vcs) {
-    const org = this.config.get('organization');
+  async getBuildsForProject(project: string, vcs?: string) {
+    const org = this.config!.get('organization');
     vcs = vcs || 'github';
     const result = await axios.get(
         `https://circleci.com/api/v1.1/project/${vcs}/${org}/${project}`, {
@@ -78,4 +80,8 @@ export class CircleCI {
         });
     return result.data;
   }
+}
+
+export interface CircleProject {
+  reponame: string;
 }

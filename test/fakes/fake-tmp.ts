@@ -18,7 +18,7 @@
 
 let dirName = '/tmp/fake-tmp-dir';
 
-function setDirName(dir) {
+function setDirName(dir: string) {
   dirName = dir;
 }
 

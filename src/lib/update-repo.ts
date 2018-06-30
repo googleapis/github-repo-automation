@@ -27,7 +27,7 @@ const exec = util.promisify(child_process.exec);
 const readFile = util.promisify(fs.readFile);
 const tmp = require('tmp-promise');
 
-import {GitHub} from './github';
+import {GitHub, GitHubRepository} from './github';
 
 /**
  * Updates files in the cloned repository and sends a pull request with
@@ -43,10 +43,11 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository, updateCallback, branch, message, comment, reviewers) {
+    repository: GitHubRepository, updateCallback: Function, branch: string,
+    message: string, comment: string, reviewers: string[]) {
   const tmpDir = await tmp.dir({unsafeCleanup: true});
 
-  const cloneUrl = repository.getRepository()['clone_url'];
+  const cloneUrl = repository.getRepository().clone_url;
   await exec(`git clone ${cloneUrl} ${tmpDir.path}`);
 
   let filesToUpdate;
@@ -159,6 +160,15 @@ async function processRepository(
   console.log(`  success! ${pullRequestUrl}`);
 }
 
+export interface UpdateRepoOptions {
+  config?: string;
+  updateCallback: Function;
+  branch: string;
+  message: string;
+  comment: string;
+  reviewers?: string[];
+}
+
 /**
  * Updates files in the cloned repository and sends a pull request with
  * this change.
@@ -174,27 +184,27 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-export async function updateRepo(options) {
-  const updateCallback = options['updateCallback'];
+export async function updateRepo(options: UpdateRepoOptions) {
+  const updateCallback = options.updateCallback;
   if (updateCallback === undefined) {
     console.error('updateRepo: updateCallback is required');
     return;
   }
 
-  const branch = options['branch'];
+  const branch = options.branch;
   if (branch === undefined) {
     console.error('updateRepo: branch is required');
     return;
   }
 
-  const message = options['message'];
+  const message = options.message;
   if (message === undefined) {
     console.error('updateRepo: message is required');
     return;
   }
 
-  const comment = options['comment'] || '';
-  const reviewers = options['reviewers'] || [];
+  const comment = options.comment || '';
+  const reviewers = options.reviewers || [];
 
   const github = new GitHub(options.config);
   await github.init();

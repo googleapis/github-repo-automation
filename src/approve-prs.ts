@@ -21,14 +21,15 @@
 'use strict';
 
 import axios from 'axios';
-import {GitHub} from './lib/github';
+import {GitHub, GitHubRepository, PullRequest} from './lib/github';
 import {question} from './lib/question';
+import meow from 'meow';
 
 /**
  * Downloads and prints patch file (well, actually, any file) to a console.
  * @param {string} patchUrl URL to download.
  */
-async function showPatch(patchUrl) {
+async function showPatch(patchUrl: string) {
   const axiosResult = await axios.get(patchUrl);
   const patch = axiosResult.data;
   console.log(patch);
@@ -39,13 +40,14 @@ async function showPatch(patchUrl) {
  * @param {GitHubRepository} repository GitHub repository for this pull request.
  * @param {Object} pr Pull request object, as returned by GitHub API.
  */
-async function processPullRequest(repository, pr) {
-  const title = pr['title'];
-  const htmlUrl = pr['html_url'];
-  const patchUrl = pr['patch_url'];
-  const author = pr['user']['login'];
-  const baseSha = pr['base']['sha'];
-  const ref = pr['head']['ref'];
+async function processPullRequest(
+    repository: GitHubRepository, pr: PullRequest) {
+  const title = pr.title;
+  const htmlUrl = pr.html_url;
+  const patchUrl = pr.patch_url;
+  const author = pr.user.login;
+  const baseSha = pr.base.sha;
+  const ref = pr.head.ref;
 
   console.log(`  [${author}] ${htmlUrl}: ${title}`);
 
@@ -123,8 +125,8 @@ async function processPullRequest(repository, pr) {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-export async function main(options) {
-  if (!options.regex) {
+export async function main(cli: meow.Result) {
+  if (cli.input.length < 2 || !cli.input[1]) {
     console.log(`Usage: repo approve [regex]`);
     console.log(
         'Will show all open PRs with title matching regex and allow to approve them.');
@@ -134,11 +136,11 @@ export async function main(options) {
   const github = new GitHub();
   await github.init();
 
-  const regex = new RegExp(options.regex || '.*');
+  const regex = new RegExp(cli.input[1] || '.*');
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);
-    let prs;
+    let prs: PullRequest[];
     try {
       prs = await repository.listPullRequests();
     } catch (err) {
@@ -147,7 +149,7 @@ export async function main(options) {
     }
 
     for (const pr of prs) {
-      const title = pr['title'];
+      const title = pr.title;
       if (title.match(regex)) {
         await processPullRequest(repository, pr);
       }

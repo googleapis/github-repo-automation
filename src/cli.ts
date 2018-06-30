@@ -51,27 +51,16 @@ if (cli.input.length < 1) {
   cli.showHelp(-1);
 }
 
-let p;
+let p: Promise<void>;
 switch (cli.input[0]) {
   case 'approve':
-    p = approve({
-      regex: cli.input[1],
-    });
+    p = approve(cli);
     break;
   case 'reject':
-    p = reject({
-      regex: cli.input[1],
-    });
+    p = reject(cli);
     break;
   case 'apply':
-    p = apply({
-      branch: cli.flags.branch,
-      message: cli.flags.message,
-      comment: cli.flags.comment,
-      reviewers: cli.flags.reviewers,
-      slient: cli.flags.silent,
-      command: cli.input[1],
-    });
+    p = apply(cli);
     break;
   case 'check':
     p = check();
@@ -80,4 +69,4 @@ switch (cli.input[0]) {
     cli.showHelp(-1);
     break;
 }
-p.catch(console.error);
+p!.catch(console.error);

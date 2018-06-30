@@ -21,6 +21,7 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import {ConfigSettings} from '../src/lib/config';
 
 const testConfig = {
   auth: {
@@ -31,12 +32,12 @@ const testConfig = {
 };
 
 class ConfigStub {
-  _config;
+  _config?: ConfigSettings;
   async init() {
     this._config = testConfig;
   }
-  get(field) {
-    return this._config[field];
+  get(field: string) {
+    return this._config![field];
   }
 }
 
@@ -79,7 +80,8 @@ class OctokitStub {
   authenticate() {}
 }
 
-function getPage(arr, page, perPage) {
+// tslint:disable-next-line no-any
+function getPage(arr: any[], page: number, perPage: number) {
   return arr.slice((page - 1) * perPage, page * perPage);
 }
 

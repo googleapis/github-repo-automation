@@ -18,16 +18,19 @@
 
 import crypto from 'crypto';
 
-function hash(input) {
+function hash(input: string) {
   return crypto.createHash('md5').update(input).digest('hex');
 }
 
 class FakeGitHubRepository {
-  branches;
-  prs;
+  // tslint:disable-next-line no-any
+  branches: any;
+  // tslint:disable-next-line no-any
+  prs: any;
+
   _name?: string;
 
-  constructor(name) {
+  constructor(name: string) {
     this.name = name;
   }
 
@@ -42,7 +45,7 @@ class FakeGitHubRepository {
     };
   }
 
-  testSetFile(branch, path, content) {
+  testSetFile(branch: string, path: string, content: string) {
     if (this.branches[branch] === undefined) {
       this.branches[branch] = {};
     }
@@ -55,14 +58,14 @@ class FakeGitHubRepository {
     return {clone_url: 'https://fake-clone-url/test.git'};
   }
 
-  async getFileFromBranch(branch, path) {
+  async getFileFromBranch(branch: string, path: string) {
     if (this.branches[branch][path] === undefined) {
       return Promise.reject(`No file ${path} in branch ${branch}`);
     }
     return Promise.resolve(this.branches[branch][path]);
   }
 
-  async getFile(path) {
+  async getFile(path: string) {
     return await this.getFileFromBranch('master', path);
   }
 
@@ -71,7 +74,7 @@ class FakeGitHubRepository {
     return Promise.resolve({sha});
   }
 
-  async createBranch(branch, latestSha) {
+  async createBranch(branch: string, latestSha: string) {
     if (this.branches[branch] !== undefined) {
       return Promise.reject(`Branch ${branch} already exists`);
     }
@@ -83,7 +86,8 @@ class FakeGitHubRepository {
     return Promise.resolve({});
   }
 
-  async createFileInBranch(branch, path, message, content) {
+  async createFileInBranch(
+      branch: string, path: string, message: string, content: string) {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
@@ -97,7 +101,9 @@ class FakeGitHubRepository {
     return Promise.resolve(newFile);
   }
 
-  async updateFileInBranch(branch, path, message, content, oldFileSha) {
+  async updateFileInBranch(
+      branch: string, path: string, message: string, content: string,
+      oldFileSha: string) {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
@@ -116,7 +122,7 @@ class FakeGitHubRepository {
     return Promise.resolve(newFile);
   }
 
-  async createPullRequest(branch, message, comment) {
+  async createPullRequest(branch: string, message: string, comment: string) {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
@@ -127,7 +133,7 @@ class FakeGitHubRepository {
     return Promise.resolve(pr);
   }
 
-  async requestReview(prNumber, reviewers) {
+  async requestReview(prNumber: number, reviewers: string[]) {
     if (this.prs[prNumber] === undefined) {
       return Promise.reject(`Pull request ${prNumber} does not exist`);
     }
