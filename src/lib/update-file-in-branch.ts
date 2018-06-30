@@ -19,7 +19,7 @@
 
 'use strict';
 
-import {GitHub} from './github';
+import {GitHub, Repository, GitHubRepository} from './github';
 
 /**
  * Updates and commits one existing file in the given branch of the given
@@ -33,7 +33,8 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository, branch, path, patchFunction, message) {
+    repository: GitHubRepository, branch: string, path: string,
+    patchFunction: Function, message: string) {
   let file;
   try {
     file = await repository.getFileFromBranch(branch, path);
@@ -71,6 +72,16 @@ async function processRepository(
   console.log('  success!');
 }
 
+export interface UpdateFileInBranchOptions {
+  config: string;
+  branch: string;
+  path: string;
+  patchFunction: Function;
+  message: string;
+  comment: string;
+  reviewers: string[];
+}
+
 /**
  * Updates one existing file in the given branch of all the repositories.
  * @param {Object} options Options object, should contain the following fields:
@@ -85,7 +96,7 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-export async function updateFileInBranch(options) {
+export async function updateFileInBranch(options: UpdateFileInBranchOptions) {
   const path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');

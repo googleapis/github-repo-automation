@@ -20,17 +20,19 @@
 
 'use strict';
 
-import {GitHub} from './lib/github';
+import {GitHub, GitHubRepository, PullRequest} from './lib/github';
+import meow from 'meow';
 
 /**
  * Process one pull request: close it
  * @param {GitHubRepository} repository GitHub repository for this pull request.
  * @param {Object} pr Pull request object, as returned by GitHub API.
  */
-async function processPullRequest(repository, pr) {
-  const title = pr['title'];
-  const htmlUrl = pr['html_url'];
-  const author = pr['user']['login'];
+async function processPullRequest(
+    repository: GitHubRepository, pr: PullRequest) {
+  const title = pr.title;
+  const htmlUrl = pr.html_url;
+  const author = pr.user.login;
   console.log(`  [${author}] ${htmlUrl}: ${title}`);
   try {
     await repository.closePullRequest(pr);
@@ -45,8 +47,8 @@ async function processPullRequest(repository, pr) {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-export async function main(options) {
-  if (!options.regex) {
+export async function main(options: meow.Result) {
+  if (options.input.length < 2 || !options.input[1]) {
     console.log(`Usage: repo reject [regex]`);
     console.log('Automatically reject all PRs that match a given filter.');
     return;
@@ -55,7 +57,7 @@ export async function main(options) {
   const github = new GitHub();
   await github.init();
 
-  const regex = new RegExp(options.regex);
+  const regex = new RegExp(options.input[1]);
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);

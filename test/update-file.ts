@@ -20,12 +20,12 @@ import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const fakeGitHub = require('./fakes/fake-github.js');
-const updateFile = proxyquire('../src/lib/update-file.js', {
-                     './github.js': {GitHub: fakeGitHub},
+const fakeGitHub = require('./fakes/fake-github');
+const updateFile = proxyquire('../src/lib/update-file', {
+                     './github': {GitHub: fakeGitHub},
                    }).updateFile;
 
-async function suppressConsole(func) {
+async function suppressConsole(func: Function) {
   console.log = () => {};
   console.warn = () => {};
   console.error = () => {};
@@ -57,7 +57,7 @@ describe('UpdateFile', () => {
     await suppressConsole(async () => {
       await updateFile({
         path,
-        patchFunction: str => {
+        patchFunction: (str: string) => {
           if (str === originalContent) {
             return changedContent;
           }
@@ -231,7 +231,7 @@ describe('UpdateFile', () => {
     try {
       await suppressConsole(async () => {
         await updateFile({
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -271,7 +271,7 @@ describe('UpdateFile', () => {
       await suppressConsole(async () => {
         await updateFile({
           path,
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -293,7 +293,7 @@ describe('UpdateFile', () => {
       await suppressConsole(async () => {
         await updateFile({
           path,
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -315,7 +315,7 @@ describe('UpdateFile', () => {
       await suppressConsole(async () => {
         await updateFile({
           path,
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -336,7 +336,7 @@ describe('UpdateFile', () => {
     await suppressConsole(async () => {
       await updateFile({
         path,
-        patchFunction: str => {
+        patchFunction: (str: string) => {
           if (str === originalContent) {
             return changedContent;
           }

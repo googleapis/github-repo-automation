@@ -25,7 +25,7 @@ const updateFileInBranch = proxyquire('../src/lib/update-file-in-branch', {
                              './github': {GitHub: fakeGitHub},
                            }).updateFileInBranch;
 
-async function suppressConsole(func) {
+async function suppressConsole(func: Function) {
   console.log = () => {};
   console.warn = () => {};
   console.error = () => {};
@@ -55,7 +55,7 @@ describe('UpdateFileInBranch', () => {
     await suppressConsole(async () => {
       await updateFileInBranch({
         path,
-        patchFunction: str => {
+        patchFunction: (str: string) => {
           if (str === originalContent) {
             return changedContent;
           }
@@ -131,7 +131,7 @@ describe('UpdateFileInBranch', () => {
     try {
       await suppressConsole(async () => {
         await updateFileInBranch({
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -167,7 +167,7 @@ describe('UpdateFileInBranch', () => {
       await suppressConsole(async () => {
         await updateFileInBranch({
           path,
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }
@@ -187,7 +187,7 @@ describe('UpdateFileInBranch', () => {
       await suppressConsole(async () => {
         await updateFileInBranch({
           path,
-          patchFunction: str => {
+          patchFunction: (str: string) => {
             if (str === originalContent) {
               return changedContent;
             }

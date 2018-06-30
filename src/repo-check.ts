@@ -20,7 +20,7 @@
 'use strict';
 
 import axios from 'axios';
-import {GitHub} from './lib/github';
+import {GitHub, GitHubRepository} from './lib/github';
 import {CircleCI} from './lib/circleci';
 
 /**
@@ -38,7 +38,7 @@ class Logger {
    * Log error to console.
    * @param {text} Error message.
    */
-  error(text) {
+  error(text: string) {
     ++this.errorCount;
     console.log(text);
   }
@@ -47,7 +47,7 @@ class Logger {
    * Log warning to console.
    * @param {text} Warning message.
    */
-  warning(text) {
+  warning(text: string) {
     ++this.warningCount;
     console.log(`\x1b[2m${text}\x1b[0m`);
   }
@@ -56,7 +56,7 @@ class Logger {
    * Log information to console.
    * @param {text} Message.
    */
-  info(text) {
+  info(text: string) {
     console.log(`\x1b[2m${text}\x1b[0m`);
   }
 }
@@ -67,7 +67,8 @@ class Logger {
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
-async function checkGithubMasterBranchProtection(logger, repository) {
+async function checkGithubMasterBranchProtection(
+    logger: Logger, repository: GitHubRepository) {
   let response = await repository.getBranch('master');
   if (!response['protected']) {
     logger.error(`${
@@ -117,7 +118,7 @@ async function checkGithubMasterBranchProtection(logger, repository) {
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
-async function checkGreenkeeper(logger, repository) {
+async function checkGreenkeeper(logger: Logger, repository: GitHubRepository) {
   const response = await repository.listPullRequests('closed');
 
   let greenkeeperFound = false;
@@ -141,11 +142,12 @@ async function checkGreenkeeper(logger, repository) {
  * @param {CircleCI} circleci Initialized CircleCI object.
  * @param {GitHubRepository} repository Repository object.
  */
-async function checkCircleSettings(logger, circleci, repository) {
+async function checkCircleSettings(
+    logger: Logger, circleci: CircleCI, repository: GitHubRepository) {
   try {
     const recentBuilds = await circleci.getBuildsForProject(repository.name);
     const recentBuildsMaster =
-        recentBuilds.filter(b => b['branch'] === 'master');
+        recentBuilds.filter((b: {branch: string}) => b.branch === 'master');
     let failedCount = 0;
     for (const recentBuild of recentBuildsMaster) {
       if (recentBuild['outcome'] === 'failed') {
@@ -178,7 +180,8 @@ async function checkCircleSettings(logger, circleci, repository) {
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
-async function checkSamplesPackageDependency(logger, repository) {
+async function checkSamplesPackageDependency(
+    logger: Logger, repository: GitHubRepository) {
   let response;
   try {
     response = await axios.get(`https://raw.githubusercontent.com/${
@@ -219,7 +222,7 @@ async function checkSamplesPackageDependency(logger, repository) {
  * @param {Logger} logger Logger object.
  * @param {GitHubRepository} repository Repository object.
  */
-async function checkReadmeLinks(logger, repository) {
+async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
   let response;
   try {
     response = await axios.get(`https://raw.githubusercontent.com/${
@@ -273,7 +276,7 @@ async function checkReadmeLinks(logger, repository) {
  * all checks for each of them. Logs errors and warnings.
  * @param {Logger} logger Logger object.
  */
-async function checkAllRepositories(logger) {
+async function checkAllRepositories(logger: Logger) {
   const github = new GitHub();
   await github.init();
 

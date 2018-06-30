@@ -22,8 +22,8 @@ import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const fakeGitHub = require('./fakes/fake-github.js');
-const fakeTmp = require('./fakes/fake-tmp.js');
+const fakeGitHub = require('./fakes/fake-github');
+const fakeTmp = require('./fakes/fake-tmp');
 const tmp = require('tmp-promise');
 
 const execCallback = sinon.spy();
@@ -31,14 +31,14 @@ const updateRepo = proxyquire('../src/lib/update-repo.js', {
                      './github': {GitHub: fakeGitHub},
                      'tmp-promise': fakeTmp,
                      child_process: {
-                       exec: (command, callback) => {
+                       exec: (command: string, callback: Function) => {
                          execCallback(command);
                          callback();
                        },
                      },
                    }).updateRepo;
 
-async function suppressConsole(func) {
+async function suppressConsole(func: Function) {
   console.log = () => {};
   console.warn = () => {};
   console.error = () => {};
@@ -60,7 +60,7 @@ describe('UpdateRepo', () => {
   const comment = 'test-comment';
   const reviewers = ['test-reviewer-1', 'test-reviewer-2'];
   let realTmpDir;
-  let tmpDir;
+  let tmpDir: string;
 
   before(async () => {
     realTmpDir = await tmp.dir({unsafeCleanup: true});
@@ -78,13 +78,13 @@ describe('UpdateRepo', () => {
     fs.writeFileSync(path.join(tmpDir, pathNonExisting), newContent);
   });
 
-  const attemptUpdate = async (files?) => {
+  const attemptUpdate = async (files?: string[]) => {
     if (files === undefined) {
       files = [pathExisting, pathNonExisting];
     }
     await suppressConsole(async () => {
       await updateRepo({
-        updateCallback: path => {
+        updateCallback: (path: string) => {
           assert.equal(path, tmpDir);
           return Promise.resolve(files);
         },

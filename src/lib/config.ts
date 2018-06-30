@@ -29,7 +29,8 @@ import * as yaml from 'js-yaml';
  */
 export class Config {
   filename: string;
-  _config;
+  _config?: ConfigSettings;
+
   /**
    * Constructs a configuration object.
    * @constructor
@@ -49,7 +50,7 @@ export class Config {
   async init() {
     try {
       const yamlContent = await readFile(this.filename);
-      this.config = yaml.load(yamlContent as {} as string);
+      this.config = yaml.load(yamlContent as {} as string) as ConfigSettings;
     } catch (err) {
       console.error(`Cannot read configuration file ${
           this.filename}. Have you created it? Use config.yaml.default as a sample.`);
@@ -62,8 +63,8 @@ export class Config {
    * @param {string} option Configuration option.
    * @returns {string|Object} Requested value.
    */
-  get(option) {
-    return this._config[option];
+  get(option: string) {
+    return this._config![option];
   }
 
   /**
@@ -81,4 +82,9 @@ export class Config {
   set config(config) {
     this._config = config;
   }
+}
+
+export interface ConfigSettings {
+  // tslint:disable-next-line no-any
+  [index: string]: any;
 }

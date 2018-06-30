@@ -20,11 +20,12 @@
 'use strict';
 
 import * as util from 'util';
-const childProcess = require('child_process');
+import * as childProcess from 'child_process';
 const exec = util.promisify(childProcess.exec);
 const commandLineUsage = require('command-line-usage');
-import {updateRepo} from './lib/update-repo';
+import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
+import meow from 'meow';
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},
@@ -117,26 +118,26 @@ async function getFilesToCommit() {
  * @param {Object} options Options object, as returned by meow.
  * @returns {Boolean} True if OK to continue, false otherwise.
  */
-function checkOptions(options) {
-  if (options.help) {
+function checkOptions(cli: meow.Result) {
+  if (cli.flags.help) {
     console.log(commandLineUsage(helpSections));
     return false;
   }
 
   let badOptions = false;
-  if (options.branch === undefined) {
+  if (cli.flags.branch === undefined) {
     badOptions = true;
     console.error('Error: --branch is required.');
   }
-  if (options.message === undefined) {
+  if (cli.flags.message === undefined) {
     badOptions = true;
     console.error('Error: --message is required.');
   }
-  if (options.comment === undefined) {
+  if (cli.flags.comment === undefined) {
     badOptions = true;
     console.error('Error: --comment is required.');
   }
-  if (options.command === undefined) {
+  if (cli.flags.command === undefined) {
     badOptions = true;
     console.error('Error: command to execute is required.');
   }
@@ -160,12 +161,12 @@ function checkOptions(options) {
  * @returns {Promise<string[]>} A promise resolving to a list of files to
  * commit.
  */
-async function updateCallback(options, repoPath) {
+async function updateCallback(cli: meow.Result, repoPath: string) {
   const cwd = process.cwd();
   try {
     process.chdir(repoPath);
-    const execResult = await exec(
-        options.command);  // will throw an error if non-zero exit code
+    const execResult =
+        await exec(cli.input[1]);  // will throw an error if non-zero exit code
     if (execResult.stdout !== '') {
       console.log(execResult.stdout);
     }
@@ -173,7 +174,7 @@ async function updateCallback(options, repoPath) {
       console.error(execResult.stderr);
     }
     const files = await getFilesToCommit();
-    if (files.length > 0 && !options.silent) {
+    if (files.length > 0 && !cli.flags.silent) {
       for (;;) {
         const response = await question(
             'Going to commit the following files:\n' +
@@ -198,18 +199,18 @@ async function updateCallback(options, repoPath) {
 /**
  * Main function.
  */
-export async function main(options) {
-  if (!checkOptions(options)) {
+export async function main(cli: meow.Result) {
+  if (!checkOptions(cli)) {
     return;
   }
   const updateRepoOptions = {
-    updateCallback: path => updateCallback(options, path),
-    branch: options.branch,
-    message: options.message,
-    comment: options.comment,
-  };
-  if (options.reviewers !== undefined) {
-    updateRepoOptions['reviewers'] = options.reviewers.split(/\s*,\s*/);
+    updateCallback: (path: string) => updateCallback(cli, path),
+    branch: cli.flags.branch,
+    message: cli.flags.message,
+    comment: cli.flags.comment,
+  } as UpdateRepoOptions;
+  if (cli.flags.reviewers !== undefined) {
+    updateRepoOptions.reviewers = cli.flags.reviewers.split(/\s*,\s*/);
   }
   await updateRepo(updateRepoOptions);
 }

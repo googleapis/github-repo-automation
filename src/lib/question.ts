@@ -24,7 +24,7 @@ import * as readline from 'readline';
  * @param {string} prompt A prompt to print.
  * @returns {string} Response from stdin.
  */
-export async function question(prompt) {
+export async function question(prompt: string) {
   return new Promise(resolve => {
     const rl = readline.createInterface({
       input: process.stdin,

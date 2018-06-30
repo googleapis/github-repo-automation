@@ -19,7 +19,7 @@
 
 'use strict';
 
-import {GitHub} from './github';
+import {GitHub, Repository, GitHubRepository} from './github';
 
 /**
  * Updates one existing file in the repository and sends a pull request with
@@ -35,7 +35,8 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository, path, patchFunction, branch, message, comment, reviewers) {
+    repository: GitHubRepository, path: string, patchFunction: Function,
+    branch: string, message: string, comment: string, reviewers: string[]) {
   let file;
   try {
     file = await repository.getFile(path);
@@ -118,6 +119,16 @@ async function processRepository(
   console.log(`  success! ${pullRequestUrl}`);
 }
 
+export interface UpdateFileOptions {
+  config: string;
+  path: string;
+  patchFunction: Function;
+  branch: string;
+  message: string;
+  comment: string;
+  reviewers: string[];
+}
+
 /**
  * Updates one existing file in the repository and sends a pull request with
  * this change.
@@ -133,7 +144,7 @@ async function processRepository(
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
  * @returns {undefined} No return value. Prints its progress to the console.
  */
-export async function updateFile(options) {
+export async function updateFile(options: UpdateFileOptions) {
   const path = options['path'];
   if (path === undefined) {
     console.error('updateFile: path is required');
