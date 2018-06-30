@@ -20,8 +20,8 @@
 'use strict';
 
 import * as util from 'util';
-const child_process = require('child_process');
-const exec = util.promisify(child_process.exec);
+const childProcess = require('child_process');
+const exec = util.promisify(childProcess.exec);
 const commandLineUsage = require('command-line-usage');
 import {updateRepo} from './lib/update-repo';
 import {question} from './lib/question';
@@ -99,11 +99,11 @@ const helpSections = [
  * @returns {string[]} List of filenames.
  */
 async function getFilesToCommit() {
-  let gitStatus = await exec('git status --porcelain');
-  let lines = gitStatus.stdout.split('\n').filter(line => line !== '');
-  let files: string[] = [];
-  for (let line of lines) {
-    let matchResult = line.match(/^(?: M|\?\?) (.*)$/);
+  const gitStatus = await exec('git status --porcelain');
+  const lines = gitStatus.stdout.split('\n').filter(line => line !== '');
+  const files: string[] = [];
+  for (const line of lines) {
+    const matchResult = line.match(/^(?: M|\?\?) (.*)$/);
     if (matchResult !== null) {
       files.push(matchResult[1]);
     }
@@ -111,7 +111,8 @@ async function getFilesToCommit() {
   return files;
 }
 
-/** Checks if options are valid and it's OK to continue.
+/**
+ * Checks if options are valid and it's OK to continue.
  * Prints a message to stderr if not, and returns false.
  * @param {Object} options Options object, as returned by meow.
  * @returns {Boolean} True if OK to continue, false otherwise.
@@ -141,15 +142,15 @@ function checkOptions(options) {
   }
   if (badOptions) {
     console.error(
-      'Please run the script with --help to get some help on the command line options.'
-    );
+        'Please run the script with --help to get some help on the command line options.');
     return false;
   }
 
   return true;
 }
 
-/** A function to be used in callback to `update-repo.js`.
+/**
+ * A function to be used in callback to `update-repo.js`.
  * Executes the given command in the repository cloned into the given
  * location, should return a promise resolving to a list of files to
  * commit.
@@ -160,24 +161,23 @@ function checkOptions(options) {
  * commit.
  */
 async function updateCallback(options, repoPath) {
-  let cwd = process.cwd();
+  const cwd = process.cwd();
   try {
     process.chdir(repoPath);
-    let execResult = await exec(options.command); // will throw an error if non-zero exit code
+    const execResult = await exec(
+        options.command);  // will throw an error if non-zero exit code
     if (execResult.stdout !== '') {
       console.log(execResult.stdout);
     }
     if (execResult.stderr !== '') {
       console.error(execResult.stderr);
     }
-    let files = await getFilesToCommit();
+    const files = await getFilesToCommit();
     if (files.length > 0 && !options.silent) {
       for (;;) {
-        let response = await question(
-          'Going to commit the following files:\n' +
-            files.map(line => `  ${line}\n`).join('') +
-            'Do it? [y/n]'
-        );
+        const response = await question(
+            'Going to commit the following files:\n' +
+            files.map(line => `  ${line}\n`).join('') + 'Do it? [y/n]');
         if (response === 'y') {
           break;
         } else if (response === 'n') {
@@ -195,13 +195,14 @@ async function updateCallback(options, repoPath) {
   }
 }
 
-/** Main function.
+/**
+ * Main function.
  */
 export async function main(options) {
   if (!checkOptions(options)) {
     return;
   }
-  let updateRepoOptions = {
+  const updateRepoOptions = {
     updateCallback: path => updateCallback(options, path),
     branch: options.branch,
     message: options.message,

@@ -18,7 +18,8 @@
 
 import * as readline from 'readline';
 
-/** Promisified version of readline question. Prints a prompt and waits for
+/**
+ * Promisified version of readline question. Prints a prompt and waits for
  * response.
  * @param {string} prompt A prompt to print.
  * @returns {string} Response from stdin.

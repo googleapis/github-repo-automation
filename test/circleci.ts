@@ -41,65 +41,65 @@ class ConfigStub {
 }
 
 const CircleCI = proxyquire('../src/lib/circleci', {
-  './config': {
-    Config: ConfigStub,
-  }
-}).CircleCI;
+                   './config': {
+                     Config: ConfigStub,
+                   }
+                 }).CircleCI;
 
 describe('CircleCI', () => {
-  let token = testConfig['auth']['circleci-token'];
-  let organization = testConfig['organization'];
+  const token = testConfig['auth']['circleci-token'];
+  const organization = testConfig['organization'];
 
   it('should initialize and read configuration', async () => {
-    let circleci = new CircleCI();
+    const circleci = new CircleCI();
     await circleci.init();
     assert.equal(circleci.circleToken, token);
   });
 
   it('should get projects', async () => {
-    let projects = [
+    const projects = [
       {reponame: 'matches-1'},
       {reponame: 'does-not-match-1'},
       {reponame: '2-matches'},
       {reponame: '2-does-not-match'},
     ];
-    let circleci = new CircleCI();
+    const circleci = new CircleCI();
     await circleci.init();
     nock('https://circleci.com')
-      .get('/api/v1.1/projects')
-      .query({'circle-token': token})
-      .reply(200, projects);
-    let result = await circleci.getProjects();
+        .get('/api/v1.1/projects')
+        .query({'circle-token': token})
+        .reply(200, projects);
+    const result = await circleci.getProjects();
     assert.equal(result.length, 2);
     assert.equal(result[0].reponame, 'matches-1');
     assert.equal(result[1].reponame, '2-matches');
   });
 
   it('should get builds for github project', async () => {
-    let builds = [{build_num: 1}, {build_num: 2}, {build_num: 3}];
-    let vcs = 'github';
-    let project = 'test-project';
-    let circleci = new CircleCI();
+    const builds = [{build_num: 1}, {build_num: 2}, {build_num: 3}];
+    const vcs = 'github';
+    const project = 'test-project';
+    const circleci = new CircleCI();
     await circleci.init();
     nock('https://circleci.com')
-      .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
-      .query({'circle-token': token})
-      .reply(200, builds);
-    let result = await circleci.getBuildsForProject(project);
+        .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
+        .query({'circle-token': token})
+        .reply(200, builds);
+    const result = await circleci.getBuildsForProject(project);
     assert.deepEqual(result, builds);
   });
 
   it('should get builds for project', async () => {
-    let builds = [{build_num: 1}, {build_num: 2}, {build_num: 3}];
-    let vcs = 'test-vcs';
-    let project = 'test-project';
-    let circleci = new CircleCI();
+    const builds = [{build_num: 1}, {build_num: 2}, {build_num: 3}];
+    const vcs = 'test-vcs';
+    const project = 'test-project';
+    const circleci = new CircleCI();
     await circleci.init();
     nock('https://circleci.com')
-      .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
-      .query({'circle-token': token})
-      .reply(200, builds);
-    let result = await circleci.getBuildsForProject(project, vcs);
+        .get(`/api/v1.1/project/${vcs}/${organization}/${project}`)
+        .query({'circle-token': token})
+        .reply(200, builds);
+    const result = await circleci.getBuildsForProject(project, vcs);
     assert.deepEqual(result, builds);
   });
 });

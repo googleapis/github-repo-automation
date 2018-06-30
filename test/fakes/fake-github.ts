@@ -18,11 +18,8 @@
 
 import crypto from 'crypto';
 
-function hash(string) {
-  return crypto
-    .createHash('md5')
-    .update(string)
-    .digest('hex');
+function hash(input) {
+  return crypto.createHash('md5').update(input).digest('hex');
 }
 
 class FakeGitHubRepository {
@@ -49,8 +46,8 @@ class FakeGitHubRepository {
     if (this.branches[branch] === undefined) {
       this.branches[branch] = {};
     }
-    let sha = hash(content);
-    let type = 'file';
+    const sha = hash(content);
+    const type = 'file';
     this.branches[branch][path] = {content, sha, type};
   }
 
@@ -70,7 +67,7 @@ class FakeGitHubRepository {
   }
 
   async getLatestCommitToMaster() {
-    let sha = this.branches['master']['_latest'];
+    const sha = this.branches['master']['_latest'];
     return Promise.resolve({sha});
   }
 
@@ -80,8 +77,7 @@ class FakeGitHubRepository {
     }
     if (this.branches['master']['_latest'] !== latestSha) {
       return Promise.reject(
-        `SHA ${latestSha} is not found in branch ${branch}`
-      );
+          `SHA ${latestSha} is not found in branch ${branch}`);
     }
     this.branches[branch] = Object.assign({}, this.branches['master']);
     return Promise.resolve({});
@@ -94,8 +90,8 @@ class FakeGitHubRepository {
     if (this.branches[branch][path] !== undefined) {
       return Promise.reject(`File ${path} already exists in branch ${branch}`);
     }
-    let sha = hash(content);
-    let newFile = {content, sha, message};
+    const sha = hash(content);
+    const newFile = {content, sha, message};
     this.branches[branch][path] = newFile;
     this.branches[branch]['_latest'] = sha;
     return Promise.resolve(newFile);
@@ -108,16 +104,13 @@ class FakeGitHubRepository {
     if (this.branches[branch][path] === undefined) {
       return Promise.reject(`File ${path} does not exist in branch ${branch}`);
     }
-    let file = this.branches[branch][path];
+    const file = this.branches[branch][path];
     if (file['sha'] !== oldFileSha) {
-      return Promise.reject(
-        `SHA of file ${path} in branch ${branch} is ${
-          file['sha']
-        } but not ${oldFileSha}`
-      );
+      return Promise.reject(`SHA of file ${path} in branch ${branch} is ${
+          file['sha']} but not ${oldFileSha}`);
     }
-    let sha = hash(content);
-    let newFile = {content, sha, message};
+    const sha = hash(content);
+    const newFile = {content, sha, message};
     this.branches[branch][path] = newFile;
     this.branches[branch]['_latest'] = sha;
     return Promise.resolve(newFile);
@@ -127,19 +120,19 @@ class FakeGitHubRepository {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
-    let number = ++this.prs['_count'];
-    let html_url = `http://example.com/pulls/${number}`;
-    let pr = {number, branch, message, comment, html_url};
-    this.prs[number] = pr;
+    const prNumber = ++this.prs['_count'];
+    const htmlUrl = `http://example.com/pulls/${prNumber}`;
+    const pr = {number: prNumber, branch, message, comment, html_url: htmlUrl};
+    this.prs[prNumber] = pr;
     return Promise.resolve(pr);
   }
 
-  async requestReview(number, reviewers) {
-    if (this.prs[number] === undefined) {
-      return Promise.reject(`Pull request ${number} does not exist`);
+  async requestReview(prNumber, reviewers) {
+    if (this.prs[prNumber] === undefined) {
+      return Promise.reject(`Pull request ${prNumber} does not exist`);
     }
-    this.prs[number]['reviewers'] = reviewers;
-    return this.prs[number];
+    this.prs[prNumber]['reviewers'] = reviewers;
+    return this.prs[prNumber];
   }
 
   get name() {
@@ -151,7 +144,7 @@ class FakeGitHubRepository {
   }
 }
 
-let repository = new FakeGitHubRepository('test-repository');
+const repository = new FakeGitHubRepository('test-repository');
 
 class FakeGitHub {
   async init() {

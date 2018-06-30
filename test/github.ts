@@ -60,6 +60,7 @@ class OctokitPullRequestsStub {
   async createReviewRequest() {}
   async createReview() {}
   async merge() {}
+  async update() {}
 }
 
 class OctokitGitdataStub {
@@ -91,29 +92,29 @@ const {GitHub, GitHubRepository} = proxyquire('../src/lib/github', {
 
 describe('GitHub', () => {
   it('should authenticate octokit', async () => {
-    let spy = sinon.spy(OctokitStub.prototype, 'authenticate');
-    let expectedAuthParam = {
+    const spy = sinon.spy(OctokitStub.prototype, 'authenticate');
+    const expectedAuthParam = {
       type: 'token',
       token: testConfig['auth']['github-token'],
     };
-    let github = new GitHub();
+    const github = new GitHub();
     await github.init();
     assert(spy.calledOnce);
     assert(spy.calledWith(expectedAuthParam));
   });
 
   it('should get repositories', async () => {
-    let testOrg = testConfig['organization'];
-    let testType = 'public';
-    let repositories = [
+    const testOrg = testConfig['organization'];
+    const testType = 'public';
+    const repositories = [
       {name: 'matches-1'},
       {name: 'does-not-match-1'},
       {name: '2-matches'},
       {name: '2-does-not-match'},
     ];
-    let github = new GitHub();
+    const github = new GitHub();
     await github.init();
-    let stub = sinon.stub(github.octokit.repos, 'getForOrg');
+    const stub = sinon.stub(github.octokit.repos, 'getForOrg');
     stub.callsFake(({org, type, page, per_page}) => {
       assert.equal(org, testOrg);
       assert.equal(type, testType);
@@ -121,7 +122,7 @@ describe('GitHub', () => {
         data: getPage(repositories, page || 1, per_page || 1),
       });
     });
-    let repos = await github.getRepositories();
+    const repos = await github.getRepositories();
     assert.equal(repos.length, 2);
     assert.equal(repos[0].name, 'matches-1');
     assert.equal(repos[0].organization, testConfig['organization']);
@@ -132,16 +133,13 @@ describe('GitHub', () => {
 });
 
 describe('GitHubRepository', () => {
-  let owner = 'test-login';
-  let repo = 'test-repo';
-  let repositoryObject = {name: repo, owner: {login: owner}};
-  let octokit = new OctokitStub();
-  let organization = 'test-organization';
-  let repository = new GitHubRepository(
-    octokit,
-    repositoryObject,
-    organization
-  );
+  const owner = 'test-login';
+  const repo = 'test-repo';
+  const repositoryObject = {name: repo, owner: {login: owner}};
+  const octokit = new OctokitStub();
+  const organization = 'test-organization';
+  const repository =
+      new GitHubRepository(octokit, repositoryObject, organization);
 
   it('should return repository object', done => {
     assert.deepEqual(repository.getRepository(), repositoryObject);
@@ -154,14 +152,13 @@ describe('GitHubRepository', () => {
   });
 
   it('should get file', async () => {
-    let content = 'test-content';
-    let path = 'test-path';
-    let stub = sinon.stub(octokit.repos, 'getContent').returns(
-      Promise.resolve({
-        data: content,
-      })
-    );
-    let result = await repository.getFile(path);
+    const content = 'test-content';
+    const path = 'test-path';
+    const stub =
+        sinon.stub(octokit.repos, 'getContent').returns(Promise.resolve({
+          data: content,
+        }));
+    const result = await repository.getFile(path);
     assert(stub.calledOnce);
     assert(stub.calledWith({owner, repo, path}));
     assert.equal(result, content);
@@ -169,15 +166,14 @@ describe('GitHubRepository', () => {
   });
 
   it('should get file from branch', async () => {
-    let ref = 'test-branch';
-    let content = 'test-content';
-    let path = 'test-path';
-    let stub = sinon.stub(octokit.repos, 'getContent').returns(
-      Promise.resolve({
-        data: content,
-      })
-    );
-    let result = await repository.getFileFromBranch(ref, path);
+    const ref = 'test-branch';
+    const content = 'test-content';
+    const path = 'test-path';
+    const stub =
+        sinon.stub(octokit.repos, 'getContent').returns(Promise.resolve({
+          data: content,
+        }));
+    const result = await repository.getFileFromBranch(ref, path);
     assert(stub.calledOnce);
     assert(stub.calledWith({owner, repo, path, ref}));
     assert.equal(result, content);
@@ -185,237 +181,230 @@ describe('GitHubRepository', () => {
   });
 
   it('should list open pull requests', async () => {
-    let prs = [{id: 1}, {id: 2}];
-    let stub = sinon.stub(octokit.pullRequests, 'getAll');
-    let testOwner = owner;
-    let testRepo = repo;
-    let testState = 'open';
+    const prs = [{id: 1}, {id: 2}];
+    const stub = sinon.stub(octokit.pullRequests, 'getAll');
+    const testOwner = owner;
+    const testRepo = repo;
+    const testState = 'open';
     stub.callsFake(({owner, repo, state, page, per_page}) => {
       assert.equal(owner, testOwner);
       assert.equal(repo, testRepo);
       assert.equal(state, testState);
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
-    let result = await repository.listPullRequests();
+    const result = await repository.listPullRequests();
     assert.deepEqual(result, prs);
     stub.restore();
   });
 
   it('should list pull requests', async () => {
-    let prs = [{id: 1}, {id: 2}];
-    let stub = sinon.stub(octokit.pullRequests, 'getAll');
-    let testOwner = owner;
-    let testRepo = repo;
-    let testState = 'test-state';
+    const prs = [{id: 1}, {id: 2}];
+    const stub = sinon.stub(octokit.pullRequests, 'getAll');
+    const testOwner = owner;
+    const testRepo = repo;
+    const testState = 'test-state';
     stub.callsFake(({owner, repo, state, page, per_page}) => {
       assert.equal(owner, testOwner);
       assert.equal(repo, testRepo);
       assert.equal(state, testState);
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
-    let result = await repository.listPullRequests(testState);
+    const result = await repository.listPullRequests(testState);
     assert.deepEqual(result, prs);
     stub.restore();
   });
 
   it('should get latest commit to master', async () => {
-    let commit = {sha: 'test-sha'};
-    let ref = 'heads/master';
-    let stub = sinon
-      .stub(octokit.repos, 'getShaOfCommitRef')
-      .returns(Promise.resolve({data: commit}));
-    let result = await repository.getLatestCommitToMaster();
+    const commit = {sha: 'test-sha'};
+    const ref = 'heads/master';
+    const stub = sinon.stub(octokit.repos, 'getShaOfCommitRef')
+                     .returns(Promise.resolve({data: commit}));
+    const result = await repository.getLatestCommitToMaster();
     assert(stub.calledOnceWith({owner, repo, ref}));
     assert.deepEqual(result, commit);
     stub.restore();
   });
 
   it('should create branch', async () => {
-    let created = {ref: 'test-ref'};
-    let branch = 'test-ref';
-    let sha = 'test-sha';
-    let ref = `refs/heads/${branch}`;
-    let stub = sinon
-      .stub(octokit.gitdata, 'createReference')
-      .returns(Promise.resolve({data: created}));
-    let result = await repository.createBranch(branch, sha);
+    const created = {ref: 'test-ref'};
+    const branch = 'test-ref';
+    const sha = 'test-sha';
+    const ref = `refs/heads/${branch}`;
+    const stub = sinon.stub(octokit.gitdata, 'createReference')
+                     .returns(Promise.resolve({data: created}));
+    const result = await repository.createBranch(branch, sha);
     assert(stub.calledOnceWith({owner, repo, ref, sha}));
     assert.deepEqual(result, created);
     stub.restore();
   });
 
   it('should update branch', async () => {
-    let base = 'test-base';
-    let head = 'test-head';
-    let commit = {sha: 'test-sha'};
-    let stub = sinon
-      .stub(octokit.repos, 'merge')
-      .returns(Promise.resolve({data: commit}));
-    let result = await repository.updateBranch(base, head);
+    const base = 'test-base';
+    const head = 'test-head';
+    const commit = {sha: 'test-sha'};
+    const stub = sinon.stub(octokit.repos, 'merge').returns(Promise.resolve({
+      data: commit
+    }));
+    const result = await repository.updateBranch(base, head);
     assert(stub.calledOnceWith({owner, repo, base, head}));
     assert.deepEqual(result, commit);
     stub.restore();
   });
 
   it('should create file in branch', async () => {
-    let branch = 'test-branch';
-    let path = 'test-path';
-    let message = 'test-message';
-    let content = 'test-content';
-    let commit = {sha: 'test-sha'};
-    let stub = sinon
-      .stub(octokit.repos, 'createFile')
-      .returns(Promise.resolve({data: commit}));
-    let result = await repository.createFileInBranch(
-      branch,
-      path,
-      message,
-      content
-    );
+    const branch = 'test-branch';
+    const path = 'test-path';
+    const message = 'test-message';
+    const content = 'test-content';
+    const commit = {sha: 'test-sha'};
+    const stub = sinon.stub(octokit.repos, 'createFile')
+                     .returns(Promise.resolve({data: commit}));
+    const result =
+        await repository.createFileInBranch(branch, path, message, content);
     assert(stub.calledOnceWith({owner, repo, path, message, content, branch}));
     assert.deepEqual(result, commit);
     stub.restore();
   });
 
   it('should update file in branch', async () => {
-    let branch = 'test-branch';
-    let path = 'test-path';
-    let message = 'test-message';
-    let content = 'test-content';
-    let sha = 'test-sha';
-    let commit = {sha: 'test-updated-sha'};
-    let stub = sinon
-      .stub(octokit.repos, 'updateFile')
-      .returns(Promise.resolve({data: commit}));
-    let result = await repository.updateFileInBranch(
-      branch,
-      path,
-      message,
-      content,
-      sha
-    );
-    assert(
-      stub.calledOnceWith({owner, repo, path, message, content, sha, branch})
-    );
+    const branch = 'test-branch';
+    const path = 'test-path';
+    const message = 'test-message';
+    const content = 'test-content';
+    const sha = 'test-sha';
+    const commit = {sha: 'test-updated-sha'};
+    const stub = sinon.stub(octokit.repos, 'updateFile')
+                     .returns(Promise.resolve({data: commit}));
+    const result = await repository.updateFileInBranch(
+        branch, path, message, content, sha);
+    assert(stub.calledOnceWith(
+        {owner, repo, path, message, content, sha, branch}));
     assert.deepEqual(result, commit);
     stub.restore();
   });
 
   it('should create pull request', async () => {
-    let branch = 'test-branch';
-    let title = 'test-title';
-    let body = 'test-body';
-    let head = `refs/heads/${branch}`;
-    let base = 'refs/heads/master';
-    let pr = {id: 1};
-    let stub = sinon
-      .stub(octokit.pullRequests, 'create')
-      .returns(Promise.resolve({data: pr}));
-    let result = await repository.createPullRequest(branch, title, body);
+    const branch = 'test-branch';
+    const title = 'test-title';
+    const body = 'test-body';
+    const head = `refs/heads/${branch}`;
+    const base = 'refs/heads/master';
+    const pr = {id: 1};
+    const stub = sinon.stub(octokit.pullRequests, 'create')
+                     .returns(Promise.resolve({data: pr}));
+    const result = await repository.createPullRequest(branch, title, body);
     assert(stub.calledOnceWith({owner, repo, head, base, title, body}));
     assert.deepEqual(result, pr);
     stub.restore();
   });
 
   it('should request review', async () => {
-    let number = 42;
-    let reviewers = ['user1', 'user2'];
-    let review = {id: 1};
-    let stub = sinon
-      .stub(octokit.pullRequests, 'createReviewRequest')
-      .returns(Promise.resolve({data: review}));
-    let result = await repository.requestReview(number, reviewers);
-    assert(stub.calledOnceWith({owner, repo, number, reviewers}));
+    const prNumber = 42;
+    const reviewers = ['user1', 'user2'];
+    const review = {id: 1};
+    const stub = sinon.stub(octokit.pullRequests, 'createReviewRequest')
+                     .returns(Promise.resolve({data: review}));
+    const result = await repository.requestReview(prNumber, reviewers);
+    assert(stub.calledOnceWith({owner, repo, number: prNumber, reviewers}));
     assert.deepEqual(result, review);
     stub.restore();
   });
 
   it('should approve pull request', async () => {
-    let number = 42;
-    let pr = {number};
-    let event = 'APPROVE';
-    let review = {id: 1};
-    let stub = sinon
-      .stub(octokit.pullRequests, 'createReview')
-      .returns(Promise.resolve({data: review}));
-    let result = await repository.approvePullRequest(pr);
-    assert(stub.calledOnceWith({owner, repo, number, event}));
+    const prNumber = 42;
+    const pr = {number: prNumber};
+    const event = 'APPROVE';
+    const review = {id: 1};
+    const stub = sinon.stub(octokit.pullRequests, 'createReview')
+                     .returns(Promise.resolve({data: review}));
+    const result = await repository.approvePullRequest(pr);
+    assert(stub.calledOnceWith({owner, repo, number: prNumber, event}));
     assert.deepEqual(result, review);
     stub.restore();
   });
 
+  it('should close pull request', async () => {
+    const prNumber = 42;
+    const pr = {number: prNumber};
+    const state = 'closed';
+    const stub = sinon.stub(octokit.pullRequests, 'update')
+                     .returns(Promise.resolve({data: pr}));
+    const result = await repository.closePullRequest(pr);
+    assert(stub.calledOnceWith({owner, repo, number: prNumber, state}));
+    assert.deepEqual(result, pr);
+    stub.restore();
+  });
+
   it('should merge pull request', async () => {
-    let number = 42;
-    let pr = {number};
-    let merge_method = 'squash';
-    let commit = {sha: 'test-sha'};
-    let stub = sinon
-      .stub(octokit.pullRequests, 'merge')
-      .returns(Promise.resolve({data: commit}));
-    let result = await repository.mergePullRequest(pr);
-    assert(stub.calledOnceWith({owner, repo, number, merge_method}));
+    const prNumber = 42;
+    const pr = {number: prNumber};
+    const mergeMethod = 'squash';
+    const commit = {sha: 'test-sha'};
+    const stub = sinon.stub(octokit.pullRequests, 'merge')
+                     .returns(Promise.resolve({data: commit}));
+    const result = await repository.mergePullRequest(pr);
+    assert(stub.calledOnceWith(
+        {owner, repo, number: prNumber, merge_method: mergeMethod}));
     assert.deepEqual(result, commit);
     stub.restore();
   });
 
   it('should return branch settings', async () => {
-    let branch = 'test-branch';
-    let response = {name: branch};
-    let stub = sinon
-      .stub(octokit.repos, 'getBranch')
-      .returns(Promise.resolve({data: response}));
-    let result = await repository.getBranch(branch);
+    const branch = 'test-branch';
+    const response = {name: branch};
+    const stub = sinon.stub(octokit.repos, 'getBranch')
+                     .returns(Promise.resolve({data: response}));
+    const result = await repository.getBranch(branch);
     assert(stub.calledOnceWith({owner, repo, branch}));
     assert.deepEqual(result, response);
     stub.restore();
   });
 
   it('should return branch protection settings', async () => {
-    let branch = 'master';
-    let protection = {'required-status-checks': []};
-    let stub = sinon
-      .stub(octokit.repos, 'getBranchProtection')
-      .returns(Promise.resolve({data: protection}));
-    let result = await repository.getRequiredMasterBranchProtection();
+    const branch = 'master';
+    const protection = {'required-status-checks': []};
+    const stub = sinon.stub(octokit.repos, 'getBranchProtection')
+                     .returns(Promise.resolve({data: protection}));
+    const result = await repository.getRequiredMasterBranchProtection();
     assert(stub.calledOnceWith({owner, repo, branch}));
     assert.deepEqual(result, protection);
     stub.restore();
   });
 
   it('should return branch protection status checks', async () => {
-    let branch = 'master';
-    let statusChecks = {contexts: ['check1', 'check2']};
-    let stub = sinon
-      .stub(octokit.repos, 'getProtectedBranchRequiredStatusChecks')
-      .returns(Promise.resolve({data: statusChecks}));
-    let result = await repository.getRequiredMasterBranchProtectionStatusChecks();
+    const branch = 'master';
+    const statusChecks = {contexts: ['check1', 'check2']};
+    const stub =
+        sinon.stub(octokit.repos, 'getProtectedBranchRequiredStatusChecks')
+            .returns(Promise.resolve({data: statusChecks}));
+    const result =
+        await repository.getRequiredMasterBranchProtectionStatusChecks();
     assert(stub.calledOnceWith({owner, repo, branch}));
     assert.deepEqual(result, statusChecks);
     stub.restore();
   });
 
   it('should update branch protection status checks', async () => {
-    let branch = 'master';
-    let contexts = ['check1', 'check2'];
-    let strict = true;
-    let updatedResponse = {contexts};
-    let stub = sinon
-      .stub(octokit.repos, 'updateProtectedBranchRequiredStatusChecks')
-      .returns(Promise.resolve({data: updatedResponse}));
-    let result = await repository.updateRequiredMasterBranchProtectionStatusChecks(
-      contexts
-    );
+    const branch = 'master';
+    const contexts = ['check1', 'check2'];
+    const strict = true;
+    const updatedResponse = {contexts};
+    const stub =
+        sinon.stub(octokit.repos, 'updateProtectedBranchRequiredStatusChecks')
+            .returns(Promise.resolve({data: updatedResponse}));
+    const result =
+        await repository.updateRequiredMasterBranchProtectionStatusChecks(
+            contexts);
     assert(stub.calledOnceWith({owner, repo, branch, strict, contexts}));
     assert.deepEqual(result, updatedResponse);
     stub.restore();
   });
 
   it('should add collaborator', async () => {
-    let username = 'username';
-    let permission = 'permission';
-    let stub = sinon
-      .stub(octokit.repos, 'addCollaborator')
-      .returns(Promise.resolve({data: {}}));
+    const username = 'username';
+    const permission = 'permission';
+    const stub = sinon.stub(octokit.repos, 'addCollaborator')
+                     .returns(Promise.resolve({data: {}}));
     await repository.addCollaborator(username, permission);
     assert(stub.calledOnceWith({owner, repo, username, permission}));
     stub.restore();

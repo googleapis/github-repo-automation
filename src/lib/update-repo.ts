@@ -29,7 +29,8 @@ const tmp = require('tmp-promise');
 
 import {GitHub} from './github';
 
-/** Updates files in the cloned repository and sends a pull request with
+/**
+ * Updates files in the cloned repository and sends a pull request with
  * this change.
  * @param {GitHubRepository} repository Repository to work with.
  * @param {updateCallback} updateCallback Callback function that should
@@ -42,16 +43,10 @@ import {GitHub} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-  repository,
-  updateCallback,
-  branch,
-  message,
-  comment,
-  reviewers
-) {
-  let tmpDir = await tmp.dir({unsafeCleanup: true});
+    repository, updateCallback, branch, message, comment, reviewers) {
+  const tmpDir = await tmp.dir({unsafeCleanup: true});
 
-  let cloneUrl = repository.getRepository()['clone_url'];
+  const cloneUrl = repository.getRepository()['clone_url'];
   await exec(`git clone ${cloneUrl} ${tmpDir.path}`);
 
   let filesToUpdate;
@@ -59,21 +54,18 @@ async function processRepository(
     filesToUpdate = await updateCallback(tmpDir.path);
   } catch (err) {
     console.warn(
-      '  callback function threw an exception, skipping this repository'
-    );
+        '  callback function threw an exception, skipping this repository');
     return;
   }
 
   if (filesToUpdate === undefined) {
     console.warn(
-      '  callback function returned undefined value, skipping this repository'
-    );
+        '  callback function returned undefined value, skipping this repository');
     return;
   }
   if (filesToUpdate.length === 0) {
     console.warn(
-      '  callback function returned empty list, skipping this repository'
-    );
+        '  callback function returned empty list, skipping this repository');
     return;
   }
 
@@ -82,24 +74,22 @@ async function processRepository(
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-      '  cannot get sha of latest commit, skipping this repository:',
-      err.toString()
-    );
+        '  cannot get sha of latest commit, skipping this repository:',
+        err.toString());
     return;
   }
-  let latestSha = latestCommit['sha'];
+  const latestSha = latestCommit['sha'];
 
   try {
     await repository.createBranch(branch, latestSha);
   } catch (err) {
     console.warn(
-      `  cannot create branch ${branch}, skipping this repository:`,
-      err.toString()
-    );
+        `  cannot create branch ${branch}, skipping this repository:`,
+        err.toString());
     return;
   }
 
-  for (let filePath of filesToUpdate) {
+  for (const filePath of filesToUpdate) {
     let file;
     try {
       file = await repository.getFile(filePath);
@@ -110,42 +100,33 @@ async function processRepository(
       console.warn('  requested path is not file, skipping this repository');
       return;
     }
-    let oldFileSha = file === undefined ? undefined : file['sha'];
+    const oldFileSha = file === undefined ? undefined : file['sha'];
 
     let patchedContent;
     try {
       patchedContent = await readFile(path.join(tmpDir.path, filePath));
     } catch (err) {
       console.warn(
-        `  cannot read file ${filePath}, skipping this repository:`,
-        err.toString()
-      );
+          `  cannot read file ${filePath}, skipping this repository:`,
+          err.toString());
       return;
     }
-    let encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
+    const encodedPatchedContent =
+        Buffer.from(patchedContent).toString('base64');
 
     try {
       if (oldFileSha === undefined) {
         await repository.createFileInBranch(
-          branch,
-          filePath,
-          message,
-          encodedPatchedContent
-        );
+            branch, filePath, message, encodedPatchedContent);
       } else {
         await repository.updateFileInBranch(
-          branch,
-          filePath,
-          message,
-          encodedPatchedContent,
-          oldFileSha
-        );
+            branch, filePath, message, encodedPatchedContent, oldFileSha);
       }
     } catch (err) {
       console.warn(
-        `  cannot commit file ${filePath} to branch ${branch}, skipping this repository:`,
-        err.toString()
-      );
+          `  cannot commit file ${filePath} to branch ${
+              branch}, skipping this repository:`,
+          err.toString());
       return;
     }
   }
@@ -155,22 +136,22 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-      `  cannot create pull request for branch ${branch}! Branch is still there.`,
-      err.toString()
-    );
+        `  cannot create pull request for branch ${
+            branch}! Branch is still there.`,
+        err.toString());
     return;
   }
-  let pullRequestNumber = pullRequest['number'];
-  let pullRequestUrl = pullRequest['html_url'];
+  const pullRequestNumber = pullRequest['number'];
+  const pullRequestUrl = pullRequest['html_url'];
 
   if (reviewers.length > 0) {
     try {
       await repository.requestReview(pullRequestNumber, reviewers);
     } catch (err) {
       console.warn(
-        `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
-        err.toString()
-      );
+          `  cannot request review for pull request #${
+              pullRequestNumber}! Pull request is still there.`,
+          err.toString());
       return;
     }
   }
@@ -178,7 +159,8 @@ async function processRepository(
   console.log(`  success! ${pullRequestUrl}`);
 }
 
-/** Updates files in the cloned repository and sends a pull request with
+/**
+ * Updates files in the cloned repository and sends a pull request with
  * this change.
  * @param {Object} options Options object, should contain the following fields:
  * @param {string} option.config Path to a configuration file. Will use default
@@ -193,45 +175,41 @@ async function processRepository(
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 export async function updateRepo(options) {
-  let updateCallback = options['updateCallback'];
+  const updateCallback = options['updateCallback'];
   if (updateCallback === undefined) {
     console.error('updateRepo: updateCallback is required');
     return;
   }
 
-  let branch = options['branch'];
+  const branch = options['branch'];
   if (branch === undefined) {
     console.error('updateRepo: branch is required');
     return;
   }
 
-  let message = options['message'];
+  const message = options['message'];
   if (message === undefined) {
     console.error('updateRepo: message is required');
     return;
   }
 
-  let comment = options['comment'] || '';
-  let reviewers = options['reviewers'] || [];
+  const comment = options['comment'] || '';
+  const reviewers = options['reviewers'] || [];
 
-  let github = new GitHub(options.config);
+  const github = new GitHub(options.config);
   await github.init();
 
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-      repository,
-      updateCallback,
-      branch,
-      message,
-      comment,
-      reviewers
-    );
+        repository, updateCallback, branch, message, comment, reviewers);
   }
 }
 
-/** Callback async function that performs required change to the cloned repository.
+/**
+ * Callback async function that performs required change to the cloned
+ * repository.
  * @callback updateCallback
  * @param {string} path Path to a temporary directory where the repository is
  * cloned.

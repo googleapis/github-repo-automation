@@ -12,7 +12,7 @@ const pkg = require('../../package.json');
 updateNotifier({pkg}).notify();
 
 const cli = meow(
-  `
+    `
 	Usage
 	  $ repo <command>
 
@@ -22,31 +22,30 @@ const cli = meow(
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
 `,
-  {
-    flags: {
-      branch: {
-        type: 'string',
-        alias: 'b',
+    {
+      flags: {
+        branch: {
+          type: 'string',
+          alias: 'b',
+        },
+        message: {
+          type: 'string',
+          alias: 'm',
+        },
+        comment: {
+          type: 'string',
+          alias: 'c',
+        },
+        reviewers: {
+          type: 'string',
+          alias: 'r',
+        },
+        silent: {
+          type: 'boolean',
+          alias: 'q',
+        },
       },
-      message: {
-        type: 'string',
-        alias: 'm',
-      },
-      comment: {
-        type: 'string',
-        alias: 'c',
-      },
-      reviewers: {
-        type: 'string',
-        alias: 'r',
-      },
-      silent: {
-        type: 'boolean',
-        alias: 'q',
-      },
-    },
-  }
-);
+    });
 
 if (cli.input.length < 1) {
   cli.showHelp(-1);

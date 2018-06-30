@@ -24,62 +24,60 @@ import axios from 'axios';
 import {GitHub} from './lib/github';
 import {question} from './lib/question';
 
-/** Downloads and prints patch file (well, actually, any file) to a console.
- * @param {string} patch_url URL to download.
+/**
+ * Downloads and prints patch file (well, actually, any file) to a console.
+ * @param {string} patchUrl URL to download.
  */
-async function showPatch(patch_url) {
-  let axiosResult = await axios.get(patch_url);
-  let patch = axiosResult.data;
+async function showPatch(patchUrl) {
+  const axiosResult = await axios.get(patchUrl);
+  const patch = axiosResult.data;
   console.log(patch);
 }
 
-/** Process one pull request: ask the user to approve, show patch, or skip it.
+/**
+ * Process one pull request: ask the user to approve, show patch, or skip it.
  * @param {GitHubRepository} repository GitHub repository for this pull request.
  * @param {Object} pr Pull request object, as returned by GitHub API.
  */
 async function processPullRequest(repository, pr) {
-  let title = pr['title'];
-  let html_url = pr['html_url'];
-  let patch_url = pr['patch_url'];
-  let author = pr['user']['login'];
-  let baseSha = pr['base']['sha'];
-  let ref = pr['head']['ref'];
+  const title = pr['title'];
+  const htmlUrl = pr['html_url'];
+  const patchUrl = pr['patch_url'];
+  const author = pr['user']['login'];
+  const baseSha = pr['base']['sha'];
+  const ref = pr['head']['ref'];
 
-  console.log(`  [${author}] ${html_url}: ${title}`);
+  console.log(`  [${author}] ${htmlUrl}: ${title}`);
 
   let latestCommit;
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-      '    cannot get sha of latest commit to master, skipping:',
-      err.toString()
-    );
+        '    cannot get sha of latest commit to master, skipping:',
+        err.toString());
     return;
   }
-  let latestMasterSha = latestCommit['sha'];
+  const latestMasterSha = latestCommit['sha'];
 
   if (latestMasterSha !== baseSha) {
     for (;;) {
-      let response = await question(
-        'PR branch is out of date. What to do? [u]pdate branch, show [p]atch, [s]kip: '
-      );
+      const response = await question(
+          'PR branch is out of date. What to do? [u]pdate branch, show [p]atch, [s]kip: ');
       if (response === 'u') {
         try {
           await repository.updateBranch(ref, 'master');
           console.log(
-            'You might not be able to merge immediately because CI tasks will take some time.'
-          );
+              'You might not be able to merge immediately because CI tasks will take some time.');
           break;
         } catch (err) {
           console.warn(
-            `    cannot update branch for PR ${html_url}, skipping:`,
-            err.toString()
-          );
+              `    cannot update branch for PR ${htmlUrl}, skipping:`,
+              err.toString());
           return;
         }
       } else if (response === 'p') {
-        await showPatch(patch_url);
+        await showPatch(patchUrl);
         continue;
       } else if (response === 's') {
         console.log('   skipped');
@@ -89,18 +87,15 @@ async function processPullRequest(repository, pr) {
   }
 
   for (;;) {
-    let response = await question(
-      'What to do? [a]pprove and merge, show [p]atch, [s]kip: '
-    );
+    const response = await question(
+        'What to do? [a]pprove and merge, show [p]atch, [s]kip: ');
     if (response === 'a') {
       try {
         await repository.approvePullRequest(pr);
         console.log('    approved!');
       } catch (err) {
         console.warn(
-          '    error trying to approve PR ${html_url}:',
-          err.toString()
-        );
+            '    error trying to approve PR ${htmlUrl}:', err.toString());
         return;
       }
       try {
@@ -108,14 +103,12 @@ async function processPullRequest(repository, pr) {
         console.log('    merged!');
       } catch (err) {
         console.warn(
-          '    error trying to merge PR ${html_url}:',
-          err.toString()
-        );
+            '    error trying to merge PR ${htmlUrl}:', err.toString());
         return;
       }
       break;
     } else if (response === 'p') {
-      await showPatch(patch_url);
+      await showPatch(patchUrl);
       continue;
     } else if (response === 's') {
       console.log('   skipped');
@@ -124,7 +117,8 @@ async function processPullRequest(repository, pr) {
   }
 }
 
-/** Main function. Iterates all open pull request in the repositories of the
+/**
+ * Main function. Iterates all open pull request in the repositories of the
  * given organization matching given filters. Organization, filters, and GitHub
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
@@ -133,17 +127,16 @@ export async function main(options) {
   if (!options.regex) {
     console.log(`Usage: repo approve [regex]`);
     console.log(
-      'Will show all open PRs with title matching regex and allow to approve them.'
-    );
+        'Will show all open PRs with title matching regex and allow to approve them.');
     return;
   }
 
-  let github = new GitHub();
+  const github = new GitHub();
   await github.init();
 
-  let regex = new RegExp(options.regex || '.*');
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const regex = new RegExp(options.regex || '.*');
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.name);
     let prs;
     try {
@@ -153,8 +146,8 @@ export async function main(options) {
       continue;
     }
 
-    for (let pr of prs) {
-      let title = pr['title'];
+    for (const pr of prs) {
+      const title = pr['title'];
       if (title.match(regex)) {
         await processPullRequest(repository, pr);
       }

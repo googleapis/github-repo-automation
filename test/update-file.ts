@@ -20,10 +20,10 @@ import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const FakeGitHub = require('./fakes/fake-github.js');
+const fakeGitHub = require('./fakes/fake-github.js');
 const updateFile = proxyquire('../src/lib/update-file.js', {
-  './github.js': FakeGitHub,
-});
+                     './github.js': {GitHub: fakeGitHub},
+                   }).updateFile;
 
 async function suppressConsole(func) {
   console.log = () => {};
@@ -36,27 +36,24 @@ async function suppressConsole(func) {
 }
 
 describe('UpdateFile', () => {
-  let path = '/path/to/file.txt';
-  let originalContent = 'content matches';
-  let badContent = 'content does not match';
-  let changedContent = 'changed content';
-  let branch = 'test-branch';
-  let message = 'test-message';
-  let comment = 'test-comment';
-  let reviewers = ['test-reviewer-1', 'test-reviewer-2'];
+  const path = '/path/to/file.txt';
+  const originalContent = 'content matches';
+  const badContent = 'content does not match';
+  const changedContent = 'changed content';
+  const branch = 'test-branch';
+  const message = 'test-message';
+  const comment = 'test-comment';
+  const reviewers = ['test-reviewer-1', 'test-reviewer-2'];
 
   beforeEach(() => {
-    FakeGitHub.repository.reset();
-    FakeGitHub.repository.testSetFile(
-      'master',
-      path,
-      Buffer.from(originalContent).toString('base64')
-    );
+    fakeGitHub.repository.reset();
+    fakeGitHub.repository.testSetFile(
+        'master', path, Buffer.from(originalContent).toString('base64'));
   });
 
   afterEach(() => {});
 
-  let attemptUpdate = async () => {
+  const attemptUpdate = async () => {
     await suppressConsole(async () => {
       await updateFile({
         path,
@@ -77,14 +74,12 @@ describe('UpdateFile', () => {
   it('should update one file if content matches', async () => {
     await attemptUpdate();
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(originalContent).toString('base64'));
     assert.equal(
-      FakeGitHub.repository.branches[branch][path]['content'],
-      Buffer.from(changedContent).toString('base64')
-    );
-    assert.deepEqual(FakeGitHub.repository.prs[1], {
+        fakeGitHub.repository.branches[branch][path]['content'],
+        Buffer.from(changedContent).toString('base64'));
+    assert.deepEqual(fakeGitHub.repository.prs[1], {
       number: 1,
       branch,
       message,
@@ -95,7 +90,7 @@ describe('UpdateFile', () => {
   });
 
   it('should not update a file if it is not a file', async () => {
-    FakeGitHub.repository.branches['master'][path]['type'] = 'not-a-file';
+    fakeGitHub.repository.branches['master'][path]['type'] = 'not-a-file';
     try {
       await attemptUpdate();
       assert(false);
@@ -103,18 +98,14 @@ describe('UpdateFile', () => {
       // ignore
     }
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(originalContent).toString('base64'));
+    assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not update a file if content does not match', async () => {
-    FakeGitHub.repository.testSetFile(
-      'master',
-      path,
-      Buffer.from(badContent).toString('base64')
-    );
+    fakeGitHub.repository.testSetFile(
+        'master', path, Buffer.from(badContent).toString('base64'));
     try {
       await attemptUpdate();
       assert(false);
@@ -122,28 +113,26 @@ describe('UpdateFile', () => {
       // ignore
     }
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(badContent).toString('base64')
-    );
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(badContent).toString('base64'));
+    assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not update a file if it does not exist', async () => {
-    delete FakeGitHub.repository.branches['master'][path];
+    delete fakeGitHub.repository.branches['master'][path];
     try {
       await attemptUpdate();
       assert(false);
     } catch (err) {
       // ignore
     }
-    assert.equal(FakeGitHub.repository.branches['master'][path], undefined);
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+    assert.equal(fakeGitHub.repository.branches['master'][path], undefined);
+    assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not update a file if cannot get master latest sha', async () => {
-    let stub = sinon
-      .stub(FakeGitHub.repository, 'getLatestCommitToMaster')
-      .returns(Promise.reject(new Error('Random error')));
+    const stub = sinon.stub(fakeGitHub.repository, 'getLatestCommitToMaster')
+                     .returns(Promise.reject(new Error('Random error')));
     try {
       await attemptUpdate();
       assert(false);
@@ -152,16 +141,14 @@ describe('UpdateFile', () => {
     }
     stub.restore();
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(originalContent).toString('base64'));
+    assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
 
   it('should not update a file if cannot create branch', async () => {
-    let stub = sinon
-      .stub(FakeGitHub.repository, 'createBranch')
-      .returns(Promise.reject(new Error('Random error')));
+    const stub = sinon.stub(fakeGitHub.repository, 'createBranch')
+                     .returns(Promise.reject(new Error('Random error')));
     try {
       await attemptUpdate();
       assert(false);
@@ -170,82 +157,75 @@ describe('UpdateFile', () => {
     }
     stub.restore();
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(FakeGitHub.repository.branches[branch], undefined);
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(originalContent).toString('base64'));
+    assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
 
-  it('should not send pull request if cannot update file in branch', async () => {
-    let stub = sinon
-      .stub(FakeGitHub.repository, 'updateFileInBranch')
-      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    stub.restore();
-    assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(FakeGitHub.repository.prs[1], undefined);
-  });
+  it('should not send pull request if cannot update file in branch',
+     async () => {
+       const stub = sinon.stub(fakeGitHub.repository, 'updateFileInBranch')
+                        .returns(Promise.reject(new Error('Random error')));
+       try {
+         await attemptUpdate();
+         assert(false);
+       } catch (err) {
+         // ignore
+       }
+       stub.restore();
+       assert.equal(
+           fakeGitHub.repository.branches['master'][path]['content'],
+           Buffer.from(originalContent).toString('base64'));
+       assert.equal(
+           fakeGitHub.repository.branches[branch][path]['content'],
+           Buffer.from(originalContent).toString('base64'));
+       assert.equal(fakeGitHub.repository.prs[1], undefined);
+     });
 
-  it('should still update a file in branch if cannot create pull request', async () => {
-    let stub = sinon
-      .stub(FakeGitHub.repository, 'createPullRequest')
-      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    stub.restore();
-    assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][path]['content'],
-      Buffer.from(changedContent).toString('base64')
-    );
-  });
+  it('should still update a file in branch if cannot create pull request',
+     async () => {
+       const stub = sinon.stub(fakeGitHub.repository, 'createPullRequest')
+                        .returns(Promise.reject(new Error('Random error')));
+       try {
+         await attemptUpdate();
+         assert(false);
+       } catch (err) {
+         // ignore
+       }
+       stub.restore();
+       assert.equal(
+           fakeGitHub.repository.branches['master'][path]['content'],
+           Buffer.from(originalContent).toString('base64'));
+       assert.equal(
+           fakeGitHub.repository.branches[branch][path]['content'],
+           Buffer.from(changedContent).toString('base64'));
+     });
 
-  it('should still update a file in branch and create pull request if cannot request review', async () => {
-    let stub = sinon
-      .stub(FakeGitHub.repository, 'requestReview')
-      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-    assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
-    assert.equal(
-      FakeGitHub.repository.branches[branch][path]['content'],
-      Buffer.from(changedContent).toString('base64')
-    );
-    assert.deepEqual(FakeGitHub.repository.prs[1], {
-      number: 1,
-      branch,
-      message,
-      comment,
-      html_url: `http://example.com/pulls/1`,
-    });
-    stub.restore();
-  });
+  it('should still update a file in branch and create pull request if cannot request review',
+     async () => {
+       const stub = sinon.stub(fakeGitHub.repository, 'requestReview')
+                        .returns(Promise.reject(new Error('Random error')));
+       try {
+         await attemptUpdate();
+         assert(false);
+       } catch (err) {
+         // ignore
+       }
+       assert.equal(
+           fakeGitHub.repository.branches['master'][path]['content'],
+           Buffer.from(originalContent).toString('base64'));
+       assert.equal(
+           fakeGitHub.repository.branches[branch][path]['content'],
+           Buffer.from(changedContent).toString('base64'));
+       assert.deepEqual(fakeGitHub.repository.prs[1], {
+         number: 1,
+         branch,
+         message,
+         comment,
+         html_url: `http://example.com/pulls/1`,
+       });
+       stub.restore();
+     });
 
   it('should require path parameter', async () => {
     try {
@@ -368,14 +348,12 @@ describe('UpdateFile', () => {
       });
     });
     assert.equal(
-      FakeGitHub.repository.branches['master'][path]['content'],
-      Buffer.from(originalContent).toString('base64')
-    );
+        fakeGitHub.repository.branches['master'][path]['content'],
+        Buffer.from(originalContent).toString('base64'));
     assert.equal(
-      FakeGitHub.repository.branches[branch][path]['content'],
-      Buffer.from(changedContent).toString('base64')
-    );
-    assert.deepEqual(FakeGitHub.repository.prs[1], {
+        fakeGitHub.repository.branches[branch][path]['content'],
+        Buffer.from(changedContent).toString('base64'));
+    assert.deepEqual(fakeGitHub.repository.prs[1], {
       number: 1,
       branch,
       message,

@@ -16,16 +16,23 @@
  * @fileoverview Fake tmp-promise implementation for tests.
  */
 
+let dirName = '/tmp/fake-tmp-dir';
+
+function setDirName(dir) {
+  dirName = dir;
+}
+
 function getDirName() {
-  return '/tmp/fake-tmp-dir';
+  return dirName;
 }
 
 async function dir() {
   return new Promise(resolve => {
-    let dir = getDirName();
+    const dir = getDirName();
     resolve({path: dir});
   });
 }
 
+module.exports.setDirName = setDirName;
 module.exports.getDirName = getDirName;
 module.exports.dir = dir;

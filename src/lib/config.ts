@@ -23,13 +23,15 @@ import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
 import * as yaml from 'js-yaml';
 
-/** Configuration object. Contains GitHub token, organization and repository
+/**
+ * Configuration object. Contains GitHub token, organization and repository
  * filter regex.
  */
 export class Config {
   filename: string;
   _config;
-  /** Constructs a configuration object.
+  /**
+   * Constructs a configuration object.
    * @constructor
    * @param {string} configFilename Path to a configuration file. If not given,
    * uses `./config.yaml`.
@@ -41,23 +43,22 @@ export class Config {
     }
   }
 
-  /** Reads the configuration.
+  /**
+   * Reads the configuration.
    */
   async init() {
     try {
       const yamlContent = await readFile(this.filename);
       this.config = yaml.load(yamlContent as {} as string);
     } catch (err) {
-      console.error(
-        `Cannot read configuration file ${
-          this.filename
-        }. Have you created it? Use config.yaml.default as a sample.`
-      );
+      console.error(`Cannot read configuration file ${
+          this.filename}. Have you created it? Use config.yaml.default as a sample.`);
       throw new Error('Configuration file is not found');
     }
   }
 
-  /** Get option value.
+  /**
+   * Get option value.
    * @param {string} option Configuration option.
    * @returns {string|Object} Requested value.
    */
@@ -65,14 +66,16 @@ export class Config {
     return this._config[option];
   }
 
-  /** Get configuration object.
+  /**
+   * Get configuration object.
    * @returns {Object} Parsed configuration yaml.
    */
   get config() {
     return this._config;
   }
 
-  /** Assigns configuration object.
+  /**
+   * Assigns configuration object.
    * @param {Object} config Configuration object.
    */
   set config(config) {
