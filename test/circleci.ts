@@ -24,13 +24,15 @@ import nock from 'nock';
 import {Config} from '../src/lib/config';
 
 const testConfig = {
-  circleciToken: 'test-circleci-token',
+  auth: {
+    circleciToken: 'test-circleci-token',
+  },
   organization: 'test-organization',
   repoNameRegex: 'matches'
 } as Config;
 
 describe('CircleCI', () => {
-  const token = testConfig.circleciToken;
+  const token = testConfig.auth.circleciToken;
   const organization = testConfig.organization;
 
   it('should initialize and read configuration', async () => {

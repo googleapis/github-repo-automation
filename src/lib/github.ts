@@ -32,7 +32,7 @@ export class GitHub {
   constructor(config: Config) {
     this.config = config;
     const octokit = new OctoKit();
-    octokit.authenticate({type: 'token', token: config.githubToken});
+    octokit.authenticate({type: 'token', token: config.auth.githubToken});
     this.organization = config.organization;
     this.octokit = octokit;
   }

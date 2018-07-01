@@ -23,7 +23,9 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const testConfig = {
-  githubToken: 'test-github-token',
+  auth: {
+    githubToken: 'test-github-token',
+  },
   organization: 'test-organization',
   repoNameRegex: 'matches'
 };
@@ -81,7 +83,7 @@ describe('GitHub', () => {
     const spy = sinon.spy(OctokitStub.prototype, 'authenticate');
     const expectedAuthParam = {
       type: 'token',
-      token: testConfig.githubToken,
+      token: testConfig.auth.githubToken,
     };
     const github = new GitHub(testConfig);
     assert(spy.calledOnce);

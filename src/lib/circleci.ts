@@ -33,7 +33,7 @@ export class CircleCI {
    * @param {string} configFileName Path to configuration yaml file.
    */
   constructor(config: Config) {
-    this.circleToken = config.circleciToken;
+    this.circleToken = config.auth.circleciToken;
     this.config = config;
   }
 
