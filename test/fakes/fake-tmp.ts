@@ -18,21 +18,17 @@
 
 let dirName = '/tmp/fake-tmp-dir';
 
-function setDirName(dir: string) {
+export function setDirName(dir: string) {
   dirName = dir;
 }
 
-function getDirName() {
+export function getDirName() {
   return dirName;
 }
 
-async function dir() {
+export async function dir() {
   return new Promise(resolve => {
     const dir = getDirName();
     resolve({path: dir});
   });
 }
-
-module.exports.setDirName = setDirName;
-module.exports.getDirName = getDirName;
-module.exports.dir = dir;

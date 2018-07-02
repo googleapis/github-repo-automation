@@ -23,68 +23,36 @@ import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
 import * as yaml from 'js-yaml';
 
-/**
- * Configuration object. Contains GitHub token, organization and repository
- * filter regex.
- */
-export class Config {
-  filename: string;
-  _config?: ConfigSettings;
+const cache = new Map<string, Config>();
 
-  /**
-   * Constructs a configuration object.
-   * @constructor
-   * @param {string} configFilename Path to a configuration file. If not given,
-   * uses `./config.yaml`.
-   */
-  constructor(configFilename?: string) {
-    this.filename = configFilename || './config.yaml';
-    if (process.env.REPO_CONFIG_PATH) {
-      this.filename = process.env.REPO_CONFIG_PATH;
-    }
+export async function getConfig(configFilename?: string) {
+  let filename: string;
+  if (configFilename) {
+    filename = configFilename;
+  } else if (process.env.REPO_CONFIG_PATH) {
+    filename = process.env.REPO_CONFIG_PATH;
+  } else {
+    filename = './config.yaml';
   }
 
-  /**
-   * Reads the configuration.
-   */
-  async init() {
-    try {
-      const yamlContent = await readFile(this.filename);
-      this.config = yaml.load(yamlContent as {} as string) as ConfigSettings;
-    } catch (err) {
-      console.error(`Cannot read configuration file ${
-          this.filename}. Have you created it? Use config.yaml.default as a sample.`);
-      throw new Error('Configuration file is not found');
-    }
+  if (cache.has(filename)) {
+    return cache.get(filename)!;
   }
 
-  /**
-   * Get option value.
-   * @param {string} option Configuration option.
-   * @returns {string|Object} Requested value.
-   */
-  get(option: string) {
-    return this._config![option];
-  }
-
-  /**
-   * Get configuration object.
-   * @returns {Object} Parsed configuration yaml.
-   */
-  get config() {
-    return this._config;
-  }
-
-  /**
-   * Assigns configuration object.
-   * @param {Object} config Configuration object.
-   */
-  set config(config) {
-    this._config = config;
+  try {
+    const yamlContent = await readFile(filename, {encoding: 'utf8'});
+    const config = yaml.safeLoad(yamlContent) as Config;
+    cache.set(filename, config);
+    return config;
+  } catch (err) {
+    console.error(`Cannot read configuration file ${
+        filename}. Have you created it? Use config.yaml.default as a sample.`);
+    throw new Error('Configuration file is not found');
   }
 }
 
-export interface ConfigSettings {
-  // tslint:disable-next-line no-any
-  [index: string]: any;
+export interface Config {
+  auth: {githubToken: string; circleciToken: string;};
+  organization: string;
+  repoNameRegex: string;
 }

@@ -19,11 +19,12 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const fakeGitHub = require('./fakes/fake-github.js');
-const updateFileInBranch = proxyquire('../src/lib/update-file-in-branch', {
-                             './github': {GitHub: fakeGitHub},
-                           }).updateFileInBranch;
+const rejects = require('assert-rejects');
+import * as fakeGitHub from './fakes/fake-github';
+const {updateFileInBranch} = proxyquire('../src/lib/update-file-in-branch', {
+  './github': {GitHub: fakeGitHub.FakeGitHub},
+  './config': {getConfig: () => Promise.resolve({})}
+});
 
 async function suppressConsole(func: Function) {
   console.log = () => {};
@@ -76,12 +77,7 @@ describe('UpdateFileInBranch', () => {
 
   it('should not update a file if it is not a file', async () => {
     fakeGitHub.repository.branches[branch][path]['type'] = 'not-a-file';
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     assert.equal(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(originalContent).toString('base64'));
@@ -90,12 +86,7 @@ describe('UpdateFileInBranch', () => {
   it('should not update a file if content does not match', async () => {
     fakeGitHub.repository.testSetFile(
         branch, path, Buffer.from(badContent).toString('base64'));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     assert.equal(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(badContent).toString('base64'));
@@ -103,24 +94,14 @@ describe('UpdateFileInBranch', () => {
 
   it('should not update a file if it does not exist', async () => {
     delete fakeGitHub.repository.branches[branch][path];
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     assert.equal(fakeGitHub.repository.branches[branch][path], undefined);
   });
 
   it('should handle error if cannot update file in branch', async () => {
     const stub = sinon.stub(fakeGitHub.repository, 'updateFileInBranch')
                      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     stub.restore();
     assert.equal(
         fakeGitHub.repository.branches[branch][path]['content'],
@@ -128,77 +109,61 @@ describe('UpdateFileInBranch', () => {
   });
 
   it('should require path parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateFileInBranch({
-          patchFunction: (str: string) => {
-            if (str === originalContent) {
-              return changedContent;
-            }
-            return;
-          },
-          branch,
-          message,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await suppressConsole(async () => {
+      await rejects(
+          updateFileInBranch({
+            patchFunction: (str: string) => {
+              if (str === originalContent) {
+                return changedContent;
+              }
+              return;
+            },
+            branch,
+            message,
+          }),
+          /path is required/);
+    });
   });
 
   it('should require patchFunction parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateFileInBranch({
-          path,
-          branch,
-          message,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await suppressConsole(async () => {
+      await rejects(
+          updateFileInBranch({path, branch, message}),
+          /patchFunction is required/);
+    });
   });
 
   it('should require branch parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateFileInBranch({
-          path,
-          patchFunction: (str: string) => {
-            if (str === originalContent) {
-              return changedContent;
-            }
-            return;
-          },
-          message,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-  });
+    await suppressConsole(async () => {
+      await rejects(
+          updateFileInBranch({
+            path,
+            patchFunction: (str: string) => {
+              if (str === originalContent) {
+                return changedContent;
+              }
+              return;
+            },
+            message,
+          }),
+          /branch is required/);
+    });
 
-  it('should require message parameter', async () => {
-    try {
+    it('should require message parameter', async () => {
       await suppressConsole(async () => {
-        await updateFileInBranch({
-          path,
-          patchFunction: (str: string) => {
-            if (str === originalContent) {
-              return changedContent;
-            }
-            return;
-          },
-          branch,
-        });
+        await rejects(
+            updateFileInBranch({
+              path,
+              patchFunction: (str: string) => {
+                if (str === originalContent) {
+                  return changedContent;
+                }
+                return;
+              },
+              branch,
+            }),
+            /message is requiretd/);
       });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    });
   });
 });

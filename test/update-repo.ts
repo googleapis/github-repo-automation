@@ -21,22 +21,24 @@ import fs from 'fs';
 import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+const rejects = require('assert-rejects');
 
-const fakeGitHub = require('./fakes/fake-github');
-const fakeTmp = require('./fakes/fake-tmp');
+import * as fakeGitHub from './fakes/fake-github';
+import * as fakeTmp from './fakes/fake-tmp';
 const tmp = require('tmp-promise');
 
 const execCallback = sinon.spy();
-const updateRepo = proxyquire('../src/lib/update-repo.js', {
-                     './github': {GitHub: fakeGitHub},
-                     'tmp-promise': fakeTmp,
-                     child_process: {
-                       exec: (command: string, callback: Function) => {
-                         execCallback(command);
-                         callback();
-                       },
-                     },
-                   }).updateRepo;
+const {updateRepo} = proxyquire('../src/lib/update-repo', {
+  './github': {GitHub: fakeGitHub.FakeGitHub},
+  './config': {getConfig: () => Promise.resolve({})},
+  'tmp-promise': fakeTmp,
+  child_process: {
+    exec: (command: string, callback: Function) => {
+      execCallback(command);
+      callback();
+    },
+  },
+});
 
 async function suppressConsole(func: Function) {
   console.log = () => {};
@@ -122,35 +124,20 @@ describe('UpdateRepo', () => {
   it('should not update a file if it is not a file', async () => {
     fakeGitHub.repository.branches['master'][pathExisting]['type'] =
         'not-a-file';
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     assert.equal(
         fakeGitHub.repository.branches['master'][pathExisting]['content'],
         Buffer.from(originalContent).toString('base64'));
   });
 
   it('should not update a file if it cannot read it', async () => {
-    try {
-      await attemptUpdate([pathFailed]);
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate([pathFailed]);
   });
 
   it('should not update a file if cannot get master latest sha', async () => {
     const stub = sinon.stub(fakeGitHub.repository, 'getLatestCommitToMaster')
                      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     stub.restore();
     assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
@@ -158,12 +145,7 @@ describe('UpdateRepo', () => {
   it('should not update a file if cannot create branch', async () => {
     const stub = sinon.stub(fakeGitHub.repository, 'createBranch')
                      .returns(Promise.reject(new Error('Random error')));
-    try {
-      await attemptUpdate();
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await attemptUpdate();
     stub.restore();
     assert.equal(fakeGitHub.repository.branches[branch], undefined);
   });
@@ -171,13 +153,8 @@ describe('UpdateRepo', () => {
   it('should not send pull request if cannot update file in branch',
      async () => {
        const stub = sinon.stub(fakeGitHub.repository, 'updateFileInBranch')
-                        .returns(Promise.reject(new Error('Random error')));
-       try {
-         await attemptUpdate();
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+                        .rejects('Random error');
+       await attemptUpdate();
        stub.restore();
        assert.equal(fakeGitHub.repository.prs[1], undefined);
      });
@@ -185,13 +162,8 @@ describe('UpdateRepo', () => {
   it('should still update a file in branch if cannot create pull request',
      async () => {
        const stub = sinon.stub(fakeGitHub.repository, 'createPullRequest')
-                        .returns(Promise.reject(new Error('Random error')));
-       try {
-         await attemptUpdate();
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+                        .rejects('Random error');
+       await attemptUpdate();
        stub.restore();
        assert.equal(
            fakeGitHub.repository.branches['master'][pathExisting]['content'],
@@ -207,13 +179,8 @@ describe('UpdateRepo', () => {
   it('should still update a file in branch and create pull request if cannot request review',
      async () => {
        const stub = sinon.stub(fakeGitHub.repository, 'requestReview')
-                        .returns(Promise.reject(new Error('Random error')));
-       try {
-         await attemptUpdate();
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+                        .rejects('Random error');
+       await attemptUpdate();
        assert.equal(
            fakeGitHub.repository.branches['master'][pathExisting]['content'],
            Buffer.from(originalContent).toString('base64'));
@@ -234,73 +201,46 @@ describe('UpdateRepo', () => {
      });
 
   it('should require updateCallback parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          branch,
-          message,
-          comment,
-          reviewers,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await suppressConsole(async () => {
+      await rejects(
+          updateRepo({
+            branch,
+            message,
+            comment,
+            reviewers,
+          }),
+          /updateCallback is required/);
+    });
   });
 
   it('should require branch parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve();
-          },
-          message,
-          comment,
-          reviewers,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await suppressConsole(async () => {
+      await rejects(
+          updateRepo({
+            updateCallback: () => {
+              return Promise.resolve();
+            },
+            message,
+            comment,
+            reviewers,
+          }),
+          /branch is required/);
+    });
   });
 
   it('should require message parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return;
-          },
-          branch,
-          comment,
-          reviewers,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
-  });
-
-  it('should require comment parameter', async () => {
-    try {
-      await suppressConsole(async () => {
-        await updateRepo({
-          updateCallback: () => {
-            return Promise.resolve();
-          },
-          branch,
-          message,
-          reviewers,
-        });
-      });
-      assert(false);
-    } catch (err) {
-      // ignore
-    }
+    await suppressConsole(async () => {
+      await rejects(
+          updateRepo({
+            updateCallback: () => {
+              return;
+            },
+            branch,
+            comment,
+            reviewers,
+          }),
+          /message is required/);
+    });
   });
 
   it('should not send review if no reviewers', async () => {
@@ -334,61 +274,46 @@ describe('UpdateRepo', () => {
 
   it('should not perform update if updateCallback returned undefined value',
      async () => {
-       try {
-         await suppressConsole(async () => {
-           await updateRepo({
-             updateCallback: () => {
-               return Promise.resolve(undefined);
-             },
-             branch,
-             message,
-             comment,
-           });
+       suppressConsole(async () => {
+         await updateRepo({
+           updateCallback: () => {
+             return Promise.resolve(undefined);
+           },
+           branch,
+           message,
+           comment,
          });
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+       });
        assert.equal(fakeGitHub.repository.branches[branch], undefined);
      });
 
   it('should not perform update if updateCallback returned empty list',
      async () => {
-       try {
-         await suppressConsole(async () => {
-           await updateRepo({
-             updateCallback: () => {
-               return Promise.resolve([]);
-             },
-             branch,
-             message,
-             comment,
-           });
+       await suppressConsole(async () => {
+         await updateRepo({
+           updateCallback: () => {
+             return Promise.resolve([]);
+           },
+           branch,
+           message,
+           comment,
          });
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+       });
        assert.equal(fakeGitHub.repository.branches[branch], undefined);
      });
 
   it('should not perform update if updateCallback promise was rejected',
      async () => {
-       try {
-         await suppressConsole(async () => {
-           await updateRepo({
-             updateCallback: () => {
-               return Promise.reject();
-             },
-             branch,
-             message,
-             comment,
-           });
+       await suppressConsole(async () => {
+         await updateRepo({
+           updateCallback: () => {
+             return Promise.reject();
+           },
+           branch,
+           message,
+           comment,
          });
-         assert(false);
-       } catch (err) {
-         // ignore
-       }
+       });
        assert.equal(fakeGitHub.repository.branches[branch], undefined);
      });
 });

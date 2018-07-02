@@ -17,12 +17,13 @@
  */
 
 import crypto from 'crypto';
+import {Config} from '../../src/lib/config';
 
 function hash(input: string) {
   return crypto.createHash('md5').update(input).digest('hex');
 }
 
-class FakeGitHubRepository {
+export class FakeGitHubRepository {
   // tslint:disable-next-line no-any
   branches: any;
   // tslint:disable-next-line no-any
@@ -150,18 +151,15 @@ class FakeGitHubRepository {
   }
 }
 
-const repository = new FakeGitHubRepository('test-repository');
+export const repository = new FakeGitHubRepository('test-repository');
 
-class FakeGitHub {
-  async init() {
-    return Promise.resolve();
+export class FakeGitHub {
+  protected config: Config;
+  constructor(config: Config) {
+    this.config = config;
   }
 
   async getRepositories() {
     return [repository];
   }
 }
-
-module.exports = FakeGitHub;
-module.exports.FakeGitHubRepository = FakeGitHubRepository;
-module.exports.repository = repository;

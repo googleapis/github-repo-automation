@@ -24,6 +24,7 @@ import axios from 'axios';
 import {GitHub, GitHubRepository, PullRequest} from './lib/github';
 import {question} from './lib/question';
 import meow from 'meow';
+import {getConfig} from './lib/config';
 
 /**
  * Downloads and prints patch file (well, actually, any file) to a console.
@@ -133,9 +134,8 @@ export async function main(cli: meow.Result) {
     return;
   }
 
-  const github = new GitHub();
-  await github.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
   const regex = new RegExp(cli.input[1] || '.*');
   const repos = await github.getRepositories();
   for (const repository of repos) {
