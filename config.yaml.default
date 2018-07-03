@@ -15,8 +15,5 @@
 ---
 auth:
   github-token: your-github-token
-  circleci-token: your-circleci-token
-# circleci token is needed only if you are going to use any
-# circleci-related functionality
 organization: googleapis
 repo-name-regex: 'nodejs-.*'

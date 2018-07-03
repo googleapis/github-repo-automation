@@ -25,17 +25,13 @@ import {getConfig} from '../src/lib/config';
 const tmp = require('tmp-promise');
 
 const configObject1 = {
-  auth:
-      {githubToken: 'test-github-token', circleciToken: 'test-circleci-token'},
+  auth: {githubToken: 'test-github-token'},
   organization: 'test-organization',
   repoNameRegex: 'test-repo-name-regex',
 };
 
 const configObject2 = {
-  auth: {
-    githubToken: 'test-github-token-2',
-    circleciToken: 'test-circleci-token-2'
-  },
+  auth: {githubToken: 'test-github-token-2'},
   organization: 'test-organization-2',
   repoNameRegex: 'test-repo-name-regex-2'
 };
@@ -67,7 +63,6 @@ describe('Config', () => {
     const config = await getConfig();
     assert.equal(config.organization, configObject1.organization);
     assert.equal(config.repoNameRegex, configObject1.repoNameRegex);
-    assert.equal(config.auth.circleciToken, configObject1.auth.circleciToken);
   });
 
   it('should accept configuration filename', async () => {
