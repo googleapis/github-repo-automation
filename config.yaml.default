@@ -13,7 +13,11 @@
 # limitations under the License.
 
 ---
-auth:
-  github-token: your-github-token
-organization: googleapis
-repo-name-regex: 'nodejs-.*'
+github-token: your-github-token
+repos:
+  - googleapis/nodejs-.*
+  - GoogleCloudPlatform/^cloud-[a-z]*-nodejs$
+  - google/google-api-nodejs-client
+  - google/google-auth-library-nodejs
+  - google/google-p12-pem
+  - google/node-gtoken

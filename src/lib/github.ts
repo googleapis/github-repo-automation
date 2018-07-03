@@ -25,15 +25,13 @@ import {Config} from './config';
  * Wraps some octokit GitHub API calls.
  */
 export class GitHub {
-  protected organization?: string;
-  protected octokit?: OctoKit;
+  protected octokit: OctoKit;
   protected config: Config;
 
   constructor(config: Config) {
     this.config = config;
     const octokit = new OctoKit();
-    octokit.authenticate({type: 'token', token: config.auth.githubToken});
-    this.organization = config.organization;
+    octokit.authenticate({type: 'token', token: config.githubToken});
     this.octokit = octokit;
   }
 
@@ -43,27 +41,25 @@ export class GitHub {
    * @returns {GitHubRepository[]} Repositories matching the filter.
    */
   async getRepositories() {
-    const org = this.organization!;
     const type = 'public';
-    const repoNameRegexConfig = this.config.repoNameRegex;
-    const repoNameRegex = new RegExp(repoNameRegexConfig);
-
-    const repos: GitHubRepository[] = [];
-    for (let page = 1;; ++page) {
-      const result = await this.octokit!.repos.getForOrg({org, type, page});
-      const reposPage = result.data;
-      if (reposPage.length === 0) {
-        break;
-      }
-
-      for (const repo of reposPage) {
-        if (repo['name'].match(repoNameRegex)) {
-          repos.push(
-              new GitHubRepository(this.octokit!, repo, this.organization!));
+    const repos = new Array<GitHubRepository>();
+    const proms = this.config.repos.map(async name => {
+      const [org, repoRegex] = name.split('/');
+      const repoNameRegex = new RegExp(repoRegex);
+      for (let page = 1;; ++page) {
+        const result = await this.octokit.repos.getForOrg({org, type, page});
+        const reposPage = result.data;
+        if (reposPage.length === 0) {
+          break;
+        }
+        for (const repo of reposPage) {
+          if (repo.name.match(repoNameRegex)) {
+            repos.push(new GitHubRepository(this.octokit, repo, org));
+          }
         }
       }
-    }
-
+    });
+    await Promise.all(proms);
     return repos;
   }
 }
@@ -102,7 +98,7 @@ export class GitHubRepository {
    * @returns {string} Name of repository.
    */
   get name() {
-    return this.repository['name'];
+    return this.repository.name;
   }
 
   /**
@@ -111,8 +107,8 @@ export class GitHubRepository {
    * @returns {Object} File object, as returned by GitHub API.
    */
   async getFile(path: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const result = await this.octokit.repos.getContent({owner, repo, path});
     return result.data;
   }
@@ -124,8 +120,8 @@ export class GitHubRepository {
    * @returns {Object} File object, as returned by GitHub API.
    */
   async getFileFromBranch(branch: string, path: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const ref = branch;
     const result =
         await this.octokit.repos.getContent({owner, repo, path, ref});
@@ -164,8 +160,8 @@ export class GitHubRepository {
    * @returns {Object} Commit object, as returned by GitHub API.
    */
   async getLatestCommitToMaster() {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const ref = 'heads/master';
     const result =
         await this.octokit.repos.getShaOfCommitRef({owner, repo, ref});
@@ -179,8 +175,8 @@ export class GitHubRepository {
    * @returns {Object} Reference object, as returned by GitHub API.
    */
   async createBranch(branch: string, sha: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const ref = `refs/heads/${branch}`;
 
     const result = await this.octokit.gitdata.createReference({
@@ -200,8 +196,8 @@ export class GitHubRepository {
    * API.
    */
   async updateBranch(base: string, head: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const result = await this.octokit.repos.merge({owner, repo, base, head});
     return result.data;
   }
@@ -217,8 +213,8 @@ export class GitHubRepository {
    */
   async createFileInBranch(
       branch: string, path: string, message: string, content: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
 
     const result = await this.octokit.repos.createFile({
       owner,
@@ -244,8 +240,8 @@ export class GitHubRepository {
   async updateFileInBranch(
       branch: string, path: string, message: string, content: string,
       sha: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
 
     const result = await this.octokit.repos.updateFile({
       owner,
@@ -267,8 +263,8 @@ export class GitHubRepository {
    * @returns {Object} Pull request object, as returned by GitHub API.
    */
   async createPullRequest(branch: string, title: string, body: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const head = `refs/heads/${branch}`;
     const base = 'refs/heads/master';
 
@@ -290,8 +286,8 @@ export class GitHubRepository {
    * @returns Review object, as returned by GitHub API.
    */
   async requestReview(prNumber: number, reviewers: string[]) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
 
     const result = await this.octokit.pullRequests.createReviewRequest({
       owner,
@@ -308,9 +304,9 @@ export class GitHubRepository {
    * @returns Review object, as returned by GitHub API.
    */
   async approvePullRequest(pr: PullRequest) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
-    const prNumber = pr['number'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const prNumber = pr.number;
     const event = 'APPROVE';
 
     const result = await this.octokit.pullRequests.createReview({
@@ -327,9 +323,9 @@ export class GitHubRepository {
    * @param {Object} pr Pull request object, as returned by GitHub API.
    */
   async closePullRequest(pr: PullRequest) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
-    const prNumber = pr['number'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const prNumber = pr.number;
     const state = 'closed';
 
     const result = await this.octokit.pullRequests.update({
@@ -367,8 +363,8 @@ export class GitHubRepository {
    * @returns {Object} Branch object, as returned by GitHub API.
    */
   async getBranch(branch: string) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
 
     const result = await this.octokit.repos.getBranch({owner, repo, branch});
     return result.data;
@@ -379,8 +375,8 @@ export class GitHubRepository {
    * @returns {Object} Branch protection object, as returned by GitHub API.
    */
   async getRequiredMasterBranchProtection() {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const branch = 'master';
 
     const result = await this.octokit.repos.getBranchProtection({
@@ -396,8 +392,8 @@ export class GitHubRepository {
    * @returns {Object} Status checks object, as returned by GitHub API.
    */
   async getRequiredMasterBranchProtectionStatusChecks() {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const branch = 'master';
 
     const result =
@@ -412,8 +408,8 @@ export class GitHubRepository {
    * @returns {Object} Status checks object, as returned by GitHub API.
    */
   async updateRequiredMasterBranchProtectionStatusChecks(contexts: string[]) {
-    const owner = this.repository['owner']['login'];
-    const repo = this.repository['name'];
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
     const branch = 'master';
     const strict = true;
 
