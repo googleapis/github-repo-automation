@@ -32,7 +32,6 @@ $ cat /User/beckwith/.repo.yaml
 ---
 auth:
   githubToken: your-github-token
-  circleciToken: your-circleci-token
 organization: googleapis
 repoNameRegex: 'nodejs-.*'
 ```
@@ -214,10 +213,6 @@ async function example() {
 A simple wrapper to GitHub client API
 ([@octokit/rest](https://github.com/octokit/rest.js)) that at least lets you
 pass less parameters to each API call.
-
-#### `lib/circleci.js`
-
-A simple wrapper to [CircleCI API](https://circleci.com/docs/api/v1-reference/).
 
 #### `lib/question.js`
 

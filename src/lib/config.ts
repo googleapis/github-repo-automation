@@ -52,7 +52,7 @@ export async function getConfig(configFilename?: string) {
 }
 
 export interface Config {
-  auth: {githubToken: string; circleciToken: string;};
+  auth: {githubToken: string;};
   organization: string;
   repoNameRegex: string;
 }

@@ -21,7 +21,6 @@
 
 import axios from 'axios';
 import {GitHub, GitHubRepository} from './lib/github';
-import {CircleCI} from './lib/circleci';
 import {getConfig} from './lib/config';
 
 /**
@@ -136,43 +135,6 @@ async function checkGreenkeeper(logger: Logger, repository: GitHubRepository) {
 }
 
 /**
- * Checks if CircleCI is enabled for the repository, and how many recent builds
- * failed on master branch.
- * Logs all errors and warnings.
- * @param {Logger} logger Logger object.
- * @param {CircleCI} circleci Initialized CircleCI object.
- * @param {GitHubRepository} repository Repository object.
- */
-async function checkCircleSettings(
-    logger: Logger, circleci: CircleCI, repository: GitHubRepository) {
-  try {
-    const recentBuilds = await circleci.getBuildsForProject(repository.name);
-    const recentBuildsMaster =
-        recentBuilds.filter((b: {branch: string}) => b.branch === 'master');
-    let failedCount = 0;
-    for (const recentBuild of recentBuildsMaster) {
-      if (recentBuild['outcome'] === 'failed') {
-        ++failedCount;
-      }
-    }
-    if (failedCount > 0) {
-      if (failedCount === recentBuildsMaster.length) {
-        logger.error(`${repository.name}: [!] all ${
-            failedCount} recent circleci build(s) for master branch failed`);
-      } else {
-        logger.warning(
-            `${repository.name}: [w] circleci builds for master branch: ${
-                failedCount} of ${
-                recentBuildsMaster.length} recent build(s) failed`);
-      }
-    }
-  } catch (err) {
-    logger.error(`${
-        repository.name}: [!] circleci builds for master branch - not found`);
-  }
-}
-
-/**
  * Checks that the version of the dependency in samples/package.json
  * matches the version of the package defined in package.json.
  * E.g. if the package is "@google-cloud/example" version "1.2.3",
@@ -280,7 +242,6 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
 async function checkAllRepositories(logger: Logger) {
   const config = await getConfig();
   const github = new GitHub(config);
-  const circleci = new CircleCI(config);
   const repos = await github.getRepositories();
   let index = 0;
   for (const repository of repos) {
@@ -290,7 +251,6 @@ async function checkAllRepositories(logger: Logger) {
     const errorCounter = logger.errorCount;
     await checkGithubMasterBranchProtection(logger, repository);
     await checkGreenkeeper(logger, repository);
-    await checkCircleSettings(logger, circleci, repository);
     await checkSamplesPackageDependency(logger, repository);
     await checkReadmeLinks(logger, repository);
 
