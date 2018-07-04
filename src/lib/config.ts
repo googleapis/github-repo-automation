@@ -53,5 +53,9 @@ export async function getConfig(configFilename?: string) {
 
 export interface Config {
   githubToken: string;
-  repos: string[];
+  repos: [{
+    org: string;
+    regex?: string;
+    name?: string;
+  }];
 }

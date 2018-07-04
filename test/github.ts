@@ -21,10 +21,11 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import {Config} from '../src/lib/config';
 
-const testConfig = {
+const testConfig: Config = {
   githubToken: 'test-github-token',
-  repos: ['test-organization/matches']
+  repos: [{org: 'test-organization', regex: 'matches'}]
 };
 
 class OctokitReposStub {
@@ -88,7 +89,7 @@ describe('GitHub', () => {
   });
 
   it('should get repositories', async () => {
-    const [testOrg] = testConfig.repos[0].split('/');
+    const testOrg = testConfig.repos[0].org;
     const testType = 'public';
     const repositories = [
       {name: 'matches-1'},

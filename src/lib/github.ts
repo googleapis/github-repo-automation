@@ -43,20 +43,30 @@ export class GitHub {
   async getRepositories() {
     const type = 'public';
     const repos = new Array<GitHubRepository>();
-    const proms = this.config.repos.map(async name => {
-      const [org, repoRegex] = name.split('/');
-      const repoNameRegex = new RegExp(repoRegex);
-      for (let page = 1;; ++page) {
-        const result = await this.octokit.repos.getForOrg({org, type, page});
-        const reposPage = result.data;
-        if (reposPage.length === 0) {
-          break;
-        }
-        for (const repo of reposPage) {
-          if (repo.name.match(repoNameRegex)) {
-            repos.push(new GitHubRepository(this.octokit, repo, org));
+    const proms = this.config.repos.map(async repo => {
+      const org = repo.org;
+      if (repo.name) {
+        const result =
+            await this.octokit.repos.get({owner: org, repo: repo.name});
+        repos.push(new GitHubRepository(this.octokit, result.data, org));
+      } else if (repo.regex) {
+        const repoNameRegex = new RegExp(repo.regex);
+        for (let page = 1;; ++page) {
+          const result = await this.octokit.repos.getForOrg(
+              {org, type, page, per_page: 100});
+          const reposPage = result.data;
+          if (reposPage.length === 0) {
+            break;
+          }
+          for (const repo of reposPage) {
+            if (repo.name.match(repoNameRegex)) {
+              repos.push(new GitHubRepository(this.octokit, repo, org));
+            }
           }
         }
+      } else {
+        throw new Error(
+            'Each organization in the config must provide either a name or a regex.');
       }
     });
     await Promise.all(proms);
@@ -452,7 +462,7 @@ export interface PullRequest {
 export interface Repository {
   name: string;
   owner: User;
-  clone_url: string;
+  clone_url?: string;
 }
 
 export interface User {
