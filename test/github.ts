@@ -21,13 +21,11 @@
 import assert from 'assert';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import {Config} from '../src/lib/config';
 
-const testConfig = {
-  auth: {
-    githubToken: 'test-github-token',
-  },
-  organization: 'test-organization',
-  repoNameRegex: 'matches'
+const testConfig: Config = {
+  githubToken: 'test-github-token',
+  repos: [{org: 'test-organization', regex: 'matches'}]
 };
 
 class OctokitReposStub {
@@ -83,7 +81,7 @@ describe('GitHub', () => {
     const spy = sinon.spy(OctokitStub.prototype, 'authenticate');
     const expectedAuthParam = {
       type: 'token',
-      token: testConfig.auth.githubToken,
+      token: testConfig.githubToken,
     };
     const github = new GitHub(testConfig);
     assert(spy.calledOnce);
@@ -91,7 +89,7 @@ describe('GitHub', () => {
   });
 
   it('should get repositories', async () => {
-    const testOrg = testConfig.organization;
+    const testOrg = testConfig.repos[0].org;
     const testType = 'public';
     const repositories = [
       {name: 'matches-1'},
@@ -108,12 +106,13 @@ describe('GitHub', () => {
         data: getPage(repositories, page || 1, per_page || 1),
       });
     });
+
     const repos = await github.getRepositories();
     assert.equal(repos.length, 2);
     assert.equal(repos[0].name, 'matches-1');
-    assert.equal(repos[0].organization, testConfig['organization']);
+    assert.equal(repos[0].organization, testOrg);
     assert.equal(repos[1].name, '2-matches');
-    assert.equal(repos[1].organization, testConfig['organization']);
+    assert.equal(repos[1].organization, testOrg);
     stub.restore();
   });
 });

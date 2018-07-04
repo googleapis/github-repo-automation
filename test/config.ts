@@ -21,19 +21,17 @@
 import assert from 'assert';
 import fs from 'fs';
 import yaml from 'js-yaml';
-import {getConfig} from '../src/lib/config';
+import {getConfig, Config} from '../src/lib/config';
 const tmp = require('tmp-promise');
 
-const configObject1 = {
-  auth: {githubToken: 'test-github-token'},
-  organization: 'test-organization',
-  repoNameRegex: 'test-repo-name-regex',
+const configObject1: Config = {
+  githubToken: 'test-github-token',
+  repos: [{org: 'test-organization', regex: 'test-repo-name-regex'}]
 };
 
-const configObject2 = {
-  auth: {githubToken: 'test-github-token-2'},
-  organization: 'test-organization-2',
-  repoNameRegex: 'test-repo-name-regex-2'
+const configObject2: Config = {
+  githubToken: 'test-github-token-2',
+  repos: [{org: 'test-organization-2', regex: 'test-repo-name-regex-2'}]
 };
 
 describe('Config', () => {
@@ -61,8 +59,8 @@ describe('Config', () => {
 
   it('should return individual values', async () => {
     const config = await getConfig();
-    assert.equal(config.organization, configObject1.organization);
-    assert.equal(config.repoNameRegex, configObject1.repoNameRegex);
+    assert.equal(config.githubToken, configObject1.githubToken);
+    assert.deepStrictEqual(config.repos, configObject1.repos);
   });
 
   it('should accept configuration filename', async () => {
