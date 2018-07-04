@@ -21,17 +21,17 @@
 import assert from 'assert';
 import fs from 'fs';
 import yaml from 'js-yaml';
-import {getConfig} from '../src/lib/config';
+import {getConfig, Config} from '../src/lib/config';
 const tmp = require('tmp-promise');
 
-const configObject1 = {
+const configObject1: Config = {
   githubToken: 'test-github-token',
-  repos: ['test-organization/test-repo-name-regex']
+  repos: [{org: 'test-organization', regex: 'test-repo-name-regex'}]
 };
 
-const configObject2 = {
+const configObject2: Config = {
   githubToken: 'test-github-token-2',
-  repos: ['test-organization-2/test-repo-name-regex-2']
+  repos: [{org: 'test-organization-2', regex: 'test-repo-name-regex-2'}]
 };
 
 describe('Config', () => {

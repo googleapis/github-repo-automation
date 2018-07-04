@@ -15,9 +15,17 @@
 ---
 github-token: your-github-token
 repos:
-  - googleapis/nodejs-.*
-  - GoogleCloudPlatform/^cloud-[a-z]*-nodejs$
-  - google/google-api-nodejs-client
-  - google/google-auth-library-nodejs
-  - google/google-p12-pem
-  - google/node-gtoken
+  - org: googleapis
+    regex: nodejs-.*
+  - org: googleapis
+    name: github-repo-automation
+  - org: GoogleCloudPlatform
+    regex: ^cloud-[a-z]*-nodejs$
+  - org: google
+    name: google-api-nodejs-client
+  - org: google
+    name: google-auth-library-nodejs
+  - org: google
+    name: google-p12-pem
+  - org: google
+    name: node-gtoken
