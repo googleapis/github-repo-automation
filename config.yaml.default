@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-github-token: your-github-token
+githubToken: your-github-token
 repos:
   - org: googleapis
     regex: nodejs-.*

@@ -30,10 +30,22 @@ You need to make your own [`config.yaml`](config.yaml.default) and put your GitH
 ```sh
 $ cat /User/beckwith/.repo.yaml
 ---
-auth:
-  githubToken: your-github-token
-organization: googleapis
-repoNameRegex: 'nodejs-.*'
+githubToken: your-github-token
+repos:
+  - org: googleapis
+    regex: nodejs-.*
+  - org: googleapis
+    name: github-repo-automation
+  - org: GoogleCloudPlatform
+    regex: ^cloud-[a-z]*-nodejs$
+  - org: google
+    name: google-api-nodejs-client
+  - org: google
+    name: google-auth-library-nodejs
+  - org: google
+    name: google-p12-pem
+  - org: google
+    name: node-gtoken
 ```
 
 ```sh
