@@ -42,7 +42,7 @@ async function showPatch(patchUrl: string) {
  * @param {Object} pr Pull request object, as returned by GitHub API.
  */
 async function processPullRequest(
-    repository: GitHubRepository, pr: PullRequest) {
+    repository: GitHubRepository, pr: PullRequest, auto: boolean) {
   const title = pr.title;
   const htmlUrl = pr.html_url;
   const patchUrl = pr.patch_url;
@@ -65,8 +65,14 @@ async function processPullRequest(
 
   if (latestMasterSha !== baseSha) {
     for (;;) {
-      const response = await question(
-          'PR branch is out of date. What to do? [u]pdate branch, show [p]atch, [s]kip: ');
+      let response: string;
+      if (auto) {
+        response = 'u';
+      } else {
+        response = await question(
+            'PR branch is out of date. What to do? [u]pdate branch, show [p]atch, [s]kip: ');
+      }
+
       if (response === 'u') {
         try {
           await repository.updateBranch(ref, 'master');
@@ -90,8 +96,13 @@ async function processPullRequest(
   }
 
   for (;;) {
-    const response = await question(
-        'What to do? [a]pprove and merge, show [p]atch, [s]kip: ');
+    let response: string;
+    if (auto) {
+      response = 'a';
+    } else {
+      response = await question(
+          'What to do? [a]pprove and merge, show [p]atch, [s]kip: ');
+    }
     if (response === 'a') {
       try {
         await repository.approvePullRequest(pr);
@@ -128,7 +139,7 @@ async function processPullRequest(
  */
 export async function main(cli: meow.Result) {
   if (cli.input.length < 2 || !cli.input[1]) {
-    console.log(`Usage: repo approve [regex]`);
+    console.log(`Usage: repo approve [regex] [--auto]`);
     console.log(
         'Will show all open PRs with title matching regex and allow to approve them.');
     return;
@@ -137,6 +148,7 @@ export async function main(cli: meow.Result) {
   const config = await getConfig();
   const github = new GitHub(config);
   const regex = new RegExp(cli.input[1] || '.*');
+  const auto = cli.flags.auto;
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);
@@ -151,7 +163,7 @@ export async function main(cli: meow.Result) {
     for (const pr of prs) {
       const title = pr.title;
       if (title.match(regex)) {
-        await processPullRequest(repository, pr);
+        await processPullRequest(repository, pr, auto);
       }
     }
   }
