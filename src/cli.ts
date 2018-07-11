@@ -17,7 +17,7 @@ const cli = meow(
 	  $ repo <command>
 
 	Examples
-    $ repo approve /regex/
+    $ repo approve /regex/ [--auto]
     $ repo reject /regex/
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
@@ -44,6 +44,7 @@ const cli = meow(
           type: 'boolean',
           alias: 'q',
         },
+        auto: {type: 'boolean'}
       },
     });
 
