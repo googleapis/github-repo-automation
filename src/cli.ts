@@ -5,8 +5,8 @@ import {main as apply} from './apply-change';
 import {main as approve} from './approve-prs';
 import {main as reject} from './reject-prs';
 import {main as check} from './repo-check';
-import meow from 'meow';
-import updateNotifier from 'update-notifier';
+import * as meow from 'meow';
+import * as updateNotifier from 'update-notifier';
 const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();

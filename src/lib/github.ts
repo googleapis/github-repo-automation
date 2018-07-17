@@ -18,7 +18,7 @@
 
 'use strict';
 
-import OctoKit from '@octokit/rest';
+import * as OctoKit from '@octokit/rest';
 import {Config} from './config';
 
 /**

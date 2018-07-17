@@ -25,7 +25,7 @@ const exec = util.promisify(childProcess.exec);
 const commandLineUsage = require('command-line-usage');
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
-import meow from 'meow';
+import * as meow from 'meow';
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},

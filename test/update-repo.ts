@@ -16,11 +16,11 @@
  * @fileoverview Tests for lib/update-repo.js.
  */
 
-import assert from 'assert';
-import fs from 'fs';
-import path from 'path';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import * as assert from 'assert';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as proxyquire from 'proxyquire';
+import * as sinon from 'sinon';
 const rejects = require('assert-rejects');
 
 import * as fakeGitHub from './fakes/fake-github';

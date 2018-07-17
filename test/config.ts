@@ -18,9 +18,9 @@
 
 'use strict';
 
-import assert from 'assert';
-import fs from 'fs';
-import yaml from 'js-yaml';
+import * as assert from 'assert';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 import {getConfig, Config} from '../src/lib/config';
 const tmp = require('tmp-promise');
 

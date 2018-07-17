@@ -16,7 +16,7 @@
  * @fileoverview Fake GitHub and GitHubRepository implementations for tests.
  */
 
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import {Config} from '../../src/lib/config';
 
 function hash(input: string) {
