@@ -23,7 +23,7 @@
 import axios from 'axios';
 import {GitHub, GitHubRepository, PullRequest} from './lib/github';
 import {question} from './lib/question';
-import meow from 'meow';
+import * as meow from 'meow';
 import {getConfig} from './lib/config';
 
 /**

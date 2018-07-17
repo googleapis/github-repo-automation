@@ -16,9 +16,9 @@
  * @fileoverview Tests for lib/update-file.js.
  */
 
-import assert from 'assert';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import * as assert from 'assert';
+import * as proxyquire from 'proxyquire';
+import * as sinon from 'sinon';
 const rejects = require('assert-rejects');
 import * as fakeGitHub from './fakes/fake-github';
 const {updateFile} = proxyquire('../src/lib/update-file', {

@@ -21,7 +21,7 @@
 'use strict';
 
 import {GitHub, GitHubRepository, PullRequest} from './lib/github';
-import meow from 'meow';
+import * as meow from 'meow';
 import {getConfig} from './lib/config';
 
 /**
