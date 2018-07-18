@@ -16,7 +16,7 @@
 
 import * as fs from 'fs';
 import chalk from 'chalk';
-import { Writable } from 'stream';
+import {Writable} from 'stream';
 
 let stream: Writable;
 const path = 'repo-debug.log';
@@ -38,7 +38,7 @@ export async function log(message: string) {
   push(LogLevel.INFO, message);
 }
 
-function push(level: LogLevel, message:string) {
+function push(level: LogLevel, message: string) {
   if (!stream) {
     stream = fs.createWriteStream(path);
   }

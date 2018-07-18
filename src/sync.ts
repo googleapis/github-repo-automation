@@ -25,8 +25,8 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cp from 'child_process';
 import * as meow from 'meow';
-import { getConfig } from './lib/config';
-import { GitHub } from './lib/github';
+import {getConfig} from './lib/config';
+import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
 
 const mkdir = util.promisify(fs.mkdir);
@@ -34,21 +34,21 @@ const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
 
 function exe(command: string, args: string[], options: cp.SpawnOptions = {}) {
-    return new Promise((resolve, reject) => {
-      cp.spawn(command, args, Object.assign(options, {stdio: 'inherit'}))
-          .on('close', code => {
+  return new Promise((resolve, reject) => {
+    cp.spawn(command, args, Object.assign(options, {stdio: 'inherit'}))
+        .on('close',
+            code => {
               if (code === 0) {
-                  resolve();
-                } else {
-                  reject(
-                      new Error(`Spawn failed with an exit code of ${code}`));
-                }
-              })
-          .on('error', err => {
-            reject(err);
-          });
-    });
-  }
+                resolve();
+              } else {
+                reject(new Error(`Spawn failed with an exit code of ${code}`));
+              }
+            })
+        .on('error', err => {
+          reject(err);
+        });
+  });
+}
 
 /**
  * Clone all repositories into ~/.repo.
@@ -58,19 +58,19 @@ export async function sync() {
   logger.info('Synchronizing repositories...');
   const repos = await getRepos();
   const rootPath = await getRootPath();
-  for (let i=0; i<repos.length; i++) {
+  for (let i = 0; i < repos.length; i++) {
     const repo = repos[i];
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
     if (fs.existsSync(cwd)) {
-      logger.info(`[${i+1}/${repos.length}] Synchronizing ${repo.name}...`);
+      logger.info(`[${i + 1}/${repos.length}] Synchronizing ${repo.name}...`);
       await exe('git', ['reset', '--hard', 'origin/master'], {cwd});
       await exe('git', ['checkout', 'master'], {cwd});
       await exe('git', ['fetch', 'origin'], {cwd});
       await exe('git', ['reset', '--hard', 'origin/master'], {cwd});
     } else {
-      logger.info(`[${i+1}/${repos.length}] Cloning ${repo.name}...`);
-      await exe('git', ['clone', cloneUrl], { cwd: rootPath });
+      logger.info(`[${i + 1}/${repos.length}] Cloning ${repo.name}...`);
+      await exe('git', ['clone', cloneUrl], {cwd: rootPath});
     }
   }
   logger.info('Repo sync complete.');
@@ -87,9 +87,9 @@ export async function exec(cli: meow.Result) {
   }));
   const dirs = ps.filter(x => x.isDirectory).map(x => x.file);
   logger.info(`Executing '${command}' in ${dirs.length} directories.`);
-  for (let i=0; i<dirs.length; i++) {
+  for (let i = 0; i < dirs.length; i++) {
     const dir = dirs[i];
-    logger.info(`[${i+1}/${dirs.length}] Executing cmd in ${dir}...`);
+    logger.info(`[${i + 1}/${dirs.length}] Executing cmd in ${dir}...`);
     try {
       const r = await exe(command[0], command.slice(1), {cwd: dir});
     } catch (e) {
