@@ -15,10 +15,11 @@
 'use strict';
 
 import * as fs from 'fs';
-import * as util from 'util';
 import chalk from 'chalk';
+import { Writable } from 'stream';
 
-const entries = new Array<LogEntry>();
+let stream: Writable;
+const path = 'repo-debug.log';
 
 export interface LogEntry {
   message: string;
@@ -38,21 +39,15 @@ export async function log(message: string) {
 }
 
 function push(level: LogLevel, message:string) {
-  entries.push({
-    level,
-    message,
-    time: new Date()
-  });
-}
-
-export async function dump() {
-  const path = 'repo-debug.log';
-  const stream = fs.createWriteStream(path);
-  for (const e of entries) {
-    const line = `${e.time}\t${e.level}\t${e.message}`;
-    await (util.promisify(stream.write) as any)(line);
+  if (!stream) {
+    stream = fs.createWriteStream(path);
   }
-  stream.close();
+  stream.write(`${new Date()}\t${level}\t${message}`, (err: Error) => {
+    if (err) {
+      console.error('Error writing to log.');
+      console.error(err);
+    }
+  });
 }
 
 export function info(message: string) {

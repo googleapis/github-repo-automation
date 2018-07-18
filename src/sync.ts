@@ -32,7 +32,6 @@ import * as logger from './lib/logger';
 const mkdir = util.promisify(fs.mkdir);
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
-//const exe = util.promisify(cp.exec);
 
 function exe(command: string, args: string[], options: cp.SpawnOptions = {}) {
     return new Promise((resolve, reject) => {
