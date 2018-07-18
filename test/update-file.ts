@@ -112,7 +112,8 @@ describe('UpdateFile', () => {
   it('should not update a file if it does not exist', async () => {
     delete fakeGitHub.repository.branches['master'][path];
     await attemptUpdate();
-    assert.strictEqual(fakeGitHub.repository.branches['master'][path], undefined);
+    assert.strictEqual(
+        fakeGitHub.repository.branches['master'][path], undefined);
     assert.strictEqual(fakeGitHub.repository.branches[branch], undefined);
   });
 
