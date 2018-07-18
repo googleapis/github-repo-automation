@@ -5,6 +5,7 @@ import {main as apply} from './apply-change';
 import {main as approve} from './approve-prs';
 import {main as reject} from './reject-prs';
 import {main as check} from './repo-check';
+import {sync, exec} from './sync';
 import * as meow from 'meow';
 import * as updateNotifier from 'update-notifier';
 const pkg = require('../../package.json');
@@ -21,6 +22,8 @@ const cli = meow(
     $ repo reject /regex/
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
+    $ repo sync
+    $ repo exec -- git status
 `,
     {
       flags: {
@@ -65,6 +68,12 @@ switch (cli.input[0]) {
     break;
   case 'check':
     p = check();
+    break;
+  case 'sync':
+    p = sync();
+    break;
+  case 'exec':
+    p = exec(cli);
     break;
   default:
     cli.showHelp(-1);
