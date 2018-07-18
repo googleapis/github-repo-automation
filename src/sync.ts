@@ -33,7 +33,7 @@ const mkdir = util.promisify(fs.mkdir);
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
 
-function exe(command: string, args: string[], options: cp.SpawnOptions = {}) {
+function spawn(command: string, args: string[], options: cp.SpawnOptions = {}) {
   return new Promise((resolve, reject) => {
     cp.spawn(command, args, Object.assign(options, {stdio: 'inherit'}))
         .on('close',
@@ -64,13 +64,13 @@ export async function sync() {
     const cwd = path.join(rootPath, repo.name);
     if (fs.existsSync(cwd)) {
       logger.info(`[${i + 1}/${repos.length}] Synchronizing ${repo.name}...`);
-      await exe('git', ['reset', '--hard', 'origin/master'], {cwd});
-      await exe('git', ['checkout', 'master'], {cwd});
-      await exe('git', ['fetch', 'origin'], {cwd});
-      await exe('git', ['reset', '--hard', 'origin/master'], {cwd});
+      await spawn('git', ['reset', '--hard', 'origin/master'], {cwd});
+      await spawn('git', ['checkout', 'master'], {cwd});
+      await spawn('git', ['fetch', 'origin'], {cwd});
+      await spawn('git', ['reset', '--hard', 'origin/master'], {cwd});
     } else {
       logger.info(`[${i + 1}/${repos.length}] Cloning ${repo.name}...`);
-      await exe('git', ['clone', cloneUrl], {cwd: rootPath});
+      await spawn('git', ['clone', cloneUrl], {cwd: rootPath});
     }
   }
   logger.info('Repo sync complete.');
@@ -79,6 +79,8 @@ export async function sync() {
 export async function exec(cli: meow.Result) {
   const command = cli.input.slice(1);
   const rootPath = await getRootPath();
+
+  // get all of the subdirectories in ~/.repo.
   const files = await readdir(rootPath);
   const ps = await Promise.all(files.map(async file => {
     file = path.join(rootPath, file);
@@ -86,12 +88,18 @@ export async function exec(cli: meow.Result) {
     return {file, isDirectory: stats.isDirectory()};
   }));
   const dirs = ps.filter(x => x.isDirectory).map(x => x.file);
+
+  if (dirs.length === 0) {
+    // the user likely hasn't run sync yet.  Lets be nice and do that for them.
+    await sync();
+  }
+
   logger.info(`Executing '${command}' in ${dirs.length} directories.`);
   for (let i = 0; i < dirs.length; i++) {
     const dir = dirs[i];
     logger.info(`[${i + 1}/${dirs.length}] Executing cmd in ${dir}...`);
     try {
-      const r = await exe(command[0], command.slice(1), {cwd: dir});
+      const r = await spawn(command[0], command.slice(1), {cwd: dir});
     } catch (e) {
       logger.error(dir);
       logger.error(e);
