@@ -21,7 +21,6 @@
 
 import * as util from 'util';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as cp from 'child_process';
 import * as meow from 'meow';
@@ -99,7 +98,7 @@ export async function exec(cli: meow.Result) {
     const dir = dirs[i];
     logger.info(`[${i + 1}/${dirs.length}] Executing cmd in ${dir}...`);
     try {
-      const r = await spawn(command[0], command.slice(1), {cwd: dir});
+      await spawn(command[0], command.slice(1), {cwd: dir});
     } catch (e) {
       logger.error(dir);
       logger.error(e);
@@ -115,7 +114,8 @@ async function getRepos() {
 }
 
 async function getRootPath() {
-  const repoPath = path.join(os.homedir(), '.repo');
+  const config = await getConfig();
+  const repoPath = config.clonePath;
   if (!fs.existsSync(repoPath)) {
     await mkdir(repoPath);
   }
