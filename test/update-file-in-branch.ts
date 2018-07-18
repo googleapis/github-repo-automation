@@ -70,7 +70,7 @@ describe('UpdateFileInBranch', () => {
 
   it('should update one file if content matches', async () => {
     await attemptUpdate();
-    assert.equal(
+    assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(changedContent).toString('base64'));
   });
@@ -78,7 +78,7 @@ describe('UpdateFileInBranch', () => {
   it('should not update a file if it is not a file', async () => {
     fakeGitHub.repository.branches[branch][path]['type'] = 'not-a-file';
     await attemptUpdate();
-    assert.equal(
+    assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(originalContent).toString('base64'));
   });
@@ -87,7 +87,7 @@ describe('UpdateFileInBranch', () => {
     fakeGitHub.repository.testSetFile(
         branch, path, Buffer.from(badContent).toString('base64'));
     await attemptUpdate();
-    assert.equal(
+    assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(badContent).toString('base64'));
   });
@@ -95,7 +95,7 @@ describe('UpdateFileInBranch', () => {
   it('should not update a file if it does not exist', async () => {
     delete fakeGitHub.repository.branches[branch][path];
     await attemptUpdate();
-    assert.equal(fakeGitHub.repository.branches[branch][path], undefined);
+    assert.strictEqual(fakeGitHub.repository.branches[branch][path], undefined);
   });
 
   it('should handle error if cannot update file in branch', async () => {
@@ -103,7 +103,7 @@ describe('UpdateFileInBranch', () => {
                      .returns(Promise.reject(new Error('Random error')));
     await attemptUpdate();
     stub.restore();
-    assert.equal(
+    assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(originalContent).toString('base64'));
   });

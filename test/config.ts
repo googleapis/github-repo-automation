@@ -59,7 +59,7 @@ describe('Config', () => {
 
   it('should return individual values', async () => {
     const config = await getConfig();
-    assert.equal(config.githubToken, configObject1.githubToken);
+    assert.strictEqual(config.githubToken, configObject1.githubToken);
     assert.deepStrictEqual(config.repos, configObject1.repos);
   });
 

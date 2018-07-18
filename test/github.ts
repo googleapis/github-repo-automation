@@ -100,19 +100,19 @@ describe('GitHub', () => {
     const github = new GitHub(testConfig);
     const stub = sinon.stub(github.octokit.repos, 'getForOrg');
     stub.callsFake(({org, type, page, per_page}) => {
-      assert.equal(org, testOrg);
-      assert.equal(type, testType);
+      assert.strictEqual(org, testOrg);
+      assert.strictEqual(type, testType);
       return Promise.resolve({
         data: getPage(repositories, page || 1, per_page || 1),
       });
     });
 
     const repos = await github.getRepositories();
-    assert.equal(repos.length, 2);
-    assert.equal(repos[0].name, 'matches-1');
-    assert.equal(repos[0].organization, testOrg);
-    assert.equal(repos[1].name, '2-matches');
-    assert.equal(repos[1].organization, testOrg);
+    assert.strictEqual(repos.length, 2);
+    assert.strictEqual(repos[0].name, 'matches-1');
+    assert.strictEqual(repos[0].organization, testOrg);
+    assert.strictEqual(repos[1].name, '2-matches');
+    assert.strictEqual(repos[1].organization, testOrg);
     stub.restore();
   });
 });
@@ -132,7 +132,7 @@ describe('GitHubRepository', () => {
   });
 
   it('should return repository name', done => {
-    assert.equal(repository.name, repo);
+    assert.strictEqual(repository.name, repo);
     done();
   });
 
@@ -146,7 +146,7 @@ describe('GitHubRepository', () => {
     const result = await repository.getFile(path);
     assert(stub.calledOnce);
     assert(stub.calledWith({owner, repo, path}));
-    assert.equal(result, content);
+    assert.strictEqual(result, content);
     stub.restore();
   });
 
@@ -161,7 +161,7 @@ describe('GitHubRepository', () => {
     const result = await repository.getFileFromBranch(ref, path);
     assert(stub.calledOnce);
     assert(stub.calledWith({owner, repo, path, ref}));
-    assert.equal(result, content);
+    assert.strictEqual(result, content);
     stub.restore();
   });
 
@@ -172,9 +172,9 @@ describe('GitHubRepository', () => {
     const testRepo = repo;
     const testState = 'open';
     stub.callsFake(({owner, repo, state, page, per_page}) => {
-      assert.equal(owner, testOwner);
-      assert.equal(repo, testRepo);
-      assert.equal(state, testState);
+      assert.strictEqual(owner, testOwner);
+      assert.strictEqual(repo, testRepo);
+      assert.strictEqual(state, testState);
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
     const result = await repository.listPullRequests();
@@ -189,9 +189,9 @@ describe('GitHubRepository', () => {
     const testRepo = repo;
     const testState = 'test-state';
     stub.callsFake(({owner, repo, state, page, per_page}) => {
-      assert.equal(owner, testOwner);
-      assert.equal(repo, testRepo);
-      assert.equal(state, testState);
+      assert.strictEqual(owner, testOwner);
+      assert.strictEqual(repo, testRepo);
+      assert.strictEqual(state, testState);
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
     const result = await repository.listPullRequests(testState);
