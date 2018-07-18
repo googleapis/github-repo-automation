@@ -25,6 +25,7 @@ import {Config} from '../src/lib/config';
 
 const testConfig: Config = {
   githubToken: 'test-github-token',
+  clonePath: '',
   repos: [{org: 'test-organization', regex: 'matches'}]
 };
 

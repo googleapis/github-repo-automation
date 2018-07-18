@@ -463,6 +463,7 @@ export interface Repository {
   name: string;
   owner: User;
   clone_url?: string;
+  ssh_url?: string;
 }
 
 export interface User {
