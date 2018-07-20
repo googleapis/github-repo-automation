@@ -21,16 +21,22 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import * as os from 'os';
+import * as path from 'path';
 import {getConfig, Config} from '../src/lib/config';
 const tmp = require('tmp-promise');
 
+const clonePath = path.join(os.homedir(), '.repo');
+
 const configObject1: Config = {
   githubToken: 'test-github-token',
+  clonePath,
   repos: [{org: 'test-organization', regex: 'test-repo-name-regex'}]
 };
 
 const configObject2: Config = {
   githubToken: 'test-github-token-2',
+  clonePath,
   repos: [{org: 'test-organization-2', regex: 'test-repo-name-regex-2'}]
 };
 

@@ -31,6 +31,7 @@ You need to make your own [`config.yaml`](config.yaml.default) and put your GitH
 $ cat /User/beckwith/.repo.yaml
 ---
 githubToken: your-github-token
+clonePath: ~/.repo # optional
 repos:
   - org: googleapis
     regex: nodejs-.*
