@@ -3,6 +3,9 @@
   "version": "0.1.2",
   "repository": "googleapis/github-repo-automation",
   "description": "A tool for automating multiple GitHub repositories.",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "bin": {
     "repo": "build/src/cli.js"
   },
@@ -34,7 +37,7 @@
     "codecov": "^3.0.0",
     "eslint": "^5.0.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-node": "^7.0.0",
     "eslint-plugin-prettier": "^2.6.0",
     "gts": "^0.8.0",
     "ink-docstrap": "^1.3.2",
