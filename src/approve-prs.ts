@@ -37,29 +37,26 @@ async function showPatch(patchUrl: string) {
 }
 
 /**
- * Process one pull request: ask the user to approve, show patch, or skip it.
+ * Compare the SHA of the PR's head versus the current master, and update
+ * if the branch is out-of-date.
  * @param {GitHubRepository} repository GitHub repository for this pull request.
- * @param {Object} pr Pull request object, as returned by GitHub API.
+ * @param {PullRequest} pr Pull request object, as returned by GitHub API.
+ * @param {boolean} auto If true, assume 'yes' to questions and proceed automatically.
  */
-async function processPullRequest(
-    repository: GitHubRepository, pr: PullRequest, auto: boolean) {
-  const title = pr.title;
+async function updateBranchIfOutdated(
+    repository: GitHubRepository, pr: PullRequest,
+    auto: boolean): Promise<void> {
   const htmlUrl = pr.html_url;
   const patchUrl = pr.patch_url;
-  const author = pr.user.login;
   const baseSha = pr.base.sha;
   const ref = pr.head.ref;
-
-  console.log(`  [${author}] ${htmlUrl}: ${title}`);
 
   let latestCommit;
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
-    console.warn(
-        '    cannot get sha of latest commit to master, skipping:',
-        err.toString());
-    return;
+    throw new Error(`    cannot get sha of latest commit to master, skipping: ${
+        err.toString()}`);
   }
   const latestMasterSha = latestCommit['sha'];
 
@@ -80,19 +77,37 @@ async function processPullRequest(
               'You might not be able to merge immediately because CI tasks will take some time.');
           break;
         } catch (err) {
-          console.warn(
-              `    cannot update branch for PR ${htmlUrl}, skipping:`,
-              err.toString());
-          return;
+          throw new Error(`    cannot update branch for PR ${
+              htmlUrl}, skipping: ${err.toString()}`);
         }
       } else if (response === 'p') {
         await showPatch(patchUrl);
         continue;
       } else if (response === 's') {
-        console.log('   skipped');
-        return;
+        throw new Error('   skipped');
       }
     }
+  }
+}
+
+/**
+ * Process one pull request: ask the user to approve, show patch, or skip it.
+ * @param {GitHubRepository} repository GitHub repository for this pull request.
+ * @param {Object} pr Pull request object, as returned by GitHub API.
+ */
+async function processPullRequest(
+    repository: GitHubRepository, pr: PullRequest, auto: boolean) {
+  const title = pr.title;
+  const author = pr.user.login;
+  const htmlUrl = pr.html_url;
+  const patchUrl = pr.patch_url;
+  console.log(`  [${author}] ${htmlUrl}: ${title}`);
+
+  try {
+    await updateBranchIfOutdated(repository, pr, auto);
+  } catch (err) {
+    console.warn(err.message);
+    return;
   }
 
   for (;;) {
