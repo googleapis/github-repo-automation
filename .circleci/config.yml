@@ -19,7 +19,8 @@ workflows:
           filters:
             branches:
               ignore: /.*/
-            tags: *releases
+            tags:
+              only: '/^v[\d.]+$/'
 jobs:
   node8:
     docker:
