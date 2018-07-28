@@ -56,7 +56,7 @@
     "lint": "eslint samples/*.js samples/*/*.js",
     "prettier": "prettier --write samples/*.js samples/*/*.js",
     "docs": "jsdoc -c .jsdoc.js",
-    "test": "nyc --reporter=lcov mocha --require intelli-espower-loader build/test && nyc report",
+    "test": "nyc --reporter=lcov mocha build/test && nyc report",
     "check": "gts check",
     "clean": "gts clean",
     "compile": "tsc -p .",
