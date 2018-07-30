@@ -59,13 +59,6 @@ const commandLineOptions = [
     type: Boolean,
     description: 'No interactive questions - just make commits. Use carefully.',
   },
-  {
-    name: 'execute',
-    alias: 'e',
-    type: String,
-    defaultOption: true,
-    description: 'Command to execute inside the cloned repository folder.',
-  },
 ];
 
 const helpSections = [
@@ -136,10 +129,6 @@ function checkOptions(cli: meow.Result) {
   if (cli.flags.comment === undefined) {
     badOptions = true;
     console.error('Error: --comment is required.');
-  }
-  if (cli.flags.command === undefined) {
-    badOptions = true;
-    console.error('Error: command to execute is required.');
   }
   if (badOptions) {
     console.error(
