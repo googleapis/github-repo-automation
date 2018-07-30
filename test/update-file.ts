@@ -80,7 +80,7 @@ describe('UpdateFile', () => {
     assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(changedContent).toString('base64'));
-    assert.deepEqual(fakeGitHub.repository.prs[1], {
+    assert.deepStrictEqual(fakeGitHub.repository.prs[1], {
       number: 1,
       branch,
       message,
@@ -179,7 +179,7 @@ describe('UpdateFile', () => {
        assert.strictEqual(
            fakeGitHub.repository.branches[branch][path]['content'],
            Buffer.from(changedContent).toString('base64'));
-       assert.deepEqual(fakeGitHub.repository.prs[1], {
+       assert.deepStrictEqual(fakeGitHub.repository.prs[1], {
          number: 1,
          branch,
          message,
@@ -281,7 +281,7 @@ describe('UpdateFile', () => {
     assert.strictEqual(
         fakeGitHub.repository.branches[branch][path]['content'],
         Buffer.from(changedContent).toString('base64'));
-    assert.deepEqual(fakeGitHub.repository.prs[1], {
+    assert.deepStrictEqual(fakeGitHub.repository.prs[1], {
       number: 1,
       branch,
       message,
