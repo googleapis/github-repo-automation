@@ -199,6 +199,18 @@ export class GitHubRepository {
   }
 
   /**
+   * Deletes the given branch.
+   * @param {string} string Ref of the branch.
+   */
+  async deleteBranch(ref: string) {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const result =
+        await this.octokit.gitdata.deleteReference({owner, ref, repo});
+    return result.data;
+  }
+
+  /**
    * Merges one branch into another.
    * @param {string} base Name of branch to merge info.
    * @param {string} head Name of branch to merge from.
