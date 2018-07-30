@@ -130,6 +130,10 @@ function checkOptions(cli: meow.Result) {
     badOptions = true;
     console.error('Error: --comment is required.');
   }
+  if (cli.input[1] === undefined) {
+    badOptions = true;
+    console.error('Error: command is required.');
+  }
   if (badOptions) {
     console.error(
         'Please run the script with --help to get some help on the command line options.');
