@@ -94,16 +94,16 @@ export async function exec(cli: meow.Result) {
   const proms = dirs.map(dir => {
     return q.add(() => {
       return spawn(command.join(' '), {cwd: dir})
-      .then(r => {
-        i++;
-        logger.info(`[${i}/${dirs.length}] Executing cmd in ${dir}...`);
-        print(r);
-      })
-      .catch(e => {
-        i++;
-        logger.error(dir);
-        logger.error(e);
-      });
+          .then(r => {
+            i++;
+            logger.info(`[${i}/${dirs.length}] Executed cmd in ${dir}.`);
+            print(r);
+          })
+          .catch(e => {
+            i++;
+            logger.error(dir);
+            logger.error(e);
+          });
     });
   });
 
