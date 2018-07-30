@@ -115,6 +115,9 @@ async function processPullRequest(
       try {
         await repository.mergePullRequest(pr);
         console.log('    merged!');
+
+        await repository.deleteBranch(ref);
+        console.log('    branch deleted!');
       } catch (err) {
         console.warn(
             '    error trying to merge PR ${htmlUrl}:', err.toString());
