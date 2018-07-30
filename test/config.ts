@@ -60,7 +60,7 @@ describe('Config', () => {
 
   it('should read default configuration file', async () => {
     const config = await getConfig();
-    assert.deepEqual(config, configObject1);
+    assert.deepStrictEqual(config, configObject1);
   });
 
   it('should return individual values', async () => {
@@ -71,14 +71,14 @@ describe('Config', () => {
 
   it('should accept configuration filename', async () => {
     const config = await getConfig('./config2.yaml');
-    assert.deepEqual(config, configObject2);
+    assert.deepStrictEqual(config, configObject2);
   });
 
   it('should read environment variable', async () => {
     process.env.REPO_CONFIG_PATH = './config2.yaml';
     const config = await getConfig();
     delete process.env.REPO_CONFIG_PATH;
-    assert.deepEqual(config, configObject2);
+    assert.deepStrictEqual(config, configObject2);
   });
 
   it('should fail if configuration file does not exist', done => {
