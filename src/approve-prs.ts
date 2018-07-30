@@ -109,7 +109,7 @@ async function processPullRequest(
         console.log('    approved!');
       } catch (err) {
         console.warn(
-            '    error trying to approve PR ${htmlUrl}:', err.toString());
+            `    error trying to approve PR ${htmlUrl}:`, err.toString());
         return;
       }
       try {
@@ -117,7 +117,15 @@ async function processPullRequest(
         console.log('    merged!');
       } catch (err) {
         console.warn(
-            '    error trying to merge PR ${htmlUrl}:', err.toString());
+            `    error trying to merge PR ${htmlUrl}:`, err.toString());
+        return;
+      }
+      try {
+        await repository.deleteBranch(ref);
+        console.log('    branch deleted!');
+      } catch (err) {
+        console.warn(
+            `    error trying to delete branch ${htmlUrl}:`, err.toString());
         return;
       }
       break;
