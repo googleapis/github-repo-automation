@@ -205,11 +205,8 @@ export class GitHubRepository {
   async deleteBranch(ref: string) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const result = await this.octokit.gitdata.deleteReference({
-      owner,
-      ref,
-      repo
-    });
+    const result =
+        await this.octokit.gitdata.deleteReference({owner, ref, repo});
     return result.data;
   }
 
