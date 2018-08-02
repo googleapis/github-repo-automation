@@ -114,7 +114,8 @@ export async function exec(cli: meow.Result) {
 async function getRepos() {
   const config = await getConfig();
   const github = new GitHub(config);
-  return github.getRepositories();
+  const repos = await github.getRepositories();
+  return repos.filter(x => !x.repository.archived);
 }
 
 async function getRootPath() {
