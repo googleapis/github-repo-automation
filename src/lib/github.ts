@@ -475,6 +475,7 @@ export interface Repository {
   name: string;
   owner: User;
   clone_url?: string;
+  archived?: boolean;
   ssh_url?: string;
 }
 
