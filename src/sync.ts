@@ -28,6 +28,7 @@ import {getConfig} from './lib/config';
 import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
 import * as Q from 'p-queue';
+import * as ora from 'ora';
 
 const mkdir = util.promisify(fs.mkdir);
 const readdir = util.promisify(fs.readdir);
@@ -49,25 +50,31 @@ function print(res: {stdout: string, stderr: string}) {
  * If repo already exists, fetch and reset.
  */
 export async function sync() {
-  logger.info('Synchronizing repositories...');
+  const orb = ora('Synchronizing repositories...').start();
   const repos = await getRepos();
   const rootPath = await getRootPath();
-  for (let i = 0; i < repos.length; i++) {
-    const repo = repos[i];
+  const dirs = await readdir(rootPath);
+  let i = 0;
+  const q = new Q({concurrency: 50});
+  const proms = repos.map(repo => {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
-    if (fs.existsSync(cwd)) {
-      logger.info(`[${i + 1}/${repos.length}] Synchronizing ${repo.name}...`);
-      await spawn('git reset --hard origin/master', {cwd});
-      await spawn('git checkout master', {cwd});
-      await spawn('git fetch origin', {cwd});
-      await spawn('git reset --hard origin/master', {cwd});
-    } else {
-      logger.info(`[${i + 1}/${repos.length}] Cloning ${repo.name}...`);
-      await spawn(`git clone ${cloneUrl}`, {cwd: rootPath});
-    }
-  }
-  logger.info('Repo sync complete.');
+    return q.add(async () => {
+      if (dirs.indexOf(cwd) === -1) {
+        await spawn('git reset --hard origin/master', {cwd});
+        await spawn('git checkout master', {cwd});
+        await spawn('git fetch origin', {cwd});
+        await spawn('git reset --hard origin/master', {cwd});
+        orb.text = `[${i + 1}/${repos.length}] Synchronized ${repo.name}...`;
+      } else {
+        await spawn(`git clone ${cloneUrl}`, {cwd: rootPath});
+        orb.text = `[${i + 1}/${repos.length}] Cloned ${repo.name}...`;
+      }
+      i++;
+    });
+  });
+  await Promise.all(proms);
+  orb.succeed('Repo sync complete.');
 }
 
 export async function exec(cli: meow.Result) {
