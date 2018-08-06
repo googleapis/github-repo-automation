@@ -128,7 +128,7 @@ describe('GitHubRepository', () => {
       new GitHubRepository(octokit, repositoryObject, organization);
 
   it('should return repository object', done => {
-    assert.deepEqual(repository.getRepository(), repositoryObject);
+    assert.deepStrictEqual(repository.getRepository(), repositoryObject);
     done();
   });
 
@@ -179,7 +179,7 @@ describe('GitHubRepository', () => {
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
     const result = await repository.listPullRequests();
-    assert.deepEqual(result, prs);
+    assert.deepStrictEqual(result, prs);
     stub.restore();
   });
 
@@ -196,7 +196,7 @@ describe('GitHubRepository', () => {
       return Promise.resolve({data: getPage(prs, page || 1, per_page || 1)});
     });
     const result = await repository.listPullRequests(testState);
-    assert.deepEqual(result, prs);
+    assert.deepStrictEqual(result, prs);
     stub.restore();
   });
 
@@ -207,7 +207,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: commit}));
     const result = await repository.getLatestCommitToMaster();
     assert(stub.calledOnceWith({owner, repo, ref}));
-    assert.deepEqual(result, commit);
+    assert.deepStrictEqual(result, commit);
     stub.restore();
   });
 
@@ -220,7 +220,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: created}));
     const result = await repository.createBranch(branch, sha);
     assert(stub.calledOnceWith({owner, repo, ref, sha}));
-    assert.deepEqual(result, created);
+    assert.deepStrictEqual(result, created);
     stub.restore();
   });
 
@@ -233,7 +233,7 @@ describe('GitHubRepository', () => {
     }));
     const result = await repository.updateBranch(base, head);
     assert(stub.calledOnceWith({owner, repo, base, head}));
-    assert.deepEqual(result, commit);
+    assert.deepStrictEqual(result, commit);
     stub.restore();
   });
 
@@ -248,7 +248,7 @@ describe('GitHubRepository', () => {
     const result =
         await repository.createFileInBranch(branch, path, message, content);
     assert(stub.calledOnceWith({owner, repo, path, message, content, branch}));
-    assert.deepEqual(result, commit);
+    assert.deepStrictEqual(result, commit);
     stub.restore();
   });
 
@@ -265,7 +265,7 @@ describe('GitHubRepository', () => {
         branch, path, message, content, sha);
     assert(stub.calledOnceWith(
         {owner, repo, path, message, content, sha, branch}));
-    assert.deepEqual(result, commit);
+    assert.deepStrictEqual(result, commit);
     stub.restore();
   });
 
@@ -280,7 +280,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: pr}));
     const result = await repository.createPullRequest(branch, title, body);
     assert(stub.calledOnceWith({owner, repo, head, base, title, body}));
-    assert.deepEqual(result, pr);
+    assert.deepStrictEqual(result, pr);
     stub.restore();
   });
 
@@ -292,7 +292,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: review}));
     const result = await repository.requestReview(prNumber, reviewers);
     assert(stub.calledOnceWith({owner, repo, number: prNumber, reviewers}));
-    assert.deepEqual(result, review);
+    assert.deepStrictEqual(result, review);
     stub.restore();
   });
 
@@ -305,7 +305,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: review}));
     const result = await repository.approvePullRequest(pr);
     assert(stub.calledOnceWith({owner, repo, number: prNumber, event}));
-    assert.deepEqual(result, review);
+    assert.deepStrictEqual(result, review);
     stub.restore();
   });
 
@@ -317,7 +317,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: pr}));
     const result = await repository.closePullRequest(pr);
     assert(stub.calledOnceWith({owner, repo, number: prNumber, state}));
-    assert.deepEqual(result, pr);
+    assert.deepStrictEqual(result, pr);
     stub.restore();
   });
 
@@ -331,7 +331,7 @@ describe('GitHubRepository', () => {
     const result = await repository.mergePullRequest(pr);
     assert(stub.calledOnceWith(
         {owner, repo, number: prNumber, merge_method: mergeMethod}));
-    assert.deepEqual(result, commit);
+    assert.deepStrictEqual(result, commit);
     stub.restore();
   });
 
@@ -342,7 +342,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: response}));
     const result = await repository.getBranch(branch);
     assert(stub.calledOnceWith({owner, repo, branch}));
-    assert.deepEqual(result, response);
+    assert.deepStrictEqual(result, response);
     stub.restore();
   });
 
@@ -353,7 +353,7 @@ describe('GitHubRepository', () => {
                      .returns(Promise.resolve({data: protection}));
     const result = await repository.getRequiredMasterBranchProtection();
     assert(stub.calledOnceWith({owner, repo, branch}));
-    assert.deepEqual(result, protection);
+    assert.deepStrictEqual(result, protection);
     stub.restore();
   });
 
@@ -366,7 +366,7 @@ describe('GitHubRepository', () => {
     const result =
         await repository.getRequiredMasterBranchProtectionStatusChecks();
     assert(stub.calledOnceWith({owner, repo, branch}));
-    assert.deepEqual(result, statusChecks);
+    assert.deepStrictEqual(result, statusChecks);
     stub.restore();
   });
 
@@ -382,7 +382,7 @@ describe('GitHubRepository', () => {
         await repository.updateRequiredMasterBranchProtectionStatusChecks(
             contexts);
     assert(stub.calledOnceWith({owner, repo, branch, strict, contexts}));
-    assert.deepEqual(result, updatedResponse);
+    assert.deepStrictEqual(result, updatedResponse);
     stub.restore();
   });
 

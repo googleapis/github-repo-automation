@@ -27,26 +27,22 @@ import * as meow from 'meow';
 import {getConfig} from './lib/config';
 import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
+import * as Q from 'p-queue';
+import * as ora from 'ora';
 
 const mkdir = util.promisify(fs.mkdir);
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
+const spawn = util.promisify(cp.exec);
 
-function spawn(command: string, args: string[], options: cp.SpawnOptions = {}) {
-  return new Promise((resolve, reject) => {
-    cp.spawn(command, args, Object.assign(options, {stdio: 'inherit'}))
-        .on('close',
-            code => {
-              if (code === 0) {
-                resolve();
-              } else {
-                reject(new Error(`Spawn failed with an exit code of ${code}`));
-              }
-            })
-        .on('error', err => {
-          reject(err);
-        });
-  });
+function print(res: {stdout: string, stderr: string}) {
+  if (res.stdout) {
+    console.log(res.stdout);
+  }
+  if (res.stderr) {
+    console.log(res.stderr);
+  }
+  return res;
 }
 
 /**
@@ -54,25 +50,31 @@ function spawn(command: string, args: string[], options: cp.SpawnOptions = {}) {
  * If repo already exists, fetch and reset.
  */
 export async function sync() {
-  logger.info('Synchronizing repositories...');
+  const orb = ora('Synchronizing repositories...').start();
   const repos = await getRepos();
   const rootPath = await getRootPath();
-  for (let i = 0; i < repos.length; i++) {
-    const repo = repos[i];
+  const dirs = await readdir(rootPath);
+  let i = 0;
+  const q = new Q({concurrency: 50});
+  const proms = repos.map(repo => {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
-    if (fs.existsSync(cwd)) {
-      logger.info(`[${i + 1}/${repos.length}] Synchronizing ${repo.name}...`);
-      await spawn('git', ['reset', '--hard', 'origin/master'], {cwd});
-      await spawn('git', ['checkout', 'master'], {cwd});
-      await spawn('git', ['fetch', 'origin'], {cwd});
-      await spawn('git', ['reset', '--hard', 'origin/master'], {cwd});
-    } else {
-      logger.info(`[${i + 1}/${repos.length}] Cloning ${repo.name}...`);
-      await spawn('git', ['clone', cloneUrl], {cwd: rootPath});
-    }
-  }
-  logger.info('Repo sync complete.');
+    return q.add(async () => {
+      if (dirs.indexOf(cwd) === -1) {
+        await spawn('git reset --hard origin/master', {cwd});
+        await spawn('git checkout master', {cwd});
+        await spawn('git fetch origin', {cwd});
+        await spawn('git reset --hard origin/master', {cwd});
+        orb.text = `[${i + 1}/${repos.length}] Synchronized ${repo.name}...`;
+      } else {
+        await spawn(`git clone ${cloneUrl}`, {cwd: rootPath});
+        orb.text = `[${i + 1}/${repos.length}] Cloned ${repo.name}...`;
+      }
+      i++;
+    });
+  });
+  await Promise.all(proms);
+  orb.succeed('Repo sync complete.');
 }
 
 export async function exec(cli: meow.Result) {
@@ -94,23 +96,33 @@ export async function exec(cli: meow.Result) {
   }
 
   logger.info(`Executing '${command}' in ${dirs.length} directories.`);
-  for (let i = 0; i < dirs.length; i++) {
-    const dir = dirs[i];
-    logger.info(`[${i + 1}/${dirs.length}] Executing cmd in ${dir}...`);
-    try {
-      await spawn(command[0], command.slice(1), {cwd: dir});
-    } catch (e) {
-      logger.error(dir);
-      logger.error(e);
-    }
-  }
+  let i = 0;
+  const q = new Q({concurrency: 10});
+  const proms = dirs.map(dir => {
+    return q.add(() => {
+      return spawn(command.join(' '), {cwd: dir})
+          .then(r => {
+            i++;
+            logger.info(`[${i}/${dirs.length}] Executed cmd in ${dir}.`);
+            print(r);
+          })
+          .catch(e => {
+            i++;
+            logger.error(dir);
+            logger.error(e);
+          });
+    });
+  });
+
+  await Promise.all(proms);
   logger.info('Command execution successful.');
 }
 
 async function getRepos() {
   const config = await getConfig();
   const github = new GitHub(config);
-  return github.getRepositories();
+  const repos = await github.getRepositories();
+  return repos.filter(x => !x.repository.archived);
 }
 
 async function getRootPath() {
