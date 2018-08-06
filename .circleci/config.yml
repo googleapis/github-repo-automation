@@ -12,21 +12,15 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - lint:
+      - publish_npm:
           requires:
             - node8
             - node10
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /.*/
-      - docs:
-          requires:
-            - node8
-            - node10
-          filters:
-            tags:
-              only: /.*/
-
+              only: '/^v[\d.]+$/'
 jobs:
   node8:
     docker:
@@ -34,42 +28,19 @@ jobs:
         user: node
     steps: &unit_tests_steps
       - checkout
-      - run: &npm_install
-          name: Install modules and dependencies.
-          command: npm install
-      - run:
-          name: Run unit tests.
-          command: npm test
-      - run:
-          name: Submit coverage data to codecov.
-          command: node_modules/.bin/codecov
-          when: always
+      - run: npm install
+      - run: npm test
+      - run: node_modules/.bin/codecov
   node10:
     docker:
       - image: node:10
         user: node
     steps: *unit_tests_steps
-  lint:
+  publish_npm:
     docker:
-      - image: node:10
+      - image: 'node:8'
         user: node
     steps:
       - checkout
-      - run: *npm_install
-      - run:
-          name: Run gts check.
-          command: npm run check
-      - run:
-          name: Run linting.
-          command: npm run lint
-
-  docs:
-    docker:
-      - image: node:10
-        user: node
-    steps:
-      - checkout
-      - run: *npm_install
-      - run:
-          name: Build documentation.
-          command: npm run docs
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run: npm publish --access=public
