@@ -42,7 +42,7 @@ function push(level: LogLevel, message: string) {
   if (!stream) {
     stream = fs.createWriteStream(path);
   }
-  stream.write(`${new Date()}\t${level}\t${message}`, (err: Error) => {
+  stream.write(`${new Date()}\t${level}\t${message}`, err => {
     if (err) {
       console.error('Error writing to log.');
       console.error(err);
