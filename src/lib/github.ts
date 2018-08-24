@@ -48,7 +48,8 @@ export class GitHub {
       if (repo.name) {
         const result =
             await this.octokit.repos.get({owner: org, repo: repo.name});
-        repos.push(new GitHubRepository(this.octokit, result.data, org));
+        repos.push(
+            new GitHubRepository(this.octokit, result.data as Repository, org));
       } else if (repo.regex) {
         const repoNameRegex = new RegExp(repo.regex);
         for (let page = 1;; ++page) {
@@ -59,8 +60,9 @@ export class GitHub {
             break;
           }
           for (const repo of reposPage) {
-            if (repo.name.match(repoNameRegex)) {
-              repos.push(new GitHubRepository(this.octokit, repo, org));
+            if (repo.name!.match(repoNameRegex)) {
+              repos.push(
+                  new GitHubRepository(this.octokit, repo as Repository, org));
             }
           }
         }
@@ -148,7 +150,7 @@ export class GitHubRepository {
     const repo = this.repository.name;
     state = state || 'open';
 
-    const prs: PullRequest[] = [];
+    const prs = [];
     for (let page = 1;; ++page) {
       const result = await this.octokit.pullRequests.getAll({
         owner,

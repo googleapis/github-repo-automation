@@ -19,7 +19,7 @@
 
 'use strict';
 
-import {GitHub, Repository, GitHubRepository} from './github';
+import {GitHub, GitHubRepository} from './github';
 import {getConfig} from './config';
 
 /**

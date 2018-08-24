@@ -67,12 +67,11 @@ export async function main(options: meow.Result) {
       console.warn('  cannot list open pull requests:', err.toString());
       continue;
     }
-
     for (const pr of prs) {
-      const title = pr['title'];
+      const title = pr.title!;
       if (title.match(regex)) {
         console.log(`deleting un...`);
-        await processPullRequest(repository, pr);
+        await processPullRequest(repository, pr as PullRequest);
       }
     }
   }
