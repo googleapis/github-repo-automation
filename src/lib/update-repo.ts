@@ -71,7 +71,7 @@ async function processRepository(
     return;
   }
 
-  let latestCommit;
+  let latestCommit: {[index: string]: string};
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
@@ -80,7 +80,7 @@ async function processRepository(
         err.toString());
     return;
   }
-  const latestSha = latestCommit['sha'];
+  const latestSha = latestCommit.sha;
 
   try {
     await repository.createBranch(branch, latestSha);
@@ -143,8 +143,8 @@ async function processRepository(
         err.toString());
     return;
   }
-  const pullRequestNumber = pullRequest['number'];
-  const pullRequestUrl = pullRequest['html_url'];
+  const pullRequestNumber = pullRequest.number!;
+  const pullRequestUrl = pullRequest.html_url;
 
   if (reviewers.length > 0) {
     try {

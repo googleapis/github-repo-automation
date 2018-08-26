@@ -61,7 +61,7 @@ async function processRepository(
   }
   const encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
 
-  let latestCommit;
+  let latestCommit: {[index: string]: string};
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
@@ -102,8 +102,8 @@ async function processRepository(
         err.toString());
     return;
   }
-  const pullRequestNumber = pullRequest['number'];
-  const pullRequestUrl = pullRequest['html_url'];
+  const pullRequestNumber = pullRequest.number!;
+  const pullRequestUrl = pullRequest.html_url;
 
   if (reviewers.length > 0) {
     try {

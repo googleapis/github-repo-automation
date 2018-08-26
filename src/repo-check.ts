@@ -69,14 +69,14 @@ class Logger {
  */
 async function checkGithubMasterBranchProtection(
     logger: Logger, repository: GitHubRepository) {
-  let response = await repository.getBranch('master');
-  if (!response['protected']) {
+  const getBranchRes = await repository.getBranch('master');
+  if (!getBranchRes['protected']) {
     logger.error(`${
         repository.name}: [!] branch protection for master branch is disabled`);
     return;
   }
 
-  response = await repository.getRequiredMasterBranchProtection();
+  const response = await repository.getRequiredMasterBranchProtection();
   if (response['required_pull_request_reviews'] === undefined) {
     logger.error(`${
         repository
@@ -123,7 +123,7 @@ async function checkGreenkeeper(logger: Logger, repository: GitHubRepository) {
 
   let greenkeeperFound = false;
   for (const pullRequest of response) {
-    if (pullRequest['user']['login'] === 'greenkeeper[bot]') {
+    if (pullRequest.user!.login === 'greenkeeper[bot]') {
       greenkeeperFound = true;
       break;
     }
