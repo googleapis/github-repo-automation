@@ -62,7 +62,7 @@
   "scripts": {
     "lint": "npm run check && eslint samples/*.js samples/*/*.js",
     "prettier": "prettier --write samples/*.js samples/*/*.js",
-    "docs": "jsdoc -c .jsdoc.js",
+    "docs": "echo no docs 👻",
     "test": "nyc --reporter=lcov mocha build/test && nyc report",
     "check": "gts check",
     "clean": "gts clean",
