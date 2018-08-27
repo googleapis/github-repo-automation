@@ -11,7 +11,7 @@
     "test": "mocha system-test"
   },
   "dependencies": {
-    "github-repo-automation": "*"
+    "@google-cloud/repo": "*"
   },
   "devDependencies": {
     "mocha": "^5.2.0"
