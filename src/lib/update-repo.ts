@@ -22,9 +22,9 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
-const exec = util.promisify(child_process.exec);
-const readFile = util.promisify(fs.readFile);
+import * as pify from 'pify';
+const exec = pify(child_process.exec);
+const readFile = pify(fs.readFile);
 const tmp = require('tmp-promise');
 
 import {GitHub, GitHubRepository} from './github';
