@@ -68,9 +68,9 @@
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "posttest": "npm run check"
-  },
-  "publishConfig": {
-    "access": "public"
+    "posttest": "npm run check",
+    "samples-test": "mocha samples/system-test",
+    "system-test": "mocha build/system-test",
+    "presystem-test": "npm run compile"
   }
 }

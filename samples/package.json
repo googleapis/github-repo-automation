@@ -1,0 +1,19 @@
+{
+  "description": "Samples for the github-repo-automation npm module.",
+  "license": "Apache-2.0",
+  "author": "Google LLC",
+  "engines": {
+    "node": ">=8"
+  },
+  "repository": "googleapis/github-repo-automation",
+  "private": true,
+  "scripts": {
+    "test": "mocha system-test"
+  },
+  "dependencies": {
+    "github-repo-automation": "*"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
