@@ -4,7 +4,7 @@
   "repository": "googleapis/github-repo-automation",
   "description": "A tool for automating multiple GitHub repositories.",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=6.0.0"
   },
   "bin": {
     "repo": "build/src/cli.js"
@@ -60,7 +60,7 @@
     "typescript": "^3.0.0"
   },
   "scripts": {
-    "lint": "eslint samples/*.js samples/*/*.js",
+    "lint": "npm run check && eslint samples/*.js samples/*/*.js",
     "prettier": "prettier --write samples/*.js samples/*/*.js",
     "docs": "jsdoc -c .jsdoc.js",
     "test": "nyc --reporter=lcov mocha build/test && nyc report",
