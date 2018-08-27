@@ -1,5 +1,5 @@
 {
-  "description": "Samples for the github-repo-automation npm module.",
+  "description": "Samples for the @google/repo npm module.",
   "license": "Apache-2.0",
   "author": "Google LLC",
   "engines": {
@@ -11,7 +11,7 @@
     "test": "mocha system-test"
   },
   "dependencies": {
-    "@google-cloud/repo": "*"
+    "@google/repo": "*"
   },
   "devDependencies": {
     "mocha": "^5.2.0"
