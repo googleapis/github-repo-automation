@@ -22,7 +22,7 @@
     "js-yaml": "^3.10.0",
     "meow": "^5.0.0",
     "ora": "^3.0.0",
-    "p-queue": "^2.4.2",
+    "p-queue": "^3.0.0",
     "pify": "^4.0.0",
     "tmp-promise": "^1.0.4",
     "update-notifier": "^2.5.0"
