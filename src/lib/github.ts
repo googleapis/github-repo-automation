@@ -202,7 +202,7 @@ export class GitHubRepository {
 
   /**
    * Deletes the given branch.
-   * @param {string} string Name of the branch.
+   * @param {string} branch Name of the branch.
    */
   async deleteBranch(branch: string) {
     const owner = this.repository.owner.login;
