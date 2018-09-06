@@ -5,9 +5,7 @@
 coverage/
 docs/
 out/
-test.js
 config.yaml
-ignored
 build
 .vscode
 package-lock.json
