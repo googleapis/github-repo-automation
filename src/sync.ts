@@ -19,7 +19,6 @@
 
 'use strict';
 
-import * as util from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
@@ -29,11 +28,12 @@ import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
 import * as Q from 'p-queue';
 import * as ora from 'ora';
+import * as pify from 'pify';
 
-const mkdir = util.promisify(fs.mkdir);
-const readdir = util.promisify(fs.readdir);
-const stat = util.promisify(fs.stat);
-const spawn = util.promisify(cp.exec);
+const mkdir = pify(fs.mkdir);
+const readdir = pify(fs.readdir);
+const stat = pify(fs.stat);
+const spawn = pify(cp.exec);
 
 function print(res: {stdout: string, stderr: string}) {
   if (res.stdout) {
@@ -60,7 +60,7 @@ export async function sync() {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
     return q.add(async () => {
-      if (dirs.indexOf(cwd) === -1) {
+      if (dirs.indexOf(cwd) !== -1) {
         await spawn('git reset --hard origin/master', {cwd});
         await spawn('git checkout master', {cwd});
         await spawn('git fetch origin', {cwd});
@@ -82,7 +82,7 @@ export async function exec(cli: meow.Result) {
   const rootPath = await getRootPath();
 
   // get all of the subdirectories in ~/.repo.
-  const files = await readdir(rootPath);
+  const files: string[] = await readdir(rootPath);
   const ps = await Promise.all(files.map(async file => {
     file = path.join(rootPath, file);
     const stats = await stat(file);

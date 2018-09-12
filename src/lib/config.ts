@@ -19,8 +19,8 @@
 'use strict';
 
 import * as fs from 'fs';
-import * as util from 'util';
-const readFile = util.promisify(fs.readFile);
+import * as pify from 'pify';
+const readFile = pify(fs.readFile);
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as os from 'os';

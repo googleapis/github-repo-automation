@@ -47,7 +47,8 @@ export class GitHub {
       if (repo.name) {
         const result =
             await this.octokit.repos.get({owner: org, repo: repo.name});
-        repos.push(new GitHubRepository(this.octokit, result.data, org));
+        repos.push(
+            new GitHubRepository(this.octokit, result.data as Repository, org));
       } else if (repo.regex) {
         const repoNameRegex = new RegExp(repo.regex);
         for (let page = 1;; ++page) {
@@ -58,8 +59,9 @@ export class GitHub {
             break;
           }
           for (const repo of reposPage) {
-            if (repo.name.match(repoNameRegex)) {
-              repos.push(new GitHubRepository(this.octokit, repo, org));
+            if (repo.name!.match(repoNameRegex)) {
+              repos.push(
+                  new GitHubRepository(this.octokit, repo as Repository, org));
             }
           }
         }
@@ -208,7 +210,7 @@ export class GitHubRepository {
     const repo = this.repository.name;
     state = state || 'open';
 
-    const prs: PullRequest[] = [];
+    const prs = [];
     for (let page = 1;; ++page) {
       const result = await this.octokit.pullRequests.getAll({
         owner,
@@ -260,11 +262,12 @@ export class GitHubRepository {
 
   /**
    * Deletes the given branch.
-   * @param {string} string Ref of the branch.
+   * @param {string} branch Name of the branch.
    */
-  async deleteBranch(ref: string) {
+  async deleteBranch(branch: string) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
+    const ref = `refs/heads/${branch}`;
     const result =
         await this.octokit.gitdata.deleteReference({owner, ref, repo});
     return result.data;

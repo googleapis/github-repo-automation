@@ -19,13 +19,13 @@
 
 'use strict';
 
-import * as util from 'util';
 import * as childProcess from 'child_process';
-const exec = util.promisify(childProcess.exec);
+import * as pify from 'pify';
 const commandLineUsage = require('command-line-usage');
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
 import * as meow from 'meow';
+const exec = pify(childProcess.exec);
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},
@@ -94,7 +94,8 @@ const helpSections = [
  */
 async function getFilesToCommit() {
   const gitStatus = await exec('git status --porcelain');
-  const lines = gitStatus.stdout.split('\n').filter(line => line !== '');
+  const lines =
+      gitStatus.stdout.split('\n').filter((line: string) => line !== '');
   const files: string[] = [];
   for (const line of lines) {
     const matchResult = line.match(/^(?: M|\?\?) (.*)$/);

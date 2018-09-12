@@ -52,7 +52,7 @@ async function processPullRequest(
 
   console.log(`  [${author}] ${htmlUrl}: ${title}`);
 
-  let latestCommit;
+  let latestCommit: {[index: string]: string};
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
@@ -160,7 +160,7 @@ export async function main(cli: meow.Result) {
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.name);
-    let prs: PullRequest[];
+    let prs;
     try {
       prs = await repository.listPullRequests();
     } catch (err) {
@@ -169,9 +169,9 @@ export async function main(cli: meow.Result) {
     }
 
     for (const pr of prs) {
-      const title = pr.title;
+      const title = pr.title!;
       if (title.match(regex)) {
-        await processPullRequest(repository, pr, auto);
+        await processPullRequest(repository, pr as PullRequest, auto);
       }
     }
   }

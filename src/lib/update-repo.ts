@@ -22,9 +22,9 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
-const exec = util.promisify(child_process.exec);
-const readFile = util.promisify(fs.readFile);
+import * as pify from 'pify';
+const exec = pify(child_process.exec);
+const readFile = pify(fs.readFile);
 const tmp = require('tmp-promise');
 
 import {GitHub, GitHubRepository} from './github';
@@ -71,7 +71,7 @@ async function processRepository(
     return;
   }
 
-  let latestCommit;
+  let latestCommit: {[index: string]: string};
   try {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
@@ -80,7 +80,7 @@ async function processRepository(
         err.toString());
     return;
   }
-  const latestSha = latestCommit['sha'];
+  const latestSha = latestCommit.sha;
 
   try {
     await repository.createBranch(branch, latestSha);
@@ -143,8 +143,8 @@ async function processRepository(
         err.toString());
     return;
   }
-  const pullRequestNumber = pullRequest['number'];
-  const pullRequestUrl = pullRequest['html_url'];
+  const pullRequestNumber = pullRequest.number!;
+  const pullRequestUrl = pullRequest.html_url;
 
   if (reviewers.length > 0) {
     try {
