@@ -18,6 +18,7 @@
 
 'use strict';
 
+import axios from 'axios';
 import * as OctoKit from '@octokit/rest';
 import {Config} from './config';
 
@@ -35,14 +36,12 @@ export class GitHub {
     this.octokit = octokit;
   }
 
-  /**
-   * List all public repositories of the organization that match the regex
-   * filter. Organization name and regex are taken from the configuration file.
-   * @returns {GitHubRepository[]} Repositories matching the filter.
-   */
-  async getRepositories() {
-    const type = 'public';
+  async fetchRepositoriesFromGitHub(): Promise<GitHubRepository[]> {
+    if (!this.config.repos) {
+      return [];
+    }
     const repos = new Array<GitHubRepository>();
+    const type = 'public';
     const proms = this.config.repos.map(async repo => {
       const org = repo.org;
       if (repo.name) {
@@ -70,6 +69,67 @@ export class GitHub {
       }
     });
     await Promise.all(proms);
+    return repos.filter(repo => !repo.repository.archived);
+  }
+
+  async fetchRepositoriesFromJson(): Promise<GitHubRepository[]> {
+    if (!this.config.reposList || !this.config.reposList.uri) {
+      return [];
+    }
+    const uri = this.config.reposList.uri;
+    const language = this.config.reposList.language;
+    const reposJson = await axios.get(this.config.reposList.uri);
+    let reposList: Array<{repo: string; language: string;}> =
+        reposJson.data.repos;
+    if (language) {
+      reposList = reposList.filter(repo => repo.language === language);
+    }
+    const repos = new Array<GitHubRepository>();
+    for (const repo of reposList) {
+      const [org, name] = repo.repo.split('/');
+      if (!org || !name) {
+        console.warn(`Warning: repository name ${repo.repo} cannot be parsed.`);
+      }
+      const repository: Repository = {owner: {login: org}, name};
+      const gitHubRepository =
+          new GitHubRepository(this.octokit, repository, org);
+      repos.push(gitHubRepository);
+    }
+    return repos;
+  }
+
+  /**
+   * List all public repositories of the organization that match the regex
+   * filter. Organization name and regex are taken from the configuration file.
+   * @returns {GitHubRepository[]} Repositories matching the filter.
+   */
+  async getRepositories(): Promise<GitHubRepository[]> {
+    const repos = new Array<GitHubRepository>();
+
+    const githubRepos = await this.fetchRepositoriesFromGitHub();
+    if (githubRepos.length > 0) {
+      console.log(`Loaded ${githubRepos.length} repositories from GitHub.`);
+    }
+
+    const jsonRepos = await this.fetchRepositoriesFromJson();
+    if (jsonRepos.length > 0) {
+      console.log(`Loaded ${jsonRepos.length} repositories from JSON config.`);
+    }
+
+    const unique: {[key: string]: GitHubRepository;} = {};
+    for (const repo of githubRepos.concat(jsonRepos)) {
+      const name = `${repo.organization}/${repo.name}`;
+      if (!(name in unique)) {
+        repos.push(repo);
+        unique[name] = repo;
+      }
+    }
+
+    if (repos.length === 0) {
+      throw new Error(
+          'No repositories configured. Use config.repos and/or config.reposList.uri.');
+    }
+    console.log(`Total ${repos.length} unique repositories loaded.`);
     return repos;
   }
 }

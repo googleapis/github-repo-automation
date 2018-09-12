@@ -90,7 +90,14 @@ describe('GitHub', () => {
   });
 
   it('should get repositories', async () => {
-    const testOrg = testConfig.repos[0].org;
+    if (testConfig.repos === undefined) {
+      throw new Error('no repos');
+    }
+    const repo = testConfig.repos[0];
+    if (repo === undefined) {
+      throw new Error('no repo');
+    }
+    const testOrg = repo.org;
     const testType = 'public';
     const repositories = [
       {name: 'matches-1'},
