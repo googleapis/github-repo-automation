@@ -14,18 +14,14 @@
 
 ---
 githubToken: your-github-token
-repos:
-  - org: googleapis
-    regex: nodejs-.*
-  - org: googleapis
-    name: github-repo-automation
-  - org: GoogleCloudPlatform
-    regex: ^cloud-[a-z]*-nodejs$
-  - org: google
-    name: google-api-nodejs-client
-  - org: google
-    name: google-auth-library-nodejs
-  - org: google
-    name: google-p12-pem
-  - org: google
-    name: node-gtoken
+reposList:
+  uri: https://raw.githubusercontent.com/GoogleCloudPlatform/sloth/master/repos.json
+  language: nodejs
+# You can also add repos not listed in the published JSON config:
+# repos:
+#   - org: googleapis
+#     regex: nodejs-.*
+#   - org: googleapis
+#     name: github-repo-automation
+#   - org: GoogleCloudPlatform
+#     regex: ^cloud-[a-z]*-nodejs$
