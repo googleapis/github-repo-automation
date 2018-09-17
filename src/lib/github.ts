@@ -92,7 +92,11 @@ export class GitHub {
       if (!org || !name) {
         console.warn(`Warning: repository name ${repo.repo} cannot be parsed.`);
       }
-      const repository: Repository = {owner: {login: org}, name};
+      const repository = {
+        owner: {login: org},
+        name,
+        ssh_url: `git@github.com:${org}/${name}.git`
+      };
       const gitHubRepository =
           new GitHubRepository(this.octokit, repository, org);
       repos.push(gitHubRepository);
