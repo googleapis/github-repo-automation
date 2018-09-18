@@ -69,14 +69,29 @@ class Logger {
  */
 async function checkGithubMasterBranchProtection(
     logger: Logger, repository: GitHubRepository) {
-  const getBranchRes = await repository.getBranch('master');
+  let getBranchRes;
+  try {
+    getBranchRes = await repository.getBranch('master');
+  } catch (err) {
+    logger.error(
+        `${repository.name}: [!] cannot fetch branch information, no access?`);
+    return;
+  }
   if (!getBranchRes['protected']) {
     logger.error(`${
         repository.name}: [!] branch protection for master branch is disabled`);
     return;
   }
 
-  const response = await repository.getRequiredMasterBranchProtection();
+  let response;
+  try {
+    response = await repository.getRequiredMasterBranchProtection();
+  } catch (err) {
+    logger.error(`${
+        repository
+            .name}: [!] cannot fetch branch protection settings, no access?`);
+    return;
+  }
   if (response['required_pull_request_reviews'] === undefined) {
     logger.error(`${
         repository
@@ -85,10 +100,9 @@ async function checkGithubMasterBranchProtection(
 
   if (response['required_status_checks'] !== undefined) {
     const requiredStatusChecks = [
-      'ci/circleci: node4',
       'ci/circleci: node6',
       'ci/circleci: node8',
-      'ci/circleci: node9',
+      'ci/circleci: node10',
     ];
     for (const check of requiredStatusChecks) {
       let enabled = false;
@@ -113,23 +127,23 @@ async function checkGithubMasterBranchProtection(
 }
 
 /**
- * Checks if Greenkeeper is enabled for GitHub repository.
+ * Checks if Renovate is enabled for GitHub repository.
  * Logs all errors and warnings.
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
-async function checkGreenkeeper(logger: Logger, repository: GitHubRepository) {
+async function checkRenovate(logger: Logger, repository: GitHubRepository) {
   const response = await repository.listPullRequests('closed');
 
-  let greenkeeperFound = false;
+  let renovateFound = false;
   for (const pullRequest of response) {
-    if (pullRequest.user!.login === 'greenkeeper[bot]') {
-      greenkeeperFound = true;
+    if (pullRequest.user!.login === 'renovate[bot]') {
+      renovateFound = true;
       break;
     }
   }
 
-  if (!greenkeeperFound) {
+  if (!renovateFound) {
     logger.error(`${repository.name}: [!] GreenKeeper is probably not enabled`);
   }
 }
@@ -168,7 +182,9 @@ async function checkSamplesPackageDependency(
     const mainVersion = packageJson['version'];
     const mainName = packageJson['name'];
     const samplesDependency = samplesPackageJson['dependencies'][mainName];
-    if (samplesDependency !== mainVersion) {
+    const regex = '^[^]?' + mainVersion.replace(/\./g, '\.') +
+        '$';  // 1.12.3 ==> ^[^]?1\.12\.3$
+    if (!samplesDependency.match(regex)) {
       logger.error(`${repository.name}: [!] main package version ${
           mainVersion} does not match samples dependency ${samplesDependency}`);
     }
@@ -250,7 +266,7 @@ async function checkAllRepositories(logger: Logger) {
 
     const errorCounter = logger.errorCount;
     await checkGithubMasterBranchProtection(logger, repository);
-    await checkGreenkeeper(logger, repository);
+    await checkRenovate(logger, repository);
     await checkSamplesPackageDependency(logger, repository);
     await checkReadmeLinks(logger, repository);
 
