@@ -40,9 +40,11 @@ async function showPatch(patchUrl: string) {
  * Process one pull request: ask the user to approve, show patch, or skip it.
  * @param {GitHubRepository} repository GitHub repository for this pull request.
  * @param {Object} pr Pull request object, as returned by GitHub API.
+ * @returns boolean True if successfully processed.
  */
 async function processPullRequest(
-    repository: GitHubRepository, pr: PullRequest, auto: boolean) {
+    repository: GitHubRepository, pr: PullRequest,
+    auto: boolean): Promise<boolean> {
   const title = pr.title;
   const htmlUrl = pr.html_url;
   const patchUrl = pr.patch_url;
@@ -59,7 +61,7 @@ async function processPullRequest(
     console.warn(
         '    cannot get sha of latest commit to master, skipping:',
         err.toString());
-    return;
+    return false;
   }
   const latestMasterSha = latestCommit['sha'];
 
@@ -83,14 +85,14 @@ async function processPullRequest(
           console.warn(
               `    cannot update branch for PR ${htmlUrl}, skipping:`,
               err.toString());
-          return;
+          return false;
         }
       } else if (response === 'p') {
         await showPatch(patchUrl);
         continue;
       } else if (response === 's') {
         console.log('   skipped');
-        return;
+        return false;
       }
     }
   }
@@ -110,7 +112,7 @@ async function processPullRequest(
       } catch (err) {
         console.warn(
             `    error trying to approve PR ${htmlUrl}:`, err.toString());
-        return;
+        return false;
       }
       try {
         await repository.mergePullRequest(pr);
@@ -118,7 +120,7 @@ async function processPullRequest(
       } catch (err) {
         console.warn(
             `    error trying to merge PR ${htmlUrl}:`, err.toString());
-        return;
+        return false;
       }
       try {
         await repository.deleteBranch(ref);
@@ -126,7 +128,7 @@ async function processPullRequest(
       } catch (err) {
         console.warn(
             `    error trying to delete branch ${ref}:`, err.toString());
-        return;
+        return false;
       }
       break;
     } else if (response === 'p') {
@@ -137,6 +139,8 @@ async function processPullRequest(
       break;
     }
   }
+
+  return true;
 }
 
 /**
@@ -158,6 +162,8 @@ export async function main(cli: meow.Result) {
   const regex = new RegExp(cli.input[1] || '.*');
   const auto = cli.flags.auto;
   const repos = await github.getRepositories();
+  const successful: string[] = [];
+  const failed: string[] = [];
   for (const repository of repos) {
     console.log(repository.name);
     let prs;
@@ -171,8 +177,25 @@ export async function main(cli: meow.Result) {
     for (const pr of prs) {
       const title = pr.title!;
       if (title.match(regex)) {
-        await processPullRequest(repository, pr as PullRequest, auto);
+        const result =
+            await processPullRequest(repository, pr as PullRequest, auto);
+        if (result) {
+          successful.push(pr.html_url);
+        } else {
+          failed.push(pr.html_url);
+        }
       }
     }
+  }
+
+  console.log(
+      `Successfully approved and merged: ${successful.length} pull request(s)`);
+  for (const pr of successful) {
+    console.log(`  ${pr}`);
+  }
+
+  console.log(`Unable to merge: ${failed.length} pull requests(s)`);
+  for (const pr of failed) {
+    console.log(`  ${pr}`);
   }
 }
