@@ -125,7 +125,7 @@ async function processPullRequest(
         console.log('    branch deleted!');
       } catch (err) {
         console.warn(
-            `    error trying to delete branch ${htmlUrl}:`, err.toString());
+            `    error trying to delete branch ${ref}:`, err.toString());
         return;
       }
       break;
