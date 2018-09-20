@@ -37,12 +37,12 @@ const updateRepo = require('../build/src/lib/update-repo.js');
  * to be added or edited, and checked in.
  */
 async function process(repoPath) {
-  let circleConfigPath = path.join('.circleci', 'config.yml');
-  let circleConfigFullPath = path.join(repoPath, circleConfigPath);
-  let text = (await readFile(circleConfigFullPath)).toString();
-  let config = yaml.load(text);
+  const circleConfigPath = path.join('.circleci', 'config.yml');
+  const circleConfigFullPath = path.join(repoPath, circleConfigPath);
+  const text = (await readFile(circleConfigFullPath)).toString();
+  const config = yaml.load(text);
 
-  let removePackageLock = {
+  const removePackageLock = {
     name: 'Remove package-lock.json if needed.',
     command: `WORKFLOW_NAME=\`python .circleci/get_workflow_name.py\`
 echo "Workflow name: $WORKFLOW_NAME"
@@ -55,14 +55,14 @@ fi
 `,
   };
 
-  let unitTestsSteps = config['unit_tests']['steps'];
+  const unitTestsSteps = config['unit_tests']['steps'];
   delete config['unit_tests'];
   unitTestsSteps.splice(1, 0, {
     run: removePackageLock,
   });
 
-  let jobs = config['jobs'];
-  for (let name of Object.keys(jobs)) {
+  const jobs = config['jobs'];
+  for (const name of Object.keys(jobs)) {
     if (name.match(/^node\d+$/)) {
       jobs[name]['steps'] = unitTestsSteps;
     } else if (name !== 'publish_npm') {
@@ -72,7 +72,7 @@ fi
     }
   }
 
-  let testJobs = config['workflows']['tests']['jobs'];
+  const testJobs = config['workflows']['tests']['jobs'];
   config['workflows']['nightly'] = {
     triggers: [
       {
@@ -95,9 +95,9 @@ fi
   newText = newText.replace(/ref_2/g, 'remove_package_lock');
   await writeFile(circleConfigFullPath, newText);
 
-  let pythonScriptPath = path.join('.circleci', 'get_workflow_name.py');
-  let pythonScriptSourceFolder = '/tmp/source_folder';
-  let pythonScript = await readFile(
+  const pythonScriptPath = path.join('.circleci', 'get_workflow_name.py');
+  const pythonScriptSourceFolder = '/tmp/source_folder';
+  const pythonScript = await readFile(
     path.join(pythonScriptSourceFolder, pythonScriptPath)
   );
   await writeFile(path.join(repoPath, pythonScriptPath), pythonScript);

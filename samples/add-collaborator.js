@@ -24,7 +24,7 @@ const question = require('../build/src/lib/question.js');
 /** Main function.
  */
 async function main() {
-  let username = await question('Enter username to add as collaborator:');
+  const username = await question('Enter username to add as collaborator:');
   if (username === undefined || username.match(/^\s*$/)) {
     console.log('Canceling.');
     return;
@@ -41,12 +41,12 @@ async function main() {
     return;
   }
 
-  let github = new GitHub();
+  const github = new GitHub();
   await github.init();
 
-  let repos = await github.getRepositories();
+  const repos = await github.getRepositories();
   let index = 0;
-  for (let repository of repos) {
+  for (const repository of repos) {
     console.log(
       `${repository.name}: [.] processing repository (${index} of ${
         repos.length

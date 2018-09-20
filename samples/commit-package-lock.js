@@ -31,7 +31,7 @@ const exec = util.promisify(child_process.exec);
  */
 async function commitPackageLockJson(dir) {
   try {
-    let cwd = process.cwd();
+    const cwd = process.cwd();
     process.chdir(dir);
     await exec('npm install --package-lock-only');
     await exec("perl -pi -e 's/\\*-lock.js\\*\\n//' .gitignore");

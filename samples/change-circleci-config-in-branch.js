@@ -26,7 +26,7 @@ const updateFileInBranch = require('../build/src/lib/update-file-in-branch.js');
  * wrong.
  */
 function fixCircleConfig(circleConfigText) {
-  let newText = circleConfigText
+  const newText = circleConfigText
     .toString()
     .replace(new RegExp('ref_0', 'g'), 'unit_tests');
   if (newText === circleConfigText) {

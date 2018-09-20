@@ -25,12 +25,12 @@ const updateFile = require('../../build/src/lib/update-file.js');
  * minutes).
  */
 function applyFix(packageJson) {
-  let json = JSON.parse(packageJson);
-  let systemTestCmd = json['scripts']['system-test'];
+  const json = JSON.parse(packageJson);
+  const systemTestCmd = json['scripts']['system-test'];
   if (systemTestCmd === undefined) {
     return undefined;
   }
-  let newSystemTestCmd = systemTestCmd.replace(
+  const newSystemTestCmd = systemTestCmd.replace(
     /--timeout\s+\d+|--no-timeouts/,
     '--timeout 600000'
   );
