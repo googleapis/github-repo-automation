@@ -24,11 +24,11 @@ const GitHub = require('../build/src/lib/github.js');
 async function main() {
   const toRemove = 'ci/circleci: node7';
 
-  let github = new GitHub();
+  const github = new GitHub();
   await github.init();
 
-  let repos = await github.getRepositories();
-  for (let repository of repos) {
+  const repos = await github.getRepositories();
+  for (const repository of repos) {
     console.log(repository.getRepository()['name']);
 
     let statusChecks;
@@ -44,8 +44,8 @@ async function main() {
       continue;
     }
 
-    let contexts = statusChecks['contexts'];
-    let index = contexts.indexOf(toRemove);
+    const contexts = statusChecks['contexts'];
+    const index = contexts.indexOf(toRemove);
     contexts.splice(index, 1);
 
     try {

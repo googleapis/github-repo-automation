@@ -29,10 +29,10 @@ const updateFile = require('../build/src/lib/update-file.js');
  */
 function removeJobFromArray(jobArray, jobNameToRemove) {
   let idToDelete;
-  for (let index in jobArray) {
-    let job = jobArray[index];
-    let keys = Object.keys(job);
-    let name = keys[0];
+  for (const index in jobArray) {
+    const job = jobArray[index];
+    const keys = Object.keys(job);
+    const name = keys[0];
     if (name === jobNameToRemove) {
       if (idToDelete === undefined) {
         idToDelete = index;
@@ -62,7 +62,7 @@ function removeJobFromArray(jobArray, jobNameToRemove) {
  * wrong.
  */
 function removeJobFromCircleConfig(circleConfigText, jobNameToRemove) {
-  let circleConfigYaml = yaml.load(circleConfigText);
+  const circleConfigYaml = yaml.load(circleConfigText);
 
   if (
     !removeJobFromArray(
@@ -78,12 +78,12 @@ function removeJobFromCircleConfig(circleConfigText, jobNameToRemove) {
 
   delete circleConfigYaml['jobs'][jobNameToRemove];
 
-  for (let job of circleConfigYaml['workflows']['tests']['jobs']) {
-    let keys = Object.keys(job);
-    let name = keys[0];
+  for (const job of circleConfigYaml['workflows']['tests']['jobs']) {
+    const keys = Object.keys(job);
+    const name = keys[0];
 
     if (job[name]['requires'] !== undefined) {
-      let indexToRemove = job[name]['requires'].indexOf(jobNameToRemove);
+      const indexToRemove = job[name]['requires'].indexOf(jobNameToRemove);
       if (indexToRemove !== -1) {
         job[name]['requires'].splice(indexToRemove, 1);
       }

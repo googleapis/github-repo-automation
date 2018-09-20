@@ -30,16 +30,16 @@ const extend = require('extend');
  * wrong.
  */
 function applyFix(circleConfigText) {
-  let circleConfigYaml = yaml.load(circleConfigText);
+  const circleConfigYaml = yaml.load(circleConfigText);
 
-  let testsWorkflowJobs = circleConfigYaml['workflows']['tests']['jobs'];
+  const testsWorkflowJobs = circleConfigYaml['workflows']['tests']['jobs'];
   let node8;
   let node9position;
 
-  for (let jobIdx in testsWorkflowJobs) {
-    let job = testsWorkflowJobs[jobIdx];
-    let keys = Object.keys(job);
-    let name = keys[0];
+  for (const jobIdx in testsWorkflowJobs) {
+    const job = testsWorkflowJobs[jobIdx];
+    const keys = Object.keys(job);
+    const name = keys[0];
 
     switch (name) {
       case 'node9':
@@ -71,17 +71,17 @@ function applyFix(circleConfigText) {
     return undefined;
   }
 
-  let node10 = extend(true, {}, node8);
+  const node10 = extend(true, {}, node8);
   node10['node10'] = node10['node8'];
   delete node10['node8'];
   testsWorkflowJobs.splice(parseInt(node9position) + 1, 0, node10);
 
-  let jobs = circleConfigYaml['jobs'];
+  const jobs = circleConfigYaml['jobs'];
   let installCmd;
   let linkSamplesCmd;
-  for (let [, job] of Object.entries(jobs)) {
+  for (const [, job] of Object.entries(jobs)) {
     if (job['steps'] !== undefined) {
-      for (let step of job['steps']) {
+      for (const step of job['steps']) {
         if (step['run'] !== undefined) {
           if (
             step['run']['name'].match(/Install and link/) &&
@@ -103,9 +103,9 @@ function applyFix(circleConfigText) {
   }
 
   let node8def;
-  for (let [name, job] of Object.entries(jobs)) {
+  for (const [name, job] of Object.entries(jobs)) {
     if (job['steps'] !== undefined) {
-      for (let step of job['steps']) {
+      for (const step of job['steps']) {
         if (step['run'] !== undefined) {
           if (
             step['run']['name'].match(/Install/) &&
@@ -142,15 +142,15 @@ function applyFix(circleConfigText) {
     return undefined;
   }
 
-  let node10def = extend(true, {}, node8def);
+  const node10def = extend(true, {}, node8def);
   node10def['steps'] = jobs['node8']['steps']; // want the same object here
   node10def['docker'][0]['image'] = 'node:10';
   // we want to keep an order of jobs so...
-  let order = Object.keys(jobs);
+  const order = Object.keys(jobs);
   order.splice(order.indexOf('node9') + 1, 0, 'node10');
   jobs['node10'] = node10def;
-  let newJobs = {};
-  for (let key of order) {
+  const newJobs = {};
+  for (const key of order) {
     newJobs[key] = jobs[key];
   }
   circleConfigYaml['jobs'] = newJobs;

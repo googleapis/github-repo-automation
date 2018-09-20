@@ -29,12 +29,12 @@ const updateFile = require('../build/src/lib/update-file');
  * wrong.
  */
 function process(text) {
-  let config = yaml.load(text);
+  const config = yaml.load(text);
 
-  let jobs = config['jobs'];
-  for (let name of Object.keys(jobs)) {
-    for (let step of jobs[name]['steps']) {
-      let run = step['run'];
+  const jobs = config['jobs'];
+  for (const name of Object.keys(jobs)) {
+    for (const step of jobs[name]['steps']) {
+      const run = step['run'];
       if (
         run !== undefined &&
         run['name'].match(/install/i) &&
