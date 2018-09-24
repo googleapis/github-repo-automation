@@ -54,13 +54,11 @@ export async function sync() {
   const repos = await getRepos();
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
-  console.log(dirs);
   let i = 0;
   const q = new Q({concurrency: 50});
   const proms = repos.map(repo => {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
-    console.log(cwd);
     return q.add(async () => {
       if (dirs.indexOf(repo.name) !== -1) {
         await spawn('git reset --hard origin/master', {cwd});
