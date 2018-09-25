@@ -60,7 +60,7 @@ export async function sync() {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
     return q.add(async () => {
-      if (dirs.indexOf(cwd) !== -1) {
+      if (dirs.indexOf(repo.name) !== -1) {
         await spawn('git reset --hard origin/master', {cwd});
         await spawn('git checkout master', {cwd});
         await spawn('git fetch origin', {cwd});
