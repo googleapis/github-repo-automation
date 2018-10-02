@@ -535,7 +535,7 @@ export interface PullRequest {
   patch_url: string;
   user: User;
   base: {sha: string;};
-  head: {ref: string;};
+  head: {ref: string; label: string;};
 }
 
 export interface Repository {

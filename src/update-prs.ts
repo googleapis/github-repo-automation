@@ -13,9 +13,9 @@
 // limitations under the License.
 
 /**
- * @fileoverview A quick'n'dirty console UI to close a bunch of pull requests.
- * Usage: `repo reject [regex]`  -- will go through open PRs with title
- * matching `regex`, one by one.
+ * @fileoverview A quick'n'dirty console UI to approve a bunch of pull requests.
+ * Usage: `node approve-prs.js [regex]`  -- will go through open PRs with title
+ * matching `regex`, one by one. Without a regex, will go through all open PRs.
  */
 
 'use strict';
@@ -28,20 +28,42 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const title = pr.title;
   const htmlUrl = pr.html_url;
   const author = pr.user.login;
+  const baseSha = pr.base.sha;
+  const ref = pr.head.ref;
+
   console.log(`  [${author}] ${htmlUrl}: ${title}`);
+
+  let latestCommit: {[index: string]: string};
   try {
-    await repository.closePullRequest(pr);
+    latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
-    console.warn('    cannot close pull request, skipping:', err.toString());
+    console.warn(
+        '    cannot get sha of latest commit to master, skipping:',
+        err.toString());
     return false;
   }
+
+  const latestMasterSha = latestCommit['sha'];
+  if (latestMasterSha !== baseSha) {
+    try {
+      await repository.updateBranch(ref, 'master');
+      console.log(`Updated ${pr.title}.`);
+    } catch (err) {
+      console.warn(
+          `    cannot update branch for PR ${htmlUrl}, skipping:`,
+          err.toString());
+      return false;
+    }
+  }
+
   return true;
 }
 
-export async function reject(cli: meow.Result) {
+export async function update(cli: meow.Result) {
   return process(cli, {
-    commandName: 'reject',
-    commandDesc: 'Automatically reject all PRs that match a given filter.',
+    commandName: 'update',
+    commandDesc:
+        'Iterates over all PRs matching the regex, and updates them, to the latest on master.',
     processMethod
   });
 }
