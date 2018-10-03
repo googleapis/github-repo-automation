@@ -2,8 +2,10 @@
 'use strict';
 
 import {main as apply} from './apply-change';
-import {main as approve} from './approve-prs';
-import {main as reject} from './reject-prs';
+import {approve} from './approve-prs';
+import {reject} from './reject-prs';
+import {update} from './update-prs';
+import {merge} from './merge-prs';
 import {main as check} from './repo-check';
 import {sync, exec} from './sync';
 import * as meow from 'meow';
@@ -18,7 +20,9 @@ const cli = meow(
 	  $ repo <command>
 
 	Examples
-    $ repo approve /regex/ [--auto]
+    $ repo approve /regex/
+    $ repo update /regex/
+    $ repo merge /regex/
     $ repo reject /regex/
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
@@ -62,6 +66,12 @@ switch (cli.input[0]) {
     break;
   case 'reject':
     p = reject(cli);
+    break;
+  case 'update':
+    p = update(cli);
+    break;
+  case 'merge':
+    p = merge(cli);
     break;
   case 'apply':
     p = apply(cli);

@@ -12,190 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @fileoverview A quick'n'dirty console UI to approve a bunch of pull requests.
- * Usage: `node approve-prs.js [regex]`  -- will go through open PRs with title
- * matching `regex`, one by one. Without a regex, will go through all open PRs.
- */
-
 'use strict';
 
-import axios from 'axios';
-import {GitHub, GitHubRepository, PullRequest} from './lib/github';
-import {question} from './lib/question';
+import {GitHubRepository, PullRequest} from './lib/github';
 import * as meow from 'meow';
-import {getConfig} from './lib/config';
+import {process} from './lib/prIterator';
 
-/**
- * Downloads and prints patch file (well, actually, any file) to a console.
- * @param {string} patchUrl URL to download.
- */
-async function showPatch(patchUrl: string) {
-  const axiosResult = await axios.get(patchUrl);
-  const patch = axiosResult.data;
-  console.log(patch);
-}
-
-/**
- * Process one pull request: ask the user to approve, show patch, or skip it.
- * @param {GitHubRepository} repository GitHub repository for this pull request.
- * @param {Object} pr Pull request object, as returned by GitHub API.
- * @returns boolean True if successfully processed.
- */
-async function processPullRequest(
-    repository: GitHubRepository, pr: PullRequest,
-    auto: boolean): Promise<boolean> {
-  const title = pr.title;
-  const htmlUrl = pr.html_url;
-  const patchUrl = pr.patch_url;
-  const author = pr.user.login;
-  const baseSha = pr.base.sha;
-  const ref = pr.head.ref;
-
-  console.log(`  [${author}] ${htmlUrl}: ${title}`);
-
-  let latestCommit: {[index: string]: string};
+async function processMethod(repository: GitHubRepository, pr: PullRequest) {
+  console.log(`  [${pr.user.login}] ${pr.html_url}: ${pr.title}`);
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    await repository.approvePullRequest(pr);
+    console.log('    approved!');
   } catch (err) {
     console.warn(
-        '    cannot get sha of latest commit to master, skipping:',
-        err.toString());
+        `    error trying to approve PR ${pr.html_url}:`, err.toString());
     return false;
   }
-  const latestMasterSha = latestCommit['sha'];
-
-  if (latestMasterSha !== baseSha) {
-    for (;;) {
-      let response: string;
-      if (auto) {
-        response = 'u';
-      } else {
-        response = await question(
-            'PR branch is out of date. What to do? [u]pdate branch, show [p]atch, [s]kip: ');
-      }
-
-      if (response === 'u') {
-        try {
-          await repository.updateBranch(ref, 'master');
-          console.log(
-              'You might not be able to merge immediately because CI tasks will take some time.');
-          break;
-        } catch (err) {
-          console.warn(
-              `    cannot update branch for PR ${htmlUrl}, skipping:`,
-              err.toString());
-          return false;
-        }
-      } else if (response === 'p') {
-        await showPatch(patchUrl);
-        continue;
-      } else if (response === 's') {
-        console.log('   skipped');
-        return false;
-      }
-    }
-  }
-
-  for (;;) {
-    let response: string;
-    if (auto) {
-      response = 'a';
-    } else {
-      response = await question(
-          'What to do? [a]pprove and merge, show [p]atch, [s]kip: ');
-    }
-    if (response === 'a') {
-      try {
-        await repository.approvePullRequest(pr);
-        console.log('    approved!');
-      } catch (err) {
-        console.warn(
-            `    error trying to approve PR ${htmlUrl}:`, err.toString());
-        return false;
-      }
-      try {
-        await repository.mergePullRequest(pr);
-        console.log('    merged!');
-      } catch (err) {
-        console.warn(
-            `    error trying to merge PR ${htmlUrl}:`, err.toString());
-        return false;
-      }
-      try {
-        await repository.deleteBranch(ref);
-        console.log('    branch deleted!');
-      } catch (err) {
-        console.warn(
-            `    error trying to delete branch ${ref}:`, err.toString());
-        return false;
-      }
-      break;
-    } else if (response === 'p') {
-      await showPatch(patchUrl);
-      continue;
-    } else if (response === 's') {
-      console.log('   skipped');
-      break;
-    }
-  }
-
   return true;
 }
 
-/**
- * Main function. Iterates all open pull request in the repositories of the
- * given organization matching given filters. Organization, filters, and GitHub
- * token should be given in the configuration file.
- * @param {string[]} args Command line arguments.
- */
-export async function main(cli: meow.Result) {
-  if (cli.input.length < 2 || !cli.input[1]) {
-    console.log(`Usage: repo approve [regex] [--auto]`);
-    console.log(
-        'Will show all open PRs with title matching regex and allow to approve them.');
-    return;
-  }
 
-  const config = await getConfig();
-  const github = new GitHub(config);
-  const regex = new RegExp(cli.input[1] || '.*');
-  const auto = cli.flags.auto;
-  const repos = await github.getRepositories();
-  const successful: string[] = [];
-  const failed: string[] = [];
-  for (const repository of repos) {
-    console.log(repository.name);
-    let prs;
-    try {
-      prs = await repository.listPullRequests();
-    } catch (err) {
-      console.warn('  cannot list open pull requests:', err.toString());
-      continue;
-    }
-
-    for (const pr of prs) {
-      const title = pr.title!;
-      if (title.match(regex)) {
-        const result =
-            await processPullRequest(repository, pr as PullRequest, auto);
-        if (result) {
-          successful.push(pr.html_url);
-        } else {
-          failed.push(pr.html_url);
-        }
-      }
-    }
-  }
-
-  console.log(
-      `Successfully approved and merged: ${successful.length} pull request(s)`);
-  for (const pr of successful) {
-    console.log(`  ${pr}`);
-  }
-
-  console.log(`Unable to merge: ${failed.length} pull requests(s)`);
-  for (const pr of failed) {
-    console.log(`  ${pr}`);
-  }
+export async function approve(cli: meow.Result) {
+  return process(cli, {
+    commandName: 'approve',
+    commandDesc:
+        'Will show all open PRs with title matching regex and approve them.',
+    processMethod
+  });
 }
