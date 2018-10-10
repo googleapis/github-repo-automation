@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^3.11.1",
-    "@types/meow": "^4.0.1",
+    "@types/meow": "^5.0.0",
     "@types/mocha": "^5.2.3",
     "@types/nock": "^9.1.3",
     "@types/node": "^10.3.6",
