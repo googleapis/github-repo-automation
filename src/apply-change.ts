@@ -25,7 +25,18 @@ const commandLineUsage = require('command-line-usage');
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
 import * as meow from 'meow';
-const exec = pify(childProcess.exec);
+
+// tslint:disable-next-line:no-any
+const exec = (command: string, options?: object): Promise<string> =>
+    new Promise<string>((resolve, reject) => {
+        childProcess.exec(command, options, (err, stdout, stderr) => {
+            if (err) {
+                reject(stderr);
+            } else {
+                resolve(stdout.toString());
+            }
+        });
+    });
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},
@@ -95,7 +106,7 @@ const helpSections = [
 async function getFilesToCommit() {
   const gitStatus = await exec('git status --porcelain');
   const lines =
-      gitStatus.stdout.split('\n').filter((line: string) => line !== '');
+      gitStatus.split('\n').filter((line: string) => line !== '');
   const files: string[] = [];
   for (const line of lines) {
     const matchResult = line.match(/^(?: M|\?\?) (.*)$/);
@@ -159,14 +170,10 @@ async function updateCallback(cli: meow.Result, repoPath: string) {
   const cwd = process.cwd();
   try {
     process.chdir(repoPath);
+    const command = cli.input.slice(1).join(' ');
+    console.log("Executing command:", command);
     const execResult =
-        await exec(cli.input[1]);  // will throw an error if non-zero exit code
-    if (execResult.stdout !== '') {
-      console.log(execResult.stdout);
-    }
-    if (execResult.stderr !== '') {
-      console.error(execResult.stderr);
-    }
+        await exec(command);  // will throw an error if non-zero exit code
     const files = await getFilesToCommit();
     if (files.length > 0 && !cli.flags.silent) {
       for (;;) {
