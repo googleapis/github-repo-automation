@@ -56,7 +56,8 @@ async function processRepository(
     filesToUpdate = await updateCallback(tmpDir.path);
   } catch (err) {
     console.warn(
-        '  callback function threw an exception, skipping this repository', err.stack);
+        '  callback function threw an exception, skipping this repository',
+        err ? err.stack : '');
     return;
   }
 

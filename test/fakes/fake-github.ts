@@ -18,6 +18,7 @@
 
 import * as crypto from 'crypto';
 import {Config} from '../../src/lib/config';
+import {Repository} from '../../src/lib/github';
 
 function hash(input: string) {
   return crypto.createHash('md5').update(input).digest('hex');
@@ -56,7 +57,7 @@ export class FakeGitHubRepository {
   }
 
   getRepository() {
-    return {clone_url: 'https://fake-clone-url/test.git'};
+    return {ssh_url: 'https://fake-clone-url/test.git'} as Repository;
   }
 
   async getFileFromBranch(branch: string, path: string) {
