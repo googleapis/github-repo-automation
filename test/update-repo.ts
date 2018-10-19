@@ -118,7 +118,7 @@ describe('UpdateRepo', () => {
       html_url: `http://example.com/pulls/1`,
     });
     assert(execCallback.calledOnceWith(`git clone ${
-        fakeGitHub.repository.getRepository()['clone_url']} ${tmpDir}`));
+        fakeGitHub.repository.getRepository()['ssh_url']} ${tmpDir}`));
   });
 
   it('should not update a file if it is not a file', async () => {
