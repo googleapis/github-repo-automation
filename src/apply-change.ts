@@ -29,13 +29,13 @@ import * as meow from 'meow';
 // tslint:disable-next-line:no-any
 const exec = (command: string, options?: object): Promise<string> =>
     new Promise<string>((resolve, reject) => {
-        childProcess.exec(command, options, (err, stdout, stderr) => {
-            if (err) {
-                reject(stderr);
-            } else {
-                resolve(stdout.toString());
-            }
-        });
+      childProcess.exec(command, options, (err, stdout, stderr) => {
+        if (err) {
+          reject(stderr);
+        } else {
+          resolve(stdout.toString());
+        }
+      });
     });
 
 const commandLineOptions = [
@@ -105,8 +105,7 @@ const helpSections = [
  */
 async function getFilesToCommit() {
   const gitStatus = await exec('git status --porcelain');
-  const lines =
-      gitStatus.split('\n').filter((line: string) => line !== '');
+  const lines = gitStatus.split('\n').filter((line: string) => line !== '');
   const files: string[] = [];
   for (const line of lines) {
     const matchResult = line.match(/^(?: M|\?\?) (.*)$/);
@@ -171,7 +170,7 @@ async function updateCallback(cli: meow.Result, repoPath: string) {
   try {
     process.chdir(repoPath);
     const command = cli.input.slice(1).join(' ');
-    console.log("Executing command:", command);
+    console.log('Executing command:', command);
     const execResult =
         await exec(command);  // will throw an error if non-zero exit code
     const files = await getFilesToCommit();
