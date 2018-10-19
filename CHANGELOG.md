@@ -4,6 +4,29 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## v1.0.0
+
+### Fixes
+- fix: `repo apply` command ([#179](https://github.com/googleapis/github-repo-automation/pull/179))
+- fix: repair repo sync ([#154](https://github.com/googleapis/github-repo-automation/pull/154))
+
+### New Features
+- feat: split the approve command ([#164](https://github.com/googleapis/github-repo-automation/pull/164))
+
+### Internal / Testing Changes
+- build: fix codecov uploading on Kokoro ([#178](https://github.com/googleapis/github-repo-automation/pull/178))
+- chore(deps): update dependency sinon to v7 ([#177](https://github.com/googleapis/github-repo-automation/pull/177))
+- chore(deps): update dependency @types/meow to v5 ([#165](https://github.com/googleapis/github-repo-automation/pull/165))
+- Update kokoro config ([#163](https://github.com/googleapis/github-repo-automation/pull/163))
+- chore(deps): update dependency eslint-plugin-prettier to v3 ([#162](https://github.com/googleapis/github-repo-automation/pull/162))
+- Update CI config ([#160](https://github.com/googleapis/github-repo-automation/pull/160))
+- Don't publish sourcemaps ([#158](https://github.com/googleapis/github-repo-automation/pull/158))
+- Re-generate library using /synth.py ([#157](https://github.com/googleapis/github-repo-automation/pull/157))
+- Update kokoro config ([#156](https://github.com/googleapis/github-repo-automation/pull/156))
+- test: remove appveyor config ([#155](https://github.com/googleapis/github-repo-automation/pull/155))
+- Update kokoro config ([#153](https://github.com/googleapis/github-repo-automation/pull/153))
+- Enable prefer-const in the eslint config ([#152](https://github.com/googleapis/github-repo-automation/pull/152))
+
 ## v0.3.0
 
 ### Features
