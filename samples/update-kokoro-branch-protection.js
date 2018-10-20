@@ -28,7 +28,7 @@ const REQUIRED_STATUS_CHECKS = [
   'ci/kokoro: lint',
   'ci/kokoro: System test',
   'ci/kokoro: Samples test',
-]
+];
 
 async function main() {
   const github = new GitHub();
@@ -40,7 +40,7 @@ async function main() {
 
     try {
       await repository.updateRequiredMasterBranchProtectionStatusChecks(
-        REQUIRED_STATUS_CHECKS,
+        REQUIRED_STATUS_CHECKS
       );
     } catch (err) {
       console.warn('  error setting required status checks:', err.toString());
