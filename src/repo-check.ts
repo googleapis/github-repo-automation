@@ -100,9 +100,12 @@ async function checkGithubMasterBranchProtection(
 
   if (response['required_status_checks'] !== undefined) {
     const requiredStatusChecks = [
-      'ci/circleci: node6',
-      'ci/circleci: node8',
-      'ci/circleci: node10',
+      'ci/kokoro: node6',
+      'ci/kokoro: node8',
+      'ci/kokoro: node10',
+      'ci/kokoro: lint',
+      'ci/kokoro: Samples test',
+      'ci/kokoro: System test',
     ];
     for (const check of requiredStatusChecks) {
       let enabled = false;
