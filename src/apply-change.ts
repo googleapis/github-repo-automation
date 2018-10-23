@@ -104,7 +104,7 @@ const helpSections = [
  * @returns {string[]} List of filenames.
  */
 async function getFilesToCommit() {
-  const gitStatus = await exec('git status --porcelain');
+  const gitStatus = await exec('git status --porcelain --untracked-files');
   const lines = gitStatus.split('\n').filter((line: string) => line !== '');
   const files: string[] = [];
   for (const line of lines) {
