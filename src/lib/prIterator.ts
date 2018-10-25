@@ -78,7 +78,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
     console.log(`  ${pr}`);
   }
 
-  console.log(`Unable to processed: ${failed.length} pull requests(s)`);
+  console.log(`Unable to process: ${failed.length} pull requests(s)`);
   for (const pr of failed) {
     console.log(`  ${pr}`);
   }
