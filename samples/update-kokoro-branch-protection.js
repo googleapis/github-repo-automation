@@ -19,25 +19,26 @@
 
 'use strict';
 
-const GitHub = require('../build/src/lib/github.js');
+const {GitHub} = require('../build/src/lib/github.js');
+const {getConfig} = require('../build/src/lib/config.js');
 
 const REQUIRED_STATUS_CHECKS = [
   'ci/kokoro: node6',
   'ci/kokoro: node8',
   'ci/kokoro: node10',
   'ci/kokoro: lint',
+  'ci/kokoro: docs',
   'ci/kokoro: System test',
   'ci/kokoro: Samples test',
+  'cla/google',
 ];
 
 async function main() {
-  const github = new GitHub();
-  await github.init();
-
+  const config = await getConfig();
+  const github = new GitHub(config);
   const repos = await github.getRepositories();
   for (const repository of repos) {
     console.log(repository.getRepository()['name']);
-
     try {
       await repository.updateRequiredMasterBranchProtectionStatusChecks(
         REQUIRED_STATUS_CHECKS
@@ -49,6 +50,4 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error(err.toString());
-});
+main().catch(console.error);
