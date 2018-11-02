@@ -30,7 +30,7 @@ const REQUIRED_STATUS_CHECKS = [
   'ci/kokoro: docs',
   'ci/kokoro: System test',
   'ci/kokoro: Samples test',
-  'cla/google'
+  'cla/google',
 ];
 
 async function main() {
