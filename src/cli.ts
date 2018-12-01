@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-'use strict';
 
 import {main as apply} from './apply-change';
 import {approve} from './approve-prs';

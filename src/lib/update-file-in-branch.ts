@@ -17,10 +17,8 @@
  * in the given branch in many GitHub repositories.
  */
 
-'use strict';
-
-import {GitHub, GitHubRepository} from './github';
 import {getConfig} from './config';
+import {GitHub, GitHubRepository} from './github';
 
 /**
  * Updates and commits one existing file in the given branch of the given

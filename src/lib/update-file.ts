@@ -17,10 +17,8 @@
  * in many GitHub repositories, and sends pull requests with the change.
  */
 
-'use strict';
-
-import {GitHub, Repository, GitHubRepository} from './github';
 import {getConfig} from './config';
+import {GitHub, GitHubRepository} from './github';
 
 /**
  * Updates one existing file in the repository and sends a pull request with

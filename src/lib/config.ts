@@ -16,8 +16,6 @@
  * @fileoverview Configuration class.
  */
 
-'use strict';
-
 import * as fs from 'fs';
 import * as pify from 'pify';
 const readFile = pify(fs.readFile);

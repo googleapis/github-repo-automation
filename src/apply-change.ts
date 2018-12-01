@@ -17,10 +17,7 @@
  * files that were added or changed.
  */
 
-'use strict';
-
 import * as childProcess from 'child_process';
-import * as pify from 'pify';
 const commandLineUsage = require('command-line-usage');
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';

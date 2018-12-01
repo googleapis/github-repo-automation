@@ -17,11 +17,10 @@
  * greenkeeper enabled, master branch protected, README links valid, etc.
  */
 
-'use strict';
-
 import axios from 'axios';
-import {GitHub, GitHubRepository} from './lib/github';
+
 import {getConfig} from './lib/config';
+import {GitHub, GitHubRepository} from './lib/github';
 
 /**
  * Logs and counts errors and warnings to console with fancy coloring.
@@ -77,7 +76,7 @@ async function checkGithubMasterBranchProtection(
         `${repository.name}: [!] cannot fetch branch information, no access?`);
     return;
   }
-  if (!getBranchRes['protected']) {
+  if (!getBranchRes.protected) {
     logger.error(`${
         repository.name}: [!] branch protection for master branch is disabled`);
     return;

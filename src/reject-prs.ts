@@ -18,10 +18,9 @@
  * matching `regex`, one by one.
  */
 
-'use strict';
+import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import * as meow from 'meow';
 import {process} from './lib/prIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
