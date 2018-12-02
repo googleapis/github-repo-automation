@@ -17,18 +17,17 @@
  * files that were added or changed.
  */
 
-'use strict';
-
-import * as fs from 'fs';
-import * as path from 'path';
 import * as cp from 'child_process';
+import * as fs from 'fs';
 import * as meow from 'meow';
+import * as ora from 'ora';
+import * as Q from 'p-queue';
+import * as path from 'path';
+import * as pify from 'pify';
+
 import {getConfig} from './lib/config';
 import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
-import * as Q from 'p-queue';
-import * as ora from 'ora';
-import * as pify from 'pify';
 
 const mkdir = pify(fs.mkdir);
 const readdir = pify(fs.readdir);
