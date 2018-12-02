@@ -18,11 +18,10 @@
  * matching `regex`, one by one. Without a regex, will go through all open PRs.
  */
 
-'use strict';
-
-import {GitHub, GitHubRepository, PullRequest} from './github';
 import * as meow from 'meow';
+
 import {getConfig} from './config';
+import {GitHub, GitHubRepository, PullRequest} from './github';
 
 export interface PRIteratorOptions {
   commandName: string;

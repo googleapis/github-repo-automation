@@ -17,8 +17,6 @@
  * many GitHub repositories, and sends pull requests with the change.
  */
 
-'use strict';
-
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';

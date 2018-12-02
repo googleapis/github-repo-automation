@@ -18,12 +18,10 @@
  * matching `regex`, one by one. Without a regex, will go through all open PRs.
  */
 
-'use strict';
+import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import * as meow from 'meow';
 import {process} from './lib/prIterator';
-
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const title = pr.title;

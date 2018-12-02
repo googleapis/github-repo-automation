@@ -16,14 +16,14 @@
  * @fileoverview Unit tests for lib/config.js.
  */
 
-'use strict';
-
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as os from 'os';
 import * as path from 'path';
-import {getConfig, Config} from '../src/lib/config';
+
+import {Config, getConfig} from '../src/lib/config';
+
 const tmp = require('tmp-promise');
 
 const clonePath = path.join(os.homedir(), '.repo');

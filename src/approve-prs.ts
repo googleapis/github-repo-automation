@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
+import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import * as meow from 'meow';
 import {process} from './lib/prIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
@@ -30,7 +29,6 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   }
   return true;
 }
-
 
 export async function approve(cli: meow.Result) {
   return process(cli, {
