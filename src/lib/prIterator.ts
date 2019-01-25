@@ -27,7 +27,8 @@ export interface PRIteratorOptions {
   commandName: string;
   commandDesc: string;
   processMethod:
-      (repository: GitHubRepository, pr: PullRequest) => Promise<boolean>;
+      (repository: GitHubRepository, pr: PullRequest,
+       cli: meow.Result) => Promise<boolean>;
 }
 
 /**
@@ -62,7 +63,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
     for (const pr of prs) {
       const title = pr.title!;
       if (title.match(regex)) {
-        const result = await options.processMethod(repository, pr);
+        const result = await options.processMethod(repository, pr, cli);
         if (result) {
           successful.push(pr.html_url);
         } else {
