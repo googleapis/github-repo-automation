@@ -9,6 +9,7 @@ import {main as check} from './repo-check';
 import {sync, exec} from './sync';
 import * as meow from 'meow';
 import * as updateNotifier from 'update-notifier';
+import {tag} from './tag-prs';
 const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();
@@ -23,6 +24,7 @@ const cli = meow(
     $ repo update /regex/
     $ repo merge /regex/
     $ repo reject /regex/
+    $ repo tag /regex/ label1 label2 ...
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
     $ repo sync
@@ -74,6 +76,9 @@ switch (cli.input[0]) {
     break;
   case 'apply':
     p = apply(cli);
+    break;
+  case 'tag':
+    p = tag(cli);
     break;
   case 'check':
     p = check();

@@ -374,6 +374,20 @@ export class GitHubRepository {
   }
 
   /**
+   * Applies a set of labels to a given pull request.
+   * @param {Object} pr Pull request object, as returned by GitHib API.
+   * @param {Array<string>} labels Labels to apply to the PR
+   * @returns A list of labels that was added to the issue..
+   */
+  async tagPullRequest(pr: PullRequest, labels: string[]) {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const url = `/repos/${owner}/${repo}/issues/${pr.number}/labels`;
+    const result = await this.client.post(url, {labels});
+    return result.data;
+  }
+
+  /**
    * Closes the given pull request without merging it.
    * @param {Object} pr Pull request object, as returned by GitHub API.
    */
