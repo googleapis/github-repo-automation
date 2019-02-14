@@ -59,7 +59,7 @@
     "sinon": "^7.0.0",
     "source-map-support": "^0.5.6",
     "typescript": "^3.0.0",
-    "broken-link-checker-local": "^0.2.0"
+    "linkinator": "^1.1.2"
   },
   "scripts": {
     "lint": "npm run check && eslint '**/*.js'",
@@ -75,7 +75,7 @@
     "samples-test": "mocha samples/system-test",
     "system-test": "mocha build/system-test",
     "presystem-test": "npm run compile",
-    "docs-test": "blcl docs -r --exclude www.googleapis.com",
+    "docs-test": "linkinator docs -r --skip www.googleapis.com",
     "predocs-test": "npm run docs"
   }
 }
