@@ -20,8 +20,8 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as meow from 'meow';
-import * as ora from 'ora';
-import * as Q from 'p-queue';
+import ora from 'ora';
+import Q from 'p-queue';
 import * as path from 'path';
 import * as pify from 'pify';
 
