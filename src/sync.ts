@@ -48,13 +48,15 @@ function print(res: {stdout: string, stderr: string}) {
  * Clone all repositories into ~/.repo.
  * If repo already exists, fetch and reset.
  */
-export async function sync() {
+export async function sync(cli: meow.Result) {
   const orb = ora('Synchronizing repositories...').start();
   const repos = await getRepos();
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
   let i = 0;
-  const q = new Q({concurrency: 50});
+  const concurrency =
+      cli.flags.concurrency ? Number(cli.flags.concurrency) : 50;
+  const q = new Q({concurrency});
   const proms = repos.map(repo => {
     const cloneUrl = repo.getRepository().ssh_url!;
     const cwd = path.join(rootPath, repo.name);
@@ -91,12 +93,14 @@ export async function exec(cli: meow.Result) {
 
   if (dirs.length === 0) {
     // the user likely hasn't run sync yet.  Lets be nice and do that for them.
-    await sync();
+    await sync(cli);
   }
 
   logger.info(`Executing '${command}' in ${dirs.length} directories.`);
   let i = 0;
-  const q = new Q({concurrency: 10});
+  const concurrency =
+      cli.flags.concurrency ? Number(cli.flags.concurrency) : 10;
+  const q = new Q({concurrency});
   const proms = dirs.map(dir => {
     return q.add(() => {
       return spawn(command.join(' '), {cwd: dir})

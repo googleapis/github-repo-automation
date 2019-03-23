@@ -29,6 +29,7 @@ const cli = meow(
     $ repo check
     $ repo sync
     $ repo exec -- git status
+    $ repo exec --concurrency 10 -- git status
 `,
     {
       flags: {
@@ -52,7 +53,8 @@ const cli = meow(
           type: 'boolean',
           alias: 'q',
         },
-        auto: {type: 'boolean'}
+        auto: {type: 'boolean'},
+        concurrency: {type: 'string'}
       },
     });
 
@@ -84,7 +86,7 @@ switch (cli.input[0]) {
     p = check();
     break;
   case 'sync':
-    p = sync();
+    p = sync(cli);
     break;
   case 'exec':
     p = exec(cli);
