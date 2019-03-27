@@ -1,233 +1,78 @@
-<img src="https://avatars0.githubusercontent.com/u/1342004?v=3&s=96" alt="Google Inc. logo" title="Google" align="right" height="96" width="96"/>
+[//]: # "This README.md file is auto-generated, all changes to this file will be lost."
+[//]: # "To regenerate it, use `python -m synthtool`."
+<img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-# GitHub Repo Automation
-> A set of tools to automate multiple GitHub repository management.
+# [:  Client](https://github.com/)
 
-**This is not an officially supported Google product.**
+None
+[![npm version](https://img.shields.io/npm/v/@google/repo.svg)](https://www.npmjs.org/package/@google/repo)
+[![codecov](https://img.shields.io/codecov/c/github//master.svg?style=flat)](https://codecov.io/gh/)
 
-As we publish Node.js client libraries to multiple repositories under
-[googleapis](https://github.com/googleapis/), we need a set of small
-tools to perform management of those repositories, such as updating
-continuous integration setup, updating dependencies, and so on.
 
-This repository contains some scripts that may be useful for this kind
-of tasks.
+A tool for automating multiple GitHub repositories.
 
-## Installation
 
-If you're not familiar with Node.js development you can still
-use the tools included as they don't require writing any Javascript
-code. Before running the scripts, make sure you have Node.js version 8+
-installed (e.g. from [here](https://nodejs.org/en/)) and available in
-your `PATH`, and install the required dependencies:
+* [Using the client library](#using-the-client-library)
+* [Versioning](#versioning)
+* [Contributing](#contributing)
+* [License](#license)
 
-```sh
-$ npm install -g @google/repo
-```
+## Using the client library
 
-You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/master/config.yaml.default) and put your GitHub token there. You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
+1.  [Select or create a Cloud Platform project][projects].
+1.  [Enable the  API][enable_api].
+1.  [Set up authentication with a service account][auth] so you can access the
+    API from your local workstation.
 
-```sh
-$ cat /User/beckwith/.repo.yaml
----
-githubToken: your-github-token
-clonePath: ~/.repo # optional
-repos:
-  - org: googleapis
-    regex: nodejs-.*
-  - org: googleapis
-    name: github-repo-automation
-  - org: GoogleCloudPlatform
-    regex: ^cloud-[a-z]*-nodejs$
-  - org: google
-    name: google-api-nodejs-client
-  - org: google
-    name: google-auth-library-nodejs
-  - org: google
-    name: google-p12-pem
-  - org: google
-    name: node-gtoken
-```
+1. Install the client library:
 
-```sh
-$ echo $REPO_CONFIG_PATH
-/User/beckwith/.repo.yaml
-```
+        npm install @google/repo
 
-Now you are good to go!
 
-## Usage
 
-### repo approve
 
-```sh
-$ repo approve [regex]
-```
 
-Iterates over all open pull requests matching `regex` (all PRs if
-no regex is given) in all configured repositories.
-For each pull request, asks (in console) if it should be approved
-and merged. Useful for managing GreenKeeper's PRs:
+The [  Client API Reference][client-docs] documentation
+also contains samples.
 
-`$ repo approve 🚀`
+## Versioning
 
-or all PRs with the word `test` in the title:
+This library follows [Semantic Versioning](http://semver.org/).
 
-`$ repo approve test`
 
-### repo reject
 
-```sh
-$ repo reject [regex]
-```
 
-Iterates over all open pull requests matching `regex`, and closes
-them. For example, close all PRs with the word `test` in the title:
 
-`$ repo reject test`
 
-### repo apply
+More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
-```sh
-$ repo apply --branch branch
-             --message message
-             --comment comment
-             [--reviewers username[,username...]]
-             [--silent]
-             command
-```
+[launch_stages]: https://cloud.google.com/terms/launch-stages
 
-Iterates over all configured repositories, clones each of them into
-a temporary folder, and runs `command` to apply any changes you need.
-After `command` is run, `git status` is executed and all added and
-changed files are committed into a new branch `branch` with commit message
-`message`, and then a new pull request is created with comment `comment`
-and the given list of reviewers.
+## Contributing
 
-Please note that because of GitHub API [does not
-support](https://github.com/isaacs/github/issues/199) inserting multiple files
-into one commit, each file will be committed separately. It can be fixed by
-changing this library to use the low-level
-[Git data API](https://developer.github.com/v3/git/),
-your contributions are welcome!
+Contributions welcome! See the [Contributing Guide](https://github.com//blob/master/CONTRIBUTING.md).
 
-### repo check
+## License
 
-```sh
-$ repo check
-```
+Apache Version 2.0
 
-Iterates all configured repositories and checks that each repository
-is configured properly (branch protection, continuous integration,
-valid `README.md`, etc.).
+See [LICENSE](https://github.com//blob/master/LICENSE)
 
-## List of libraries
+## What's Next
 
-The tools listed above use the following libraries available in `lib/` folder.
-Feel free to use them directly from your JavaScript code if you need more
-flexibility than provided by the tools. The files in `samples/` folder
-can serve as samples that show library usage.
+* [ Documentation][product-docs]
+* [  Client API Reference][client-docs]
+* [github.com/](https://github.com/)
 
-### `lib/update-repo.js`
+Read more about the client libraries for Cloud APIs, including the older
+Google APIs Client Libraries, in [Client Libraries Explained][explained].
 
-Iterates over all configured repositories, clones each of them into
-a temporary folder, and calls the provided function to apply any changes you
-need. The function must return a promise resolving to the list of files to
-create or modify. These files are committed into a new branch with the given
-commit message, and then a new pull request is created with the given comment
-and the given list of reviewers.
+[explained]: https://cloud.google.com/apis/docs/client-libraries-explained
 
-Please note that because of GitHub API [does not
-support](https://github.com/isaacs/github/issues/199) inserting multiple files
-into one commit, each file will be committed separately. It can be fixed by
-changing this library to use the low-level
-[Git data API](https://developer.github.com/v3/git/),
-your contributions are welcome!
-
-```js
-const updateRepo = require('./lib/update-repo.js');
-
-async function callbackFunction(repoPath) {
-  // make any changes to the cloned repo in repoPath
-  let files = ['path/to/updated/file', 'path/to/new/file'];
-  return Promise.resolve(files);
-}
-
-async function example() {
-  await updateRepo({
-    updateCallback: callbackFunction,
-    branch: 'new-branch',
-    message: 'commit message',
-    comment: 'pull request comment',
-    reviewers: ['github-username1', 'github-username2'],
-  });
-}
-```
-
-### `lib/update-file.js`
-
-A function that applies the same fix to one file in all configured
-repositories, and sends pull requests (that can be approved and merged
-later by `approve-pr.js` or manually). Useful if you need to make
-the same boring change to all the repositories, such as change some
-configuration file in a certain way.
-
-```js
-const updateFile = require('./lib/update-file.js');
-
-function callbackFunction(content) {
-  let newContent = content;
-  // make any changes to file content
-  return newContent;
-}
-
-async function example() {
-  await updateFile({
-    path: 'path/to/file/in/repository',
-    patchFunction: callbackFunction,
-    branch: 'new-branch',
-    message: 'commit message',
-    comment: 'pull request comment',
-    reviewers: ['github-username1', 'github-username2'],
-  });
-}
-```
-
-### `lib/update-file-in-branch.js`
-
-A function that does pretty much the same, but to the file in the
-given branch in all configured repositories, and does not send any
-pull requests. Useful if you created a bunch of PRs using `update-file.js`, but
-then decided to apply a quick change in all created branches.
-
-```js
-const updateFileInBranch = require('./lib/update-file-in-branch.js');
-
-function callbackFunction(content) {
-  let newContent = content;
-  // make any changes to file content
-  return newContent;
-}
-
-async function example() {
-  await updateFileInBranch({
-    path: 'path/to/file/in/repository',
-    patchFunction: callbackFunction,
-    branch: 'existing-branch',
-    message: 'commit message',
-  });
-}
-```
-
-### Other files in `lib/`
-
-#### `lib/github.js`
-
-A simple wrapper to GitHub client API
-([@octokit/rest](https://github.com/octokit/rest.js)) that at least lets you
-pass less parameters to each API call.
-
-#### `lib/question.js`
-
-A promisified version of `readline.question` to provide some primitive
-interaction.
+[client-docs]: 
+[product-docs]: 
+[shell_img]: https://gstatic.com/cloudssh/images/open-btn.png
+[projects]: https://console.cloud.google.com/project
+[billing]: https://support.google.com/cloud/answer/6293499#enable-billing
+[enable_api]: https://console.cloud.google.com/flows/enableapi?apiid=
+[auth]: https://cloud.google.com/docs/authentication/getting-started
