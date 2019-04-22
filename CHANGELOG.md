@@ -4,6 +4,72 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## v1.1.0
+
+04-18-2019 14:47 PDT
+
+### New features
+- feat: let user specify concurrency ([#258](https://github.com/googleapis/github-repo-automation/pull/258))
+- feat: add `tag` command to apply labels to PRs ([#237](https://github.com/googleapis/github-repo-automation/pull/237))
+- feat: repo check Kokoro status enabled, samples code for enabling Kokoro checks ([#183](https://github.com/googleapis/github-repo-automation/pull/183))
+
+### Bug fixes
+- fix: log message ([#193](https://github.com/googleapis/github-repo-automation/pull/193))
+- fix: repo apply fails when untracked dirs were added ([#188](https://github.com/googleapis/github-repo-automation/pull/188))
+- fix(deps): update dependency p-queue to v4 ([#252](https://github.com/googleapis/github-repo-automation/pull/252))
+- fix: remove unused packages ([#249](https://github.com/googleapis/github-repo-automation/pull/249))
+- fix: update sample for updating status checks ([#202](https://github.com/googleapis/github-repo-automation/pull/202))
+
+### Docs
+- docs: update links in contrib guide ([#246](https://github.com/googleapis/github-repo-automation/pull/246))
+- docs: update contributing guide ([#242](https://github.com/googleapis/github-repo-automation/pull/242))
+- docs: add lint/fix example to contributing guide ([#239](https://github.com/googleapis/github-repo-automation/pull/239))
+
+### Internal changes
+- chore(deps): update dependency nyc to v14 ([#262](https://github.com/googleapis/github-repo-automation/pull/262))
+- chore: publish to npm using wombat ([#255](https://github.com/googleapis/github-repo-automation/pull/255))
+- build: use per-repo publish token ([#254](https://github.com/googleapis/github-repo-automation/pull/254))
+- build: Add docuploader credentials to node publish jobs ([#251](https://github.com/googleapis/github-repo-automation/pull/251))
+- build: use node10 to run samples-test, system-test etc ([#250](https://github.com/googleapis/github-repo-automation/pull/250))
+- build: update release configuration ([#248](https://github.com/googleapis/github-repo-automation/pull/248))
+- chore(deps): update dependency mocha to v6 ([#247](https://github.com/googleapis/github-repo-automation/pull/247))
+- build: use linkinator for docs test ([#245](https://github.com/googleapis/github-repo-automation/pull/245))
+- build: create docs test npm scripts ([#244](https://github.com/googleapis/github-repo-automation/pull/244))
+- build: test using @grpc/grpc-js in CI ([#243](https://github.com/googleapis/github-repo-automation/pull/243))
+- chore(deps): update dependency eslint-config-prettier to v4 ([#238](https://github.com/googleapis/github-repo-automation/pull/238))
+- build: ignore googleapis.com in doc link check ([#236](https://github.com/googleapis/github-repo-automation/pull/236))
+- build: check for 404s in the docs ([#235](https://github.com/googleapis/github-repo-automation/pull/235))
+- chore(deps): update dependency @types/ora to v3 ([#233](https://github.com/googleapis/github-repo-automation/pull/233))
+- chore(deps): update dependency @types/sinon to v7 ([#232](https://github.com/googleapis/github-repo-automation/pull/232))
+- chore(build): inject yoshi automation key ([#231](https://github.com/googleapis/github-repo-automation/pull/231))
+- chore: update nyc and eslint configs ([#230](https://github.com/googleapis/github-repo-automation/pull/230))
+- chore: fix publish.sh permission +x ([#228](https://github.com/googleapis/github-repo-automation/pull/228))
+- fix(build): fix Kokoro release script ([#227](https://github.com/googleapis/github-repo-automation/pull/227))
+- build: add Kokoro configs for autorelease ([#226](https://github.com/googleapis/github-repo-automation/pull/226))
+- chore: always nyc report before calling codecov ([#223](https://github.com/googleapis/github-repo-automation/pull/223))
+- chore: nyc ignore build/test by default ([#222](https://github.com/googleapis/github-repo-automation/pull/222))
+- chore(build): update prettier config ([#220](https://github.com/googleapis/github-repo-automation/pull/220))
+- chore(deps): update dependency @types/sinon to v5.0.7 ([#213](https://github.com/googleapis/github-repo-automation/pull/213))
+- chore(build): update CI config ([#217](https://github.com/googleapis/github-repo-automation/pull/217))
+- fix(build): fix system key decryption ([#214](https://github.com/googleapis/github-repo-automation/pull/214))
+- refactor: drop octokit, just use rest ([#216](https://github.com/googleapis/github-repo-automation/pull/216))
+- fix(deps): update dependency @octokit/rest to v16 ([#207](https://github.com/googleapis/github-repo-automation/pull/207))
+- chore(deps): update dependency @types/p-queue to v3 ([#209](https://github.com/googleapis/github-repo-automation/pull/209))
+- fix: Pin @types/sinon to last compatible version ([#210](https://github.com/googleapis/github-repo-automation/pull/210))
+- chore: add a synth.metadata
+- chore(deps): update dependency gts to ^0.9.0 ([#205](https://github.com/googleapis/github-repo-automation/pull/205))
+- chore: update eslintignore config ([#204](https://github.com/googleapis/github-repo-automation/pull/204))
+- chore: use latest npm on Windows ([#203](https://github.com/googleapis/github-repo-automation/pull/203))
+- chore: update CircleCI config ([#201](https://github.com/googleapis/github-repo-automation/pull/201))
+- chore: include build in eslintignore ([#198](https://github.com/googleapis/github-repo-automation/pull/198))
+- chore(deps): update dependency eslint-plugin-node to v8 ([#194](https://github.com/googleapis/github-repo-automation/pull/194))
+- chore: update issue templates ([#192](https://github.com/googleapis/github-repo-automation/pull/192))
+- chore: remove old issue template ([#190](https://github.com/googleapis/github-repo-automation/pull/190))
+- build: run tests on node11 ([#189](https://github.com/googleapis/github-repo-automation/pull/189))
+- chores(build): run codecov on continuous builds ([#185](https://github.com/googleapis/github-repo-automation/pull/185))
+- chores(build): do not collect sponge.xml from windows builds ([#186](https://github.com/googleapis/github-repo-automation/pull/186))
+- chore: update new issue template ([#184](https://github.com/googleapis/github-repo-automation/pull/184))
+
 ## v1.0.0
 
 ### Fixes
