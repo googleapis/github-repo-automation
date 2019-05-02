@@ -24,7 +24,9 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
     console.log('    approved!');
   } catch (err) {
     console.warn(
-        `    error trying to approve PR ${pr.html_url}:`, err.toString());
+      `    error trying to approve PR ${pr.html_url}:`,
+      err.toString()
+    );
     return false;
   }
   return true;
@@ -34,7 +36,7 @@ export async function approve(cli: meow.Result) {
   return process(cli, {
     commandName: 'approve',
     commandDesc:
-        'Will show all open PRs with title matching regex and approve them.',
-    processMethod
+      'Will show all open PRs with title matching regex and approve them.',
+    processMethod,
   });
 }

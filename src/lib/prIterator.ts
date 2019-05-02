@@ -26,9 +26,11 @@ import {GitHub, GitHubRepository, PullRequest} from './github';
 export interface PRIteratorOptions {
   commandName: string;
   commandDesc: string;
-  processMethod:
-      (repository: GitHubRepository, pr: PullRequest,
-       cli: meow.Result) => Promise<boolean>;
+  processMethod: (
+    repository: GitHubRepository,
+    pr: PullRequest,
+    cli: meow.Result
+  ) => Promise<boolean>;
 }
 
 /**

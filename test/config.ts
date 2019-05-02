@@ -31,13 +31,13 @@ const clonePath = path.join(os.homedir(), '.repo');
 const configObject1: Config = {
   githubToken: 'test-github-token',
   clonePath,
-  repos: [{org: 'test-organization', regex: 'test-repo-name-regex'}]
+  repos: [{org: 'test-organization', regex: 'test-repo-name-regex'}],
 };
 
 const configObject2: Config = {
   githubToken: 'test-github-token-2',
   clonePath,
-  repos: [{org: 'test-organization-2', regex: 'test-repo-name-regex-2'}]
+  repos: [{org: 'test-organization-2', regex: 'test-repo-name-regex-2'}],
 };
 
 describe('Config', () => {

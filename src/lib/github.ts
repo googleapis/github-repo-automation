@@ -22,7 +22,7 @@ import {Config} from './config';
 function getClient(config: Config) {
   return axios.create({
     baseURL: 'https://api.github.com',
-    headers: {Authorization: `token ${config.githubToken}`}
+    headers: {Authorization: `token ${config.githubToken}`},
   });
 }
 
@@ -47,14 +47,17 @@ export class GitHub {
     const proms = this.config.repos.map(async repo => {
       const org = repo.org;
       if (repo.name) {
-        const res =
-            await this.client.get<Repository>(`/repos/${org}/${repo.name}`);
+        const res = await this.client.get<Repository>(
+          `/repos/${org}/${repo.name}`
+        );
         repos.push(new GitHubRepository(this.client, res.data, org));
       } else if (repo.regex) {
         const repoNameRegex = new RegExp(repo.regex);
-        for (let page = 1;; ++page) {
+        for (let page = 1; ; ++page) {
           const result = await this.client.get<Repository[]>(
-              `/orgs/${org}/repos`, {params: {type, page, per_page: 100}});
+            `/orgs/${org}/repos`,
+            {params: {type, page, per_page: 100}}
+          );
           for (const repo of result.data) {
             if (repo.name.match(repoNameRegex)) {
               repos.push(new GitHubRepository(this.client, repo, org));
@@ -66,7 +69,8 @@ export class GitHub {
         }
       } else {
         throw new Error(
-            'Each organization in the config must provide either a name or a regex.');
+          'Each organization in the config must provide either a name or a regex.'
+        );
       }
     });
     await Promise.all(proms);
@@ -79,8 +83,8 @@ export class GitHub {
     }
     const language = this.config.reposList.language;
     const reposJson = await axios.get(this.config.reposList.uri);
-    let reposList: Array<{repo: string; language: string;}> =
-        reposJson.data.repos;
+    let reposList: Array<{repo: string; language: string}> =
+      reposJson.data.repos;
     if (language) {
       reposList = reposList.filter(repo => repo.language === language);
     }
@@ -93,7 +97,7 @@ export class GitHub {
       const repository = {
         owner: {login: org},
         name,
-        ssh_url: `git@github.com:${org}/${name}.git`
+        ssh_url: `git@github.com:${org}/${name}.git`,
       };
       repos.push(new GitHubRepository(this.client, repository, org));
     }
@@ -118,7 +122,7 @@ export class GitHub {
       console.log(`Loaded ${jsonRepos.length} repositories from JSON config.`);
     }
 
-    const unique: {[key: string]: GitHubRepository;} = {};
+    const unique: {[key: string]: GitHubRepository} = {};
     for (const repo of githubRepos.concat(jsonRepos)) {
       const name = `${repo.organization}/${repo.name}`;
       if (!(name in unique)) {
@@ -129,7 +133,8 @@ export class GitHub {
 
     if (repos.length === 0) {
       throw new Error(
-          'No repositories configured. Use config.repos and/or config.reposList.uri.');
+        'No repositories configured. Use config.repos and/or config.reposList.uri.'
+      );
     }
     console.log(`Total ${repos.length} unique repositories loaded.`);
     return repos;
@@ -152,7 +157,10 @@ export class GitHubRepository {
    * @param {string} organization Name of GitHub organization.
    */
   constructor(
-      client: AxiosInstance, repository: Repository, organization: string) {
+    client: AxiosInstance,
+    repository: Repository,
+    organization: string
+  ) {
     this.client = client;
     this.repository = repository;
     this.organization = organization;
@@ -206,14 +214,15 @@ export class GitHubRepository {
    * @param {string} state Pull request state (open, closed), defaults to open.
    * @returns {Object[]} Pull request objects, as returned by GitHub API.
    */
-  async listPullRequests(state: 'open'|'closed'|'all' = 'open') {
+  async listPullRequests(state: 'open' | 'closed' | 'all' = 'open') {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const prs: PullRequest[] = [];
     const url = `/repos/${owner}/${repo}/pulls`;
-    for (let page = 1;; ++page) {
-      const result =
-          await this.client.get<PullRequest[]>(url, {params: {state, page}});
+    for (let page = 1; ; ++page) {
+      const result = await this.client.get<PullRequest[]>(url, {
+        params: {state, page},
+      });
       if (result.data.length === 0) {
         break;
       }
@@ -231,8 +240,9 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const ref = 'heads/master';
     const shaUrl = `/repos/${owner}/${repo}/commits/${ref}`;
-    const {data: sha} = await this.client.get<string>(
-        shaUrl, {headers: {accept: 'application/vnd.github.VERSION.sha'}});
+    const {data: sha} = await this.client.get<string>(shaUrl, {
+      headers: {accept: 'application/vnd.github.VERSION.sha'},
+    });
     const url = `/repos/${owner}/${repo}/commits/${sha}`;
     const result = await this.client.get(url);
     return result.data;
@@ -290,7 +300,11 @@ export class GitHubRepository {
    * @returns {Object} Commit object, as returned by GitHub API.
    */
   async createFileInBranch(
-      branch: string, path: string, message: string, content: string) {
+    branch: string,
+    path: string,
+    message: string,
+    content: string
+  ) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
@@ -313,8 +327,12 @@ export class GitHubRepository {
    * @returns {Object} Commit object, as returned by GitHub API.
    */
   async updateFileInBranch(
-      branch: string, path: string, message: string, content: string,
-      sha: string) {
+    branch: string,
+    path: string,
+    message: string,
+    content: string,
+    sha: string
+  ) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
@@ -446,8 +464,7 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const branch = 'master';
-    const url = `/repos/${owner}/${repo}/branches/${
-        branch}/protection/required_status_checks`;
+    const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
     const result = await this.client.get<StatusCheck[]>(url);
     return result.data;
   }
@@ -462,8 +479,7 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const branch = 'master';
     const strict = true;
-    const url = `/repos/${owner}/${repo}/branches/${
-        branch}/protection/required_status_checks`;
+    const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
     const result = await this.client.patch(url, {strict, contexts});
     return result.data;
   }
@@ -475,7 +491,10 @@ export class GitHubRepository {
    * push).
    * @returns {Object} As returned by GitHub API.
    */
-  async addCollaborator(username: string, permission: 'pull'|'push'|'admin') {
+  async addCollaborator(
+    username: string,
+    permission: 'pull' | 'push' | 'admin'
+  ) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/collaborators/${username}`;
@@ -490,8 +509,8 @@ export interface PullRequest {
   html_url: string;
   patch_url: string;
   user: User;
-  base: {sha: string;};
-  head: {ref: string; label: string;};
+  base: {sha: string};
+  head: {ref: string; label: string};
 }
 
 export interface Repository {
@@ -508,7 +527,7 @@ export interface User {
 
 export interface Branches {
   [index: string]: {
-    _latest: string,
+    _latest: string;
   };
 }
 
@@ -524,7 +543,7 @@ export interface File {
   git_url: string;
   html_url: string;
   download_url: string;
-  _links: {git: string; self: string; html: string;};
+  _links: {git: string; self: string; html: string};
 }
 export interface StatusCheck {
   url: string;
