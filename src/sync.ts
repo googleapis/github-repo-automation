@@ -21,7 +21,7 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as meow from 'meow';
 import ora from 'ora';
-import Q from 'p-queue';
+import * as Q from 'p-queue';
 import * as path from 'path';
 import * as pify from 'pify';
 
@@ -49,10 +49,10 @@ function print(res: {stdout: string; stderr: string}) {
  * If repo already exists, fetch and reset.
  */
 export async function sync(cli: meow.Result) {
-  const orb = ora('Synchronizing repositories...').start();
   const repos = await getRepos();
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
+  const orb = ora('Synchronizing repositories...').start();
   let i = 0;
   const concurrency = cli.flags.concurrency
     ? Number(cli.flags.concurrency)
