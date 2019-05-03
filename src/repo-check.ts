@@ -67,18 +67,22 @@ class Logger {
  * @param {Logger} logger Logger object.
  */
 async function checkGithubMasterBranchProtection(
-    logger: Logger, repository: GitHubRepository) {
+  logger: Logger,
+  repository: GitHubRepository
+) {
   let getBranchRes;
   try {
     getBranchRes = await repository.getBranch('master');
   } catch (err) {
     logger.error(
-        `${repository.name}: [!] cannot fetch branch information, no access?`);
+      `${repository.name}: [!] cannot fetch branch information, no access?`
+    );
     return;
   }
   if (!getBranchRes.protected) {
-    logger.error(`${
-        repository.name}: [!] branch protection for master branch is disabled`);
+    logger.error(
+      `${repository.name}: [!] branch protection for master branch is disabled`
+    );
     return;
   }
 
@@ -86,15 +90,19 @@ async function checkGithubMasterBranchProtection(
   try {
     response = await repository.getRequiredMasterBranchProtection();
   } catch (err) {
-    logger.error(`${
-        repository
-            .name}: [!] cannot fetch branch protection settings, no access?`);
+    logger.error(
+      `${
+        repository.name
+      }: [!] cannot fetch branch protection settings, no access?`
+    );
     return;
   }
   if (response['required_pull_request_reviews'] === undefined) {
-    logger.error(`${
-        repository
-            .name}: [!] branch protection for master branch - pull request reviews are not required`);
+    logger.error(
+      `${
+        repository.name
+      }: [!] branch protection for master branch - pull request reviews are not required`
+    );
   }
 
   if (response['required_status_checks'] !== undefined) {
@@ -108,23 +116,27 @@ async function checkGithubMasterBranchProtection(
     ];
     for (const check of requiredStatusChecks) {
       let enabled = false;
-      for (const enabledCheck of
-               response['required_status_checks']['contexts']) {
+      for (const enabledCheck of response['required_status_checks'][
+        'contexts'
+      ]) {
         if (enabledCheck === check) {
           enabled = true;
         }
       }
       if (!enabled) {
-        logger.error(`${
-            repository
-                .name}: [!] branch protection for master branch - status check ${
-            check} is not required`);
+        logger.error(
+          `${
+            repository.name
+          }: [!] branch protection for master branch - status check ${check} is not required`
+        );
       }
     }
   } else {
-    logger.error(`${
-        repository
-            .name}: [!] branch protection for master branch - status checks are not enabled`);
+    logger.error(
+      `${
+        repository.name
+      }: [!] branch protection for master branch - status checks are not enabled`
+    );
   }
 }
 
@@ -160,21 +172,29 @@ async function checkRenovate(logger: Logger, repository: GitHubRepository) {
  * @param {Logger} logger Logger object.
  */
 async function checkSamplesPackageDependency(
-    logger: Logger, repository: GitHubRepository) {
+  logger: Logger,
+  repository: GitHubRepository
+) {
   let response;
   try {
-    response = await axios.get(`https://raw.githubusercontent.com/${
-        repository.organization}/${repository.name}/master/package.json`);
+    response = await axios.get(
+      `https://raw.githubusercontent.com/${repository.organization}/${
+        repository.name
+      }/master/package.json`
+    );
   } catch (err) {
-    logger.error(`${repository.name}: [!] cannot download package.json: ${
-        err.toString()}`);
+    logger.error(
+      `${repository.name}: [!] cannot download package.json: ${err.toString()}`
+    );
     return;
   }
   const packageJson = response.data;
   try {
     response = await axios.get(
-        `https://raw.githubusercontent.com/${repository.organization}/${
-            repository.name}/master/samples/package.json`);
+      `https://raw.githubusercontent.com/${repository.organization}/${
+        repository.name
+      }/master/samples/package.json`
+    );
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
     return;
@@ -184,16 +204,20 @@ async function checkSamplesPackageDependency(
     const mainVersion = packageJson['version'];
     const mainName = packageJson['name'];
     const samplesDependency = samplesPackageJson['dependencies'][mainName];
-    const regex = '^[^]?' + mainVersion.replace(/\./g, '\.') +
-        '$';  // 1.12.3 ==> ^[^]?1\.12\.3$
+    const regex = '^[^]?' + mainVersion.replace(/\./g, '.') + '$'; // 1.12.3 ==> ^[^]?1\.12\.3$
     if (!samplesDependency.match(regex)) {
-      logger.error(`${repository.name}: [!] main package version ${
-          mainVersion} does not match samples dependency ${samplesDependency}`);
+      logger.error(
+        `${
+          repository.name
+        }: [!] main package version ${mainVersion} does not match samples dependency ${samplesDependency}`
+      );
     }
   } catch (err) {
     logger.error(
-        `${repository.name}: cannot check samples package dependencies: ${
-            err.toString()}`);
+      `${
+        repository.name
+      }: cannot check samples package dependencies: ${err.toString()}`
+    );
   }
 }
 
@@ -206,11 +230,15 @@ async function checkSamplesPackageDependency(
 async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
   let response;
   try {
-    response = await axios.get(`https://raw.githubusercontent.com/${
-        repository.organization}/${repository.name}/master/README.md`);
+    response = await axios.get(
+      `https://raw.githubusercontent.com/${repository.organization}/${
+        repository.name
+      }/master/README.md`
+    );
   } catch (err) {
     logger.error(
-        `${repository.name}: [!] cannot download README.md: ${err.toString()}`);
+      `${repository.name}: [!] cannot download README.md: ${err.toString()}`
+    );
     return;
   }
   const readme = response.data;
@@ -238,16 +266,20 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
     const regex = /^(https?):\/\/([^/]+)(\/.*?)?(?:#.*)?$/;
     const match = regex.exec(link);
     if (!match) {
-      logger.error(`${repository.name}: [!] README.md has link ${
-          link} which does not look valid`);
+      logger.error(
+        `${
+          repository.name
+        }: [!] README.md has link ${link} which does not look valid`
+      );
       continue;
     }
 
     try {
       await axios.get(link);
     } catch (err) {
-      logger.error(`${repository.name}: [!] README.md has link ${
-          link} which does not work`);
+      logger.error(
+        `${repository.name}: [!] README.md has link ${link} which does not work`
+      );
     }
   }
 }
@@ -263,8 +295,11 @@ async function checkAllRepositories(logger: Logger) {
   const repos = await github.getRepositories();
   let index = 0;
   for (const repository of repos) {
-    logger.info(`${repository.name}: [.] checking repository (${index} of ${
-        repos.length} repositories completed)`);
+    logger.info(
+      `${repository.name}: [.] checking repository (${index} of ${
+        repos.length
+      } repositories completed)`
+    );
 
     const errorCounter = logger.errorCount;
     await checkGithubMasterBranchProtection(logger, repository);
@@ -273,10 +308,11 @@ async function checkAllRepositories(logger: Logger) {
     await checkReadmeLinks(logger, repository);
 
     const foundErrors = logger.errorCount - errorCounter;
-    logger.info(`${repository.name}: [.] ${
-        foundErrors === 0 ?
-            'no' :
-            foundErrors} error${foundErrors === 1 ? '' : 's'} found`);
+    logger.info(
+      `${repository.name}: [.] ${foundErrors === 0 ? 'no' : foundErrors} error${
+        foundErrors === 1 ? '' : 's'
+      } found`
+    );
 
     ++index;
   }

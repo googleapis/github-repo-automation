@@ -28,7 +28,7 @@ export interface LogEntry {
 export enum LogLevel {
   'INFO',
   'WARN',
-  'ERROR'
+  'ERROR',
 }
 
 export async function log(message: string) {

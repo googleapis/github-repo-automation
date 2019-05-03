@@ -68,7 +68,7 @@ export class FakeGitHubRepository {
   }
 
   async getFile(path: string) {
-    return await this.getFileFromBranch('master', path);
+    return this.getFileFromBranch('master', path);
   }
 
   async getLatestCommitToMaster() {

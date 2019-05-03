@@ -25,15 +25,15 @@ import * as meow from 'meow';
 
 // tslint:disable-next-line:no-any
 const exec = (command: string, options?: object): Promise<string> =>
-    new Promise<string>((resolve, reject) => {
-      childProcess.exec(command, options, (err, stdout, stderr) => {
-        if (err) {
-          reject(stderr);
-        } else {
-          resolve(stdout.toString());
-        }
-      });
+  new Promise<string>((resolve, reject) => {
+    childProcess.exec(command, options, (err, stdout, stderr) => {
+      if (err) {
+        reject(stderr);
+      } else {
+        resolve(stdout.toString());
+      }
     });
+  });
 
 const commandLineOptions = [
   {name: 'help', alias: 'h', type: Boolean, description: 'Show help.'},
@@ -144,7 +144,8 @@ function checkOptions(cli: meow.Result) {
   }
   if (badOptions) {
     console.error(
-        'Please run the script with --help to get some help on the command line options.');
+      'Please run the script with --help to get some help on the command line options.'
+    );
     return false;
   }
 
@@ -168,14 +169,15 @@ async function updateCallback(cli: meow.Result, repoPath: string) {
     process.chdir(repoPath);
     const command = cli.input.slice(1).join(' ');
     console.log('Executing command:', command);
-    const execResult =
-        await exec(command);  // will throw an error if non-zero exit code
+    const execResult = await exec(command); // will throw an error if non-zero exit code
     const files = await getFilesToCommit();
     if (files.length > 0 && !cli.flags.silent) {
       for (;;) {
         const response = await question(
-            'Going to commit the following files:\n' +
-            files.map(line => `  ${line}\n`).join('') + 'Do it? [y/n]');
+          'Going to commit the following files:\n' +
+            files.map(line => `  ${line}\n`).join('') +
+            'Do it? [y/n]'
+        );
         if (response === 'y') {
           break;
         } else if (response === 'n') {

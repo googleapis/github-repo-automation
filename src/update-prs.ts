@@ -37,8 +37,9 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-        '    cannot get sha of latest commit to master, skipping:',
-        err.toString());
+      '    cannot get sha of latest commit to master, skipping:',
+      err.toString()
+    );
     return false;
   }
 
@@ -49,8 +50,9 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
       console.log(`Updated ${pr.title}.`);
     } catch (err) {
       console.warn(
-          `    cannot update branch for PR ${htmlUrl}, skipping:`,
-          err.toString());
+        `    cannot update branch for PR ${htmlUrl}, skipping:`,
+        err.toString()
+      );
       return false;
     }
   }
@@ -62,7 +64,7 @@ export async function update(cli: meow.Result) {
   return process(cli, {
     commandName: 'update',
     commandDesc:
-        'Iterates over all PRs matching the regex, and updates them, to the latest on master.',
-    processMethod
+      'Iterates over all PRs matching the regex, and updates them, to the latest on master.',
+    processMethod,
   });
 }

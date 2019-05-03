@@ -42,8 +42,13 @@ import {getConfig} from './config';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository: GitHubRepository, updateCallback: Function, branch: string,
-    message: string, comment: string, reviewers: string[]) {
+  repository: GitHubRepository,
+  updateCallback: Function,
+  branch: string,
+  message: string,
+  comment: string,
+  reviewers: string[]
+) {
   const tmpDir = await tmp.dir({unsafeCleanup: true});
 
   const cloneUrl = repository.getRepository().ssh_url;
@@ -54,19 +59,22 @@ async function processRepository(
     filesToUpdate = await updateCallback(tmpDir.path);
   } catch (err) {
     console.warn(
-        '  callback function threw an exception, skipping this repository',
-        err ? err.stack : '');
+      '  callback function threw an exception, skipping this repository',
+      err ? err.stack : ''
+    );
     return;
   }
 
   if (filesToUpdate === undefined) {
     console.warn(
-        '  callback function returned undefined value, skipping this repository');
+      '  callback function returned undefined value, skipping this repository'
+    );
     return;
   }
   if (filesToUpdate.length === 0) {
     console.warn(
-        '  callback function returned empty list, skipping this repository');
+      '  callback function returned empty list, skipping this repository'
+    );
     return;
   }
 
@@ -75,8 +83,9 @@ async function processRepository(
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-        '  cannot get sha of latest commit, skipping this repository:',
-        err.toString());
+      '  cannot get sha of latest commit, skipping this repository:',
+      err.toString()
+    );
     return;
   }
   const latestSha = latestCommit.sha;
@@ -85,8 +94,9 @@ async function processRepository(
     await repository.createBranch(branch, latestSha);
   } catch (err) {
     console.warn(
-        `  cannot create branch ${branch}, skipping this repository:`,
-        err.toString());
+      `  cannot create branch ${branch}, skipping this repository:`,
+      err.toString()
+    );
     return;
   }
 
@@ -108,26 +118,37 @@ async function processRepository(
       patchedContent = await readFile(path.join(tmpDir.path, filePath));
     } catch (err) {
       console.warn(
-          `  cannot read file ${filePath}, skipping this repository:`,
-          err.toString());
+        `  cannot read file ${filePath}, skipping this repository:`,
+        err.toString()
+      );
       return;
     }
-    const encodedPatchedContent =
-        Buffer.from(patchedContent).toString('base64');
+    const encodedPatchedContent = Buffer.from(patchedContent).toString(
+      'base64'
+    );
 
     try {
       if (oldFileSha === undefined) {
         await repository.createFileInBranch(
-            branch, filePath, message, encodedPatchedContent);
+          branch,
+          filePath,
+          message,
+          encodedPatchedContent
+        );
       } else {
         await repository.updateFileInBranch(
-            branch, filePath, message, encodedPatchedContent, oldFileSha);
+          branch,
+          filePath,
+          message,
+          encodedPatchedContent,
+          oldFileSha
+        );
       }
     } catch (err) {
       console.warn(
-          `  cannot commit file ${filePath} to branch ${
-              branch}, skipping this repository:`,
-          err.toString());
+        `  cannot commit file ${filePath} to branch ${branch}, skipping this repository:`,
+        err.toString()
+      );
       return;
     }
   }
@@ -137,9 +158,9 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-        `  cannot create pull request for branch ${
-            branch}! Branch is still there.`,
-        err.toString());
+      `  cannot create pull request for branch ${branch}! Branch is still there.`,
+      err.toString()
+    );
     return;
   }
   const pullRequestNumber = pullRequest.number!;
@@ -150,9 +171,9 @@ async function processRepository(
       await repository.requestReview(pullRequestNumber, reviewers);
     } catch (err) {
       console.warn(
-          `  cannot request review for pull request #${
-              pullRequestNumber}! Pull request is still there.`,
-          err.toString());
+        `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
+        err.toString()
+      );
       return;
     }
   }
@@ -206,8 +227,13 @@ export async function updateRepo(options: UpdateRepoOptions) {
   for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-        repository, options.updateCallback, options.branch, options.message,
-        comment, reviewers);
+      repository,
+      options.updateCallback,
+      options.branch,
+      options.message,
+      comment,
+      reviewers
+    );
   }
 }
 

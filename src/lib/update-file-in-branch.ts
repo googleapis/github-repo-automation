@@ -32,14 +32,20 @@ import {GitHub, GitHubRepository} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository: GitHubRepository, branch: string, path: string,
-    patchFunction: Function, message: string) {
+  repository: GitHubRepository,
+  branch: string,
+  path: string,
+  patchFunction: Function,
+  message: string
+) {
   let file;
   try {
     file = await repository.getFileFromBranch(branch, path);
   } catch (err) {
     console.warn(
-        '  cannot get file, skipping this repository:', err.toString());
+      '  cannot get file, skipping this repository:',
+      err.toString()
+    );
     return;
   }
   if (file['type'] !== 'file') {
@@ -52,19 +58,25 @@ async function processRepository(
   const patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(
-        '  patch function returned undefined value, skipping this repository');
+      '  patch function returned undefined value, skipping this repository'
+    );
     return;
   }
   const encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
 
   try {
     await repository.updateFileInBranch(
-        branch, path, message, encodedPatchedContent, oldFileSha);
+      branch,
+      path,
+      message,
+      encodedPatchedContent,
+      oldFileSha
+    );
   } catch (err) {
     console.warn(
-        `  cannot commit file ${path} to branch ${
-            branch}, skipping this repository:`,
-        err.toString());
+      `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
+      err.toString()
+    );
     return;
   }
 
@@ -118,7 +130,11 @@ export async function updateFileInBranch(options: UpdateFileInBranchOptions) {
   for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-        repository, options.branch, options.path, options.patchFunction,
-        options.message);
+      repository,
+      options.branch,
+      options.path,
+      options.patchFunction,
+      options.message
+    );
   }
 }

@@ -41,6 +41,6 @@ export async function reject(cli: meow.Result) {
   return process(cli, {
     commandName: 'reject',
     commandDesc: 'Automatically reject all PRs that match a given filter.',
-    processMethod
+    processMethod,
   });
 }
