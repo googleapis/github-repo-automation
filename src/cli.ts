@@ -15,7 +15,7 @@ const pkg = require('../../package.json');
 updateNotifier({pkg}).notify();
 
 const cli = meow(
-    `
+  `
 	Usage
 	  $ repo <command>
 
@@ -31,32 +31,33 @@ const cli = meow(
     $ repo exec -- git status
     $ repo exec --concurrency 10 -- git status
 `,
-    {
-      flags: {
-        branch: {
-          type: 'string',
-          alias: 'b',
-        },
-        message: {
-          type: 'string',
-          alias: 'm',
-        },
-        comment: {
-          type: 'string',
-          alias: 'c',
-        },
-        reviewers: {
-          type: 'string',
-          alias: 'r',
-        },
-        silent: {
-          type: 'boolean',
-          alias: 'q',
-        },
-        auto: {type: 'boolean'},
-        concurrency: {type: 'string'}
+  {
+    flags: {
+      branch: {
+        type: 'string',
+        alias: 'b',
       },
-    });
+      message: {
+        type: 'string',
+        alias: 'm',
+      },
+      comment: {
+        type: 'string',
+        alias: 'c',
+      },
+      reviewers: {
+        type: 'string',
+        alias: 'r',
+      },
+      silent: {
+        type: 'boolean',
+        alias: 'q',
+      },
+      auto: {type: 'boolean'},
+      concurrency: {type: 'string'},
+    },
+  }
+);
 
 if (cli.input.length < 1) {
   cli.showHelp(-1);

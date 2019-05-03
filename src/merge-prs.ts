@@ -37,8 +37,9 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-        '    cannot get sha of latest commit to master, skipping:',
-        err.toString());
+      '    cannot get sha of latest commit to master, skipping:',
+      err.toString()
+    );
     return false;
   }
   const latestMasterSha = latestCommit['sha'];
@@ -46,11 +47,13 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
     try {
       await repository.updateBranch(ref, 'master');
       console.log(
-          'You might not be able to merge immediately because CI tasks will take some time.');
+        'You might not be able to merge immediately because CI tasks will take some time.'
+      );
     } catch (err) {
       console.warn(
-          `    cannot update branch for PR ${htmlUrl}, skipping:`,
-          err.toString());
+        `    cannot update branch for PR ${htmlUrl}, skipping:`,
+        err.toString()
+      );
       return false;
     }
   }
@@ -78,6 +81,6 @@ export async function merge(cli: meow.Result) {
     processMethod,
     commandName: 'merge',
     commandDesc:
-        'Will show all open PRs with title matching regex and allow to merge them.'
+      'Will show all open PRs with title matching regex and allow to merge them.',
   });
 }

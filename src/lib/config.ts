@@ -46,8 +46,9 @@ export async function getConfig(configFilename?: string) {
     config.clonePath = config.clonePath || path.join(os.homedir(), '.repo');
     return config;
   } catch (err) {
-    console.error(`Cannot read configuration file ${
-        filename}. Have you created it? Use config.yaml.default as a sample.`);
+    console.error(
+      `Cannot read configuration file ${filename}. Have you created it? Use config.yaml.default as a sample.`
+    );
     throw new Error('Configuration file is not found');
   }
 }
@@ -55,10 +56,12 @@ export async function getConfig(configFilename?: string) {
 export interface Config {
   githubToken: string;
   clonePath: string;
-  repos?: [{
-    org: string;
-    regex?: string;
-    name?: string;
-  }];
-  reposList?: {uri: string; language?: string;};
+  repos?: [
+    {
+      org: string;
+      regex?: string;
+      name?: string;
+    }
+  ];
+  reposList?: {uri: string; language?: string};
 }

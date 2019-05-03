@@ -26,7 +26,7 @@ nock.disableNetConnect();
 const testConfig: Config = {
   githubToken: 'test-github-token',
   clonePath: '',
-  repos: [{org: 'test-organization', regex: 'matches'}]
+  repos: [{org: 'test-organization', regex: 'matches'}],
 };
 
 const url = 'https://api.github.com';
@@ -36,10 +36,12 @@ describe('GitHub', () => {
   it('should get the list of repositories', async () => {
     const github = new GitHub(testConfig);
     const path =
-        '/orgs/test-organization/repos?type=public&page=1&per_page=100';
+      '/orgs/test-organization/repos?type=public&page=1&per_page=100';
     const name = 'matches';
     const owner = {login: 'test-organization'};
-    const scope = nock(url).get(path).reply(200, [{name, owner}]);
+    const scope = nock(url)
+      .get(path)
+      .reply(200, [{name, owner}]);
     const repos = await github.getRepositories();
     scope.done();
     assert.strictEqual(repos.length, 1);
@@ -50,10 +52,10 @@ describe('GitHub', () => {
     const response = {hello: 'world'};
     const path = `/repos/test-organization/matches/contents/index.test`;
     const scope = nock(url)
-                      .get(path, undefined, {
-                        reqheaders: {authorization: 'token test-github-token'}
-                      })
-                      .reply(200, response);
+      .get(path, undefined, {
+        reqheaders: {authorization: 'token test-github-token'},
+      })
+      .reply(200, response);
     const file = await repo.getFile('index.test');
     assert.deepStrictEqual(file, response);
     scope.done();

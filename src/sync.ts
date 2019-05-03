@@ -34,7 +34,7 @@ const readdir = pify(fs.readdir);
 const stat = pify(fs.stat);
 const spawn = pify(cp.exec);
 
-function print(res: {stdout: string, stderr: string}) {
+function print(res: {stdout: string; stderr: string}) {
   if (res.stdout) {
     console.log(res.stdout);
   }
@@ -54,8 +54,9 @@ export async function sync(cli: meow.Result) {
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
   let i = 0;
-  const concurrency =
-      cli.flags.concurrency ? Number(cli.flags.concurrency) : 50;
+  const concurrency = cli.flags.concurrency
+    ? Number(cli.flags.concurrency)
+    : 50;
   const q = new Q({concurrency});
   const proms = repos.map(repo => {
     const cloneUrl = repo.getRepository().ssh_url!;
@@ -84,11 +85,13 @@ export async function exec(cli: meow.Result) {
 
   // get all of the subdirectories in ~/.repo.
   const files: string[] = await readdir(rootPath);
-  const ps = await Promise.all(files.map(async file => {
-    file = path.join(rootPath, file);
-    const stats = await stat(file);
-    return {file, isDirectory: stats.isDirectory()};
-  }));
+  const ps = await Promise.all(
+    files.map(async file => {
+      file = path.join(rootPath, file);
+      const stats = await stat(file);
+      return {file, isDirectory: stats.isDirectory()};
+    })
+  );
   const dirs = ps.filter(x => x.isDirectory).map(x => x.file);
 
   if (dirs.length === 0) {
@@ -98,22 +101,23 @@ export async function exec(cli: meow.Result) {
 
   logger.info(`Executing '${command}' in ${dirs.length} directories.`);
   let i = 0;
-  const concurrency =
-      cli.flags.concurrency ? Number(cli.flags.concurrency) : 10;
+  const concurrency = cli.flags.concurrency
+    ? Number(cli.flags.concurrency)
+    : 10;
   const q = new Q({concurrency});
   const proms = dirs.map(dir => {
     return q.add(() => {
       return spawn(command.join(' '), {cwd: dir})
-          .then(r => {
-            i++;
-            logger.info(`[${i}/${dirs.length}] Executed cmd in ${dir}.`);
-            print(r);
-          })
-          .catch(e => {
-            i++;
-            logger.error(dir);
-            logger.error(e);
-          });
+        .then(r => {
+          i++;
+          logger.info(`[${i}/${dirs.length}] Executed cmd in ${dir}.`);
+          print(r);
+        })
+        .catch(e => {
+          i++;
+          logger.error(dir);
+          logger.error(e);
+        });
     });
   });
 

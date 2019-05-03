@@ -34,14 +34,22 @@ import {GitHub, GitHubRepository} from './github';
  * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
-    repository: GitHubRepository, path: string, patchFunction: Function,
-    branch: string, message: string, comment: string, reviewers: string[]) {
+  repository: GitHubRepository,
+  path: string,
+  patchFunction: Function,
+  branch: string,
+  message: string,
+  comment: string,
+  reviewers: string[]
+) {
   let file;
   try {
     file = await repository.getFile(path);
   } catch (err) {
     console.warn(
-        '  cannot get file, skipping this repository:', err.toString());
+      '  cannot get file, skipping this repository:',
+      err.toString()
+    );
     return;
   }
   if (file['type'] !== 'file') {
@@ -54,7 +62,8 @@ async function processRepository(
   const patchedContent = patchFunction(decodedContent);
   if (patchedContent === undefined) {
     console.warn(
-        '  patch function returned undefined value, skipping this repository');
+      '  patch function returned undefined value, skipping this repository'
+    );
     return;
   }
   const encodedPatchedContent = Buffer.from(patchedContent).toString('base64');
@@ -64,8 +73,9 @@ async function processRepository(
     latestCommit = await repository.getLatestCommitToMaster();
   } catch (err) {
     console.warn(
-        '  cannot get sha of latest commit, skipping this repository:',
-        err.toString());
+      '  cannot get sha of latest commit, skipping this repository:',
+      err.toString()
+    );
     return;
   }
   const latestSha = latestCommit['sha'];
@@ -74,19 +84,25 @@ async function processRepository(
     await repository.createBranch(branch, latestSha);
   } catch (err) {
     console.warn(
-        `  cannot create branch ${branch}, skipping this repository:`,
-        err.toString());
+      `  cannot create branch ${branch}, skipping this repository:`,
+      err.toString()
+    );
     return;
   }
 
   try {
     await repository.updateFileInBranch(
-        branch, path, message, encodedPatchedContent, oldFileSha);
+      branch,
+      path,
+      message,
+      encodedPatchedContent,
+      oldFileSha
+    );
   } catch (err) {
     console.warn(
-        `  cannot commit file ${path} to branch ${
-            branch}, skipping this repository:`,
-        err.toString());
+      `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
+      err.toString()
+    );
     return;
   }
 
@@ -95,9 +111,9 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-        `  cannot create pull request for branch ${
-            branch}! Branch is still there.`,
-        err.toString());
+      `  cannot create pull request for branch ${branch}! Branch is still there.`,
+      err.toString()
+    );
     return;
   }
   const pullRequestNumber = pullRequest.number!;
@@ -108,9 +124,9 @@ async function processRepository(
       await repository.requestReview(pullRequestNumber, reviewers);
     } catch (err) {
       console.warn(
-          `  cannot request review for pull request #${
-              pullRequestNumber}! Pull request is still there.`,
-          err.toString());
+        `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
+        err.toString()
+      );
       return;
     }
   }
@@ -169,8 +185,14 @@ export async function updateFile(options: UpdateFileOptions) {
   for (const repository of repos) {
     console.log(repository.name);
     await processRepository(
-        repository, options.path, options.patchFunction, options.branch,
-        options.message, comment, reviewers);
+      repository,
+      options.path,
+      options.patchFunction,
+      options.branch,
+      options.message,
+      comment,
+      reviewers
+    );
   }
 }
 
