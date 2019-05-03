@@ -4,6 +4,19 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v1.1.0...v2.0.0) (2019-05-03)
+
+
+### Bug Fixes
+
+* stop supporting Node.js v6 ([#270](https://www.github.com/googleapis/github-repo-automation/issues/270)) ([02eb085](https://www.github.com/googleapis/github-repo-automation/commit/02eb085))
+* **deps:** update dependency p-queue to v5 ([#261](https://www.github.com/googleapis/github-repo-automation/issues/261)) ([75e5bb6](https://www.github.com/googleapis/github-repo-automation/commit/75e5bb6))
+
+
+### BREAKING CHANGES
+
+* stop supporting Node.js v6 (#270)
+
 ## v1.1.0
 
 04-18-2019 14:47 PDT
@@ -134,4 +147,3 @@
 - chore(deps): update dependency typescript to v3 ([#117](https://github.com/googleapis/github-repo-automation/pull/117))
 - chore: assert.deelEqual => assert.deepStrictEqual ([#114](https://github.com/googleapis/github-repo-automation/pull/114))
 - chore: move mocha options to mocha.opts ([#110](https://github.com/googleapis/github-repo-automation/pull/110))
-
