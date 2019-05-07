@@ -8,12 +8,16 @@
   "repository": "googleapis/github-repo-automation",
   "private": true,
   "scripts": {
-    "test": "mocha system-test"
+    "test": "mocha system-test",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
-    "@google/repo": "^2.0.0"
+    "@google/repo": "^2.0.0",
+    "snyk": "^1.162.0"
   },
   "devDependencies": {
     "mocha": "^6.0.0"
-  }
+  },
+  "snyk": true
 }
