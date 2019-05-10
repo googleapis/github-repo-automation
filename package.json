@@ -25,7 +25,7 @@
     "p-queue": "^5.0.0",
     "pify": "^4.0.0",
     "tmp-promise": "^1.0.4",
-    "update-notifier": "^2.5.0"
+    "update-notifier": "^3.0.0"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.7",
