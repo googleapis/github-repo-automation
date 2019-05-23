@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [2.0.1](https://www.github.com/googleapis/github-repo-automation/compare/v2.0.0...v2.0.1) (2019-05-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency tmp-promise to v2 ([#278](https://www.github.com/googleapis/github-repo-automation/issues/278)) ([a7a7b2d](https://www.github.com/googleapis/github-repo-automation/commit/a7a7b2d))
+* **deps:** update dependency update-notifier to v3 ([#275](https://www.github.com/googleapis/github-repo-automation/issues/275)) ([d8e9529](https://www.github.com/googleapis/github-repo-automation/commit/d8e9529))
+
 ## [2.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v1.1.0...v2.0.0) (2019-05-03)
 
 
