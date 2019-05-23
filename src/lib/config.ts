@@ -17,8 +17,8 @@
  */
 
 import * as fs from 'fs';
-import * as pify from 'pify';
-const readFile = pify(fs.readFile);
+import {promisify} from 'util';
+const readFile = promisify(fs.readFile);
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as os from 'os';
