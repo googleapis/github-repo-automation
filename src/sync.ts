@@ -23,16 +23,16 @@ import * as meow from 'meow';
 import ora from 'ora';
 import * as Q from 'p-queue';
 import * as path from 'path';
-import * as pify from 'pify';
+import {promisify} from 'util';
 
 import {getConfig} from './lib/config';
 import {GitHub} from './lib/github';
 import * as logger from './lib/logger';
 
-const mkdir = pify(fs.mkdir);
-const readdir = pify(fs.readdir);
-const stat = pify(fs.stat);
-const spawn = pify(cp.exec);
+const mkdir = promisify(fs.mkdir);
+const readdir = promisify(fs.readdir);
+const stat = promisify(fs.stat);
+const spawn = promisify(cp.exec);
 
 function print(res: {stdout: string; stderr: string}) {
   if (res.stdout) {
