@@ -392,6 +392,20 @@ export class GitHubRepository {
   }
 
   /**
+   * Renames the given pull request.
+   * @param {Object} pr Pull request object, as returned by GitHib API.
+   * @param {string} title New title to give the PR
+   * @returns Review object, as returned by GitHub API.
+   */
+  async renamePullRequest(pr: PullRequest, title: string) {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const url = `/repos/${owner}/${repo}/pulls/${pr.number}`;
+    const result = await this.client.patch(url, {title});
+    return result.data;
+  }
+
+  /**
    * Applies a set of labels to a given pull request.
    * @param {Object} pr Pull request object, as returned by GitHib API.
    * @param {Array<string>} labels Labels to apply to the PR

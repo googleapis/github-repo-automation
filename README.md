@@ -81,6 +81,12 @@ or all PRs with the word `test` in the title:
 $ repo reject [regex]
 ```
 
+### repo rename
+
+```sh
+$ repo rename 'title to match' 'new title'
+```
+
 Iterates over all open pull requests matching `regex`, and closes
 them. For example, close all PRs with the word `test` in the title:
 
