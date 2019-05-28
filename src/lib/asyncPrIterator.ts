@@ -44,6 +44,9 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
     return;
   }
 
+  const concurrency = cli.flags.concurrency
+    ? Number(cli.flags.concurrency)
+    : 15;
   const config = await getConfig();
   const github = new GitHub(config);
   const regex = new RegExp(cli.input[1] || '.*');
@@ -59,7 +62,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
   ).start();
 
   // Concurrently find all PRs in all relevant repositories
-  const q = new Q({concurrency: 15});
+  const q = new Q({concurrency});
   q.addAll(
     repos.map(repo => {
       return async () => {
