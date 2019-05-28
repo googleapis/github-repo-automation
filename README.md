@@ -92,6 +92,9 @@ them. For example, close all PRs with the word `test` in the title:
 $ repo rename 'title to match' 'new title'
 ```
 
+Iterates over all open pull requests matching `regex`, and renames
+them.
+
 ### repo apply
 
 ```sh
