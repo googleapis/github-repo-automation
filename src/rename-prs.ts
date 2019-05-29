@@ -17,22 +17,22 @@ import * as meow from 'meow';
 import {GitHubRepository, PullRequest} from './lib/github';
 import {process} from './lib/asyncPrIterator';
 
+let title: string;
+
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  try {
-    await repository.approvePullRequest(pr);
-  } catch (err) {
-    return false;
-  }
+  await repository.renamePullRequest(pr, title);
   return true;
 }
 
-export async function approve(cli: meow.Result) {
+export async function rename(cli: meow.Result) {
+  title = cli.input[2];
+  console.log(`title: ${title}`);
   return process(cli, {
-    commandName: 'approve',
-    commandNamePastTense: 'approved',
-    commandActive: 'approving',
+    commandName: 'rename',
+    commandNamePastTense: 'renamed',
+    commandActive: 'renaming',
     commandDesc:
-      'Will show all open PRs with title matching regex and approve them.',
+      'Will show all open PRs with title matching regex and rename them.',
     processMethod,
   });
 }

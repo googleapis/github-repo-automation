@@ -2,6 +2,7 @@
 
 import {main as apply} from './apply-change';
 import {approve} from './approve-prs';
+import {rename} from './rename-prs';
 import {reject} from './reject-prs';
 import {update} from './update-prs';
 import {merge} from './merge-prs';
@@ -24,6 +25,7 @@ const cli = meow(
     $ repo update /regex/
     $ repo merge /regex/
     $ repo reject /regex/
+    $ repo rename /regex/ 'new PR title'
     $ repo tag /regex/ label1 label2 ...
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
@@ -67,6 +69,9 @@ let p: Promise<void>;
 switch (cli.input[0]) {
   case 'approve':
     p = approve(cli);
+    break;
+  case 'rename':
+    p = rename(cli);
     break;
   case 'reject':
     p = reject(cli);
