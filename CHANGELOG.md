@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.1.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.0.1...v2.1.0) (2019-05-29)
+
+
+### Features
+
+* add the `rename` command ([#284](https://www.github.com/googleapis/github-repo-automation/issues/284)) ([7991585](https://www.github.com/googleapis/github-repo-automation/commit/7991585))
+
 ### [2.0.1](https://www.github.com/googleapis/github-repo-automation/compare/v2.0.0...v2.0.1) (2019-05-23)
 
 
