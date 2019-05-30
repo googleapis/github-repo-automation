@@ -21,16 +21,12 @@
 import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/prIterator';
+import {process} from './lib/asyncPrIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  const title = pr.title;
   const htmlUrl = pr.html_url;
-  const author = pr.user.login;
   const baseSha = pr.base.sha;
   const ref = pr.head.ref;
-
-  console.log(`  [${author}] ${htmlUrl}: ${title}`);
 
   let latestCommit: {[index: string]: string};
   try {
@@ -47,7 +43,6 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   if (latestMasterSha !== baseSha) {
     try {
       await repository.updateBranch(ref, 'master');
-      console.log(`Updated ${pr.title}.`);
     } catch (err) {
       console.warn(
         `    cannot update branch for PR ${htmlUrl}, skipping:`,
@@ -63,6 +58,8 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 export async function update(cli: meow.Result) {
   return process(cli, {
     commandName: 'update',
+    commandActive: 'updating',
+    commandNamePastTense: 'updated',
     commandDesc:
       'Iterates over all PRs matching the regex, and updates them, to the latest on master.',
     processMethod,

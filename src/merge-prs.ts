@@ -21,17 +21,12 @@
 import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/prIterator';
+import {process} from './lib/asyncPrIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  const title = pr.title;
   const htmlUrl = pr.html_url;
-  const author = pr.user.login;
   const baseSha = pr.base.sha;
   const ref = pr.head.ref;
-
-  console.log(`  [${author}] ${htmlUrl}: ${title}`);
-
   let latestCommit: {[index: string]: string};
   try {
     latestCommit = await repository.getLatestCommitToMaster();
@@ -60,10 +55,8 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 
   try {
     await repository.mergePullRequest(pr);
-    console.log('    merged!');
     try {
       await repository.deleteBranch(ref);
-      console.log('    branch deleted!');
     } catch (err) {
       console.warn(`    error trying to delete branch ${ref}: ${err}`);
       return false;
@@ -79,6 +72,8 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 export async function merge(cli: meow.Result) {
   return process(cli, {
     processMethod,
+    commandActive: 'merging',
+    commandNamePastTense: 'merged',
     commandName: 'merge',
     commandDesc:
       'Will show all open PRs with title matching regex and allow to merge them.',

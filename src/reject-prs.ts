@@ -21,13 +21,9 @@
 import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/prIterator';
+import {process} from './lib/asyncPrIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  const title = pr.title;
-  const htmlUrl = pr.html_url;
-  const author = pr.user.login;
-  console.log(`  [${author}] ${htmlUrl}: ${title}`);
   try {
     await repository.closePullRequest(pr);
   } catch (err) {
@@ -40,6 +36,8 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 export async function reject(cli: meow.Result) {
   return process(cli, {
     commandName: 'reject',
+    commandActive: 'rejecting',
+    commandNamePastTense: 'rejected',
     commandDesc: 'Automatically reject all PRs that match a given filter.',
     processMethod,
   });
