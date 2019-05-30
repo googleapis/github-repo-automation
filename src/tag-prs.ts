@@ -15,17 +15,15 @@
 import * as meow from 'meow';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/prIterator';
+import {process} from './lib/asyncPrIterator';
 
 async function processMethod(
   repository: GitHubRepository,
   pr: PullRequest,
   cli: meow.Result
 ) {
-  console.log(`  [${pr.user.login}] ${pr.html_url}: ${pr.title}`);
   try {
     await repository.tagPullRequest(pr, cli.input.slice(2));
-    console.log('    tagged!');
   } catch (err) {
     console.warn(`    error trying to tag PR ${pr.html_url}:`, err.toString());
     return false;
@@ -36,6 +34,8 @@ async function processMethod(
 export async function tag(cli: meow.Result) {
   return process(cli, {
     commandName: 'tag',
+    commandActive: 'tagging',
+    commandNamePastTense: 'tagged',
     commandDesc:
       'Will apply label(s) to all open PRs with title matching regex.',
     processMethod,
