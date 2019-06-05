@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [2.1.1](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.0...v2.1.1) (2019-06-05)
+
+
+### Bug Fixes
+
+* make other PR commands concurrent ([#289](https://www.github.com/googleapis/github-repo-automation/issues/289)) ([ec70b56](https://www.github.com/googleapis/github-repo-automation/commit/ec70b56))
+* **deps:** update dependency axios to ^0.19.0 ([#291](https://www.github.com/googleapis/github-repo-automation/issues/291)) ([913c93c](https://www.github.com/googleapis/github-repo-automation/commit/913c93c))
+
 ## [2.1.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.0.1...v2.1.0) (2019-05-29)
 
 
