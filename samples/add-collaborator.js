@@ -48,9 +48,7 @@ async function main() {
   let index = 0;
   for (const repository of repos) {
     console.log(
-      `${repository.name}: [.] processing repository (${index} of ${
-        repos.length
-      } repositories completed)`
+      `${repository.name}: [.] processing repository (${index} of ${repos.length} repositories completed)`
     );
     await repository.addCollaborator(username, permission);
     ++index;
