@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as meow from 'meow';
-import * as Q from 'p-queue';
+import Q from 'p-queue';
 import ora from 'ora';
 
 import {getConfig} from './config';
@@ -86,9 +86,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
   // Filter the list of PRs to ones who match the PR title
   prs = prs.filter(prSet => prSet.pr.title.match(regex));
   orb1.succeed(
-    `[${scanned}/${repos.length}] repositories scanned, ${
-      prs.length
-    } matching PRs found`
+    `[${scanned}/${repos.length}] repositories scanned, ${prs.length} matching PRs found`
   );
 
   // Concurrently process each relevant PR
@@ -100,9 +98,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
       return async () => {
         const title = prSet.pr.title!;
         if (title.match(regex)) {
-          orb2.text = `[${processed}/${prs.length}] ${
-            options.commandActive
-          } PRs`;
+          orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
           const result = await options.processMethod(prSet.repo, prSet.pr, cli);
           if (result) {
             successful.push(prSet.pr.html_url);
@@ -110,9 +106,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
             failed.push(prSet.pr.html_url);
           }
           processed++;
-          orb2.text = `[${processed}/${prs.length}] ${
-            options.commandActive
-          } PRs`;
+          orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
         }
       };
     })

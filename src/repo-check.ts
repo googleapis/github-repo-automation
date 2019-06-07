@@ -91,17 +91,13 @@ async function checkGithubMasterBranchProtection(
     response = await repository.getRequiredMasterBranchProtection();
   } catch (err) {
     logger.error(
-      `${
-        repository.name
-      }: [!] cannot fetch branch protection settings, no access?`
+      `${repository.name}: [!] cannot fetch branch protection settings, no access?`
     );
     return;
   }
   if (response['required_pull_request_reviews'] === undefined) {
     logger.error(
-      `${
-        repository.name
-      }: [!] branch protection for master branch - pull request reviews are not required`
+      `${repository.name}: [!] branch protection for master branch - pull request reviews are not required`
     );
   }
 
@@ -125,17 +121,13 @@ async function checkGithubMasterBranchProtection(
       }
       if (!enabled) {
         logger.error(
-          `${
-            repository.name
-          }: [!] branch protection for master branch - status check ${check} is not required`
+          `${repository.name}: [!] branch protection for master branch - status check ${check} is not required`
         );
       }
     }
   } else {
     logger.error(
-      `${
-        repository.name
-      }: [!] branch protection for master branch - status checks are not enabled`
+      `${repository.name}: [!] branch protection for master branch - status checks are not enabled`
     );
   }
 }
@@ -178,9 +170,7 @@ async function checkSamplesPackageDependency(
   let response;
   try {
     response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/package.json`
+      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/package.json`
     );
   } catch (err) {
     logger.error(
@@ -191,9 +181,7 @@ async function checkSamplesPackageDependency(
   const packageJson = response.data;
   try {
     response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/samples/package.json`
+      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/samples/package.json`
     );
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
@@ -207,9 +195,7 @@ async function checkSamplesPackageDependency(
     const regex = '^[^]?' + mainVersion.replace(/\./g, '.') + '$'; // 1.12.3 ==> ^[^]?1\.12\.3$
     if (!samplesDependency.match(regex)) {
       logger.error(
-        `${
-          repository.name
-        }: [!] main package version ${mainVersion} does not match samples dependency ${samplesDependency}`
+        `${repository.name}: [!] main package version ${mainVersion} does not match samples dependency ${samplesDependency}`
       );
     }
   } catch (err) {
@@ -231,9 +217,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
   let response;
   try {
     response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${
-        repository.name
-      }/master/README.md`
+      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/README.md`
     );
   } catch (err) {
     logger.error(
@@ -267,9 +251,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
     const match = regex.exec(link);
     if (!match) {
       logger.error(
-        `${
-          repository.name
-        }: [!] README.md has link ${link} which does not look valid`
+        `${repository.name}: [!] README.md has link ${link} which does not look valid`
       );
       continue;
     }
@@ -296,9 +278,7 @@ async function checkAllRepositories(logger: Logger) {
   let index = 0;
   for (const repository of repos) {
     logger.info(
-      `${repository.name}: [.] checking repository (${index} of ${
-        repos.length
-      } repositories completed)`
+      `${repository.name}: [.] checking repository (${index} of ${repos.length} repositories completed)`
     );
 
     const errorCounter = logger.errorCount;
