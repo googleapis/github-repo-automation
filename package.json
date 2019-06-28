@@ -45,7 +45,7 @@
     "gts": "^1.0.0",
     "ink-docstrap": "^1.3.2",
     "intelli-espower-loader": "^1.0.1",
-    "linkinator": "^1.4.3",
+    "linkinator": "^1.5.0",
     "mocha": "^6.1.4",
     "nock": "^10.0.6",
     "nyc": "^14.1.1",
@@ -70,7 +70,7 @@
     "samples-test": "mocha samples/system-test",
     "system-test": "mocha build/system-test",
     "presystem-test": "npm run compile",
-    "docs-test": "linkinator docs -r --skip www.googleapis.com",
+    "docs-test": "linkinator docs",
     "predocs-test": "npm run docs"
   }
 }
