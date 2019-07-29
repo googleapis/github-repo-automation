@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [2.1.2](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.1...v2.1.2) (2019-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency command-line-usage to v6 ([#299](https://www.github.com/googleapis/github-repo-automation/issues/299)) ([ab395a9](https://www.github.com/googleapis/github-repo-automation/commit/ab395a9))
+
 ### [2.1.1](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.0...v2.1.1) (2019-06-05)
 
 
