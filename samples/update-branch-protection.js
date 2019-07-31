@@ -19,13 +19,13 @@
 
 'use strict';
 
-const GitHub = require('../build/src/lib/github.js');
+const meow = require('meow');
+const {getConfig} = require('../build/src/lib/config.js');
+const {GitHub} = require('../build/src/lib/github');
 
-async function main() {
-  const toRemove = 'ci/circleci: node7';
-
-  const github = new GitHub();
-  await github.init();
+async function main(input) {
+  const config = await getConfig();
+  const github = new GitHub(config);
 
   const repos = await github.getRepositories();
   for (const repository of repos) {
@@ -45,8 +45,14 @@ async function main() {
     }
 
     const contexts = statusChecks['contexts'];
-    const index = contexts.indexOf(toRemove);
-    contexts.splice(index, 1);
+    if (input[0] === 'remove') {
+      const index = contexts.indexOf(input[1]);
+      contexts.splice(index, 1);
+    } else if (input[0] === 'add') {
+      contexts.push(input[1]);
+    } else {
+      throw Error(`unrecognized command ${input[0]}`);
+    }
 
     try {
       await repository.updateRequiredMasterBranchProtectionStatusChecks(
@@ -59,6 +65,18 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error(err.toString());
-});
+const cli = meow(
+  `
+	Usage
+    $ node update-branch-protection.js remove "ci/kokoro: node11"
+    $ node update-branch-protection.js add "ci/kokoro: node12"
+`
+);
+
+if (cli.input.length < 2) {
+  cli.showHelp(-1);
+} else {
+  main(cli.input).catch(err => {
+    console.error(err.toString());
+  });
+}
