@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.2.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.2...v2.2.0) (2019-07-31)
+
+
+### Features
+
+* make samples/update-branch-protection.js is a flexible CLI ([#303](https://www.github.com/googleapis/github-repo-automation/issues/303)) ([b23c2b7](https://www.github.com/googleapis/github-repo-automation/commit/b23c2b7))
+
 ### [2.1.2](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.1...v2.1.2) (2019-07-29)
 
 
