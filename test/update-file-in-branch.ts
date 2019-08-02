@@ -25,16 +25,7 @@ const {updateFileInBranch} = proxyquire('../src/lib/update-file-in-branch', {
   './github': {GitHub: fakeGitHub.FakeGitHub},
   './config': {getConfig: () => Promise.resolve({})},
 });
-
-async function suppressConsole(func: Function) {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-  await func();
-  delete console.error;
-  delete console.warn;
-  delete console.log;
-}
+import {suppressConsole} from './util';
 
 describe('UpdateFileInBranch', () => {
   const path = '/path/to/file.txt';

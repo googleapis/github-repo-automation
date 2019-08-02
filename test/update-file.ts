@@ -25,16 +25,7 @@ const {updateFile} = proxyquire('../src/lib/update-file', {
   './config': {getConfig: () => Promise.resolve({})},
   './github': {GitHub: fakeGitHub.FakeGitHub},
 });
-
-async function suppressConsole(func: Function) {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-  await func();
-  delete console.error;
-  delete console.warn;
-  delete console.log;
-}
+import {suppressConsole} from './util';
 
 describe('UpdateFile', () => {
   const path = '/path/to/file.txt';
