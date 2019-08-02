@@ -439,8 +439,12 @@ export class GitHubRepository {
   async mergePullRequest(pr: PullRequest) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
+    const title = pr.title;
     const url = `/repos/${owner}/${repo}/pulls/${pr.number}/merge`;
-    const result = await this.client.put(url, {merge_method: 'squash'});
+    const result = await this.client.put(url, {
+      merge_method: 'squash',
+      commit_title: title,
+    });
     return result.data;
   }
 
