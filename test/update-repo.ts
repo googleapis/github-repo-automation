@@ -26,6 +26,7 @@ const rejects = require('assert-rejects');
 import * as fakeGitHub from './fakes/fake-github';
 import * as fakeTmp from './fakes/fake-tmp';
 const tmp = require('tmp-promise');
+import {suppressConsole} from './util';
 
 const execCallback = sinon.spy();
 const {updateRepo} = proxyquire('../src/lib/update-repo', {
@@ -39,16 +40,6 @@ const {updateRepo} = proxyquire('../src/lib/update-repo', {
     },
   },
 });
-
-async function suppressConsole(func: Function) {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-  await func();
-  delete console.error;
-  delete console.warn;
-  delete console.log;
-}
 
 describe('UpdateRepo', () => {
   const pathExisting = 'file1.txt';
