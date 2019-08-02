@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [2.2.1](https://www.github.com/googleapis/github-repo-automation/compare/v2.2.0...v2.2.1) (2019-08-02)
+
+
+### Bug Fixes
+
+* set commit title when merging PR ([#310](https://www.github.com/googleapis/github-repo-automation/issues/310)) ([a7b1bb0](https://www.github.com/googleapis/github-repo-automation/commit/a7b1bb0))
+
 ## [2.2.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.1.2...v2.2.0) (2019-07-31)
 
 
