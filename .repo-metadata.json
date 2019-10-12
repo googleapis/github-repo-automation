@@ -1,0 +1,8 @@
+{
+  "name": "github-repo-automation",
+  "name_pretty": "GitHub Repo Automation",
+  "issue_tracker": "https://github.com/googleapis/github-repo-automation/issues",
+  "language": "nodejs",
+  "repo": "googleapis/github-repo-automation",
+  "distribution_name": "@google/repo"
+}
