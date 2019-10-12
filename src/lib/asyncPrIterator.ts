@@ -14,7 +14,7 @@
 
 import * as meow from 'meow';
 import Q from 'p-queue';
-import ora from 'ora';
+import ora = require('ora');
 
 import {getConfig} from './config';
 import {GitHub, GitHubRepository, PullRequest} from './github';
