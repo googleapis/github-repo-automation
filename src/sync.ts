@@ -20,7 +20,7 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as meow from 'meow';
-import ora from 'ora';
+import ora = require('ora');
 import Q from 'p-queue';
 import * as path from 'path';
 import {promisify} from 'util';
