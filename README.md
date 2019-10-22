@@ -31,7 +31,7 @@ You need to make your own [`config.yaml`](https://github.com/googleapis/github-r
 $ cat /User/beckwith/.repo.yaml
 ---
 githubToken: your-github-token
-clonePath: ~/.repo # optional
+clonePath: /User/beckwith/.repo # optional
 repos:
   - org: googleapis
     regex: nodejs-.*
