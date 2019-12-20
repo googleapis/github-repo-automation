@@ -1,59 +1,176 @@
-## Some examples of using the tool
+[//]: # "This README.md file is auto-generated, all changes to this file will be lost."
+[//]: # "To regenerate it, use `python -m synthtool`."
+<img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-While we don't have a good documented samples (yet), this folder contains
-scripts that were used to solve some problems related to managing multiple
-repositories, and can be used as examples of using the library.
+# [GitHub Repo Automation: Node.js Samples](https://github.com/googleapis/github-repo-automation)
 
-### `lock-file-maintenance.sh`
+[![Open in Cloud Shell][shell_img]][shell_link]
 
-A sample shell script that can be passed to `apply-change.js`. This script
-updates `package-lock.json` and `samples/package-lock.json` (if the latter
-exists) to make the package use the latest dependencies. It also verifies that
-the samples package depends on the current version of the main package.
 
-### `fix-samples-dependency.sh`
 
-A sample shell script that can be passed to `apply-change.js`. This particular
-script uses [jq](https://stedolan.github.io/jq/) tool to validate if the
-samples package (`samples/package.json`) depends on the exactly the same version
-of the main package as listed in `package.json` (to make sure that when we run
-samples tests, we test the current code using `npm link`, and not the code of
-some older version downloaded from NPM). The script is called inside the
-temporary folder where each repository is cloned, and makes the required
-changes, after which the added and modified files will be checked in by
-`apply-change.js`.
+## Table of Contents
 
-### `remove-node7.js`
+* [Before you begin](#before-you-begin)
+* [Samples](#samples)
+  * [Add-collaborator](#add-collaborator)
+  * [Change-circleci-config-in-branch](#change-circleci-config-in-branch)
+  * [Chmod-repo-tools](#chmod-repo-tools)
+  * [Commit-package-lock](#commit-package-lock)
+  * [Remove-node7](#remove-node7)
+  * [Setup-nighty-builds](#setup-nighty-builds)
+  * [Update-branch-protection](#update-branch-protection)
+  * [Update-kokoro-branch-protection](#update-kokoro-branch-protection)
 
-Fix CircleCI configuration `.circleci/config.yml` in all repositories,
-removing a job called `node7` from the workflow and job descriptions.
-Since `.circleci/config.yml` is YaML, we parse it into object, then fix
-it and dump it back.
+## Before you begin
 
-### `chmod-repo-tools.js`
+Before running the samples, make sure you've followed the steps outlined in
+[Using the client library](https://github.com/googleapis/github-repo-automation#using-the-client-library).
 
-Very similar example of changing CircleCI configuration by adding some
-extra command in one particular step.
+`cd samples`
 
-### `update-branch-protection.js`
+`npm install`
 
-Removes the given CI task (`node7` in this example) from the master branch
-protection tasks list on GitHub for all our repositories.
+`cd ..`
 
-### `change-circleci-config-in-branch.js`
+## Samples
 
-An example of fixing the existing file in branch (e.g. apply a quick change
-requested in the pull request review).
 
-### `commit-package-lock.js`
 
-An example of applying the change not to one file, but to the whole
-cloned repository. The `updateCallback` function takes a path to a folder
-where the repository is cloned, and performs requested changes.
-The changes are then committed and pull request is sent.
+### Add-collaborator
 
-### `setup-nighty-builds.js`
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/add-collaborator.js).
 
-One more example of updating several files at once. This example modifies
-`.circleci/config.yml` to add a `nightly` workflow, and changes some jobs.
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/add-collaborator.js,samples/README.md)
 
+__Usage:__
+
+
+`node samples/add-collaborator.js`
+
+
+-----
+
+
+
+
+### Change-circleci-config-in-branch
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/change-circleci-config-in-branch.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/change-circleci-config-in-branch.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/change-circleci-config-in-branch.js`
+
+
+-----
+
+
+
+
+### Chmod-repo-tools
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/chmod-repo-tools.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/chmod-repo-tools.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/chmod-repo-tools.js`
+
+
+-----
+
+
+
+
+### Commit-package-lock
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/commit-package-lock.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/commit-package-lock.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/commit-package-lock.js`
+
+
+-----
+
+
+
+
+### Remove-node7
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/remove-node7.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/remove-node7.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/remove-node7.js`
+
+
+-----
+
+
+
+
+### Setup-nighty-builds
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/setup-nighty-builds.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/setup-nighty-builds.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/setup-nighty-builds.js`
+
+
+-----
+
+
+
+
+### Update-branch-protection
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-branch-protection.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-branch-protection.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/update-branch-protection.js`
+
+
+-----
+
+
+
+
+### Update-kokoro-branch-protection
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-kokoro-branch-protection.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-kokoro-branch-protection.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/update-kokoro-branch-protection.js`
+
+
+
+
+
+
+[shell_img]: https://gstatic.com/cloudssh/images/open-btn.png
+[shell_link]: https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/README.md
+[product-docs]: 
