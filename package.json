@@ -37,7 +37,7 @@
     "@types/sinon": "^7.0.12",
     "@types/update-notifier": "^2.5.0",
     "assert-rejects": "^1.0.0",
-    "c8": "^6.0.1",
+    "c8": "^7.0.0",
     "codecov": "^3.5.0",
     "eslint": "^6.0.0",
     "eslint-config-prettier": "^6.0.0",
