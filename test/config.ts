@@ -17,6 +17,7 @@
  */
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as os from 'os';
