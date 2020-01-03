@@ -51,8 +51,9 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
   const github = new GitHub(config);
   const regex = new RegExp(cli.input[1] || '.*');
   const repos = await github.getRepositories();
-  const successful: string[] = [];
-  const failed: string[] = [];
+  const successful: PullRequest[] = [];
+  const failed: PullRequest[] = [];
+  let error: string | undefined;
   let processed = 0;
   let scanned = 0;
   let prs = new Array<{repo: GitHubRepository; pr: PullRequest}>();
@@ -76,7 +77,7 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
           scanned++;
           orb1.text = `[${scanned}/${repos.length}] Scanning repos for PRs`;
         } catch (err) {
-          failed.push('cannot list open pull requests:', err.toString());
+          error = `cannot list open pull requests: ${err.toString()}`;
         }
       };
     })
@@ -101,9 +102,9 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
           orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
           const result = await options.processMethod(prSet.repo, prSet.pr, cli);
           if (result) {
-            successful.push(prSet.pr.html_url);
+            successful.push(prSet.pr);
           } else {
-            failed.push(prSet.pr.html_url);
+            failed.push(prSet.pr);
           }
           processed++;
           orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
@@ -117,15 +118,28 @@ export async function process(cli: meow.Result, options: PRIteratorOptions) {
     `[${processed}/${prs.length}] PRs ${options.commandNamePastTense}`
   );
 
+  // Pretty-print as a table
+  const maxUrlLength = prs
+    .map(pr => pr.pr)
+    .reduce(
+      (maxLength: number, pr: PullRequest) =>
+        pr.html_url.length > maxLength ? pr.html_url.length : maxLength,
+      0
+    );
+
   console.log(`Successfully processed: ${successful.length} pull request(s)`);
   for (const pr of successful) {
-    console.log(`  ${pr}`);
+    console.log(`  ${pr.html_url.padEnd(maxUrlLength, ' ')} ${pr.title}`);
   }
 
   if (failed.length > 0) {
     console.log(`Unable to process: ${failed.length} pull requests(s)`);
     for (const pr of failed) {
-      console.log(`  ${pr}`);
+      console.log(`  ${pr.html_url.padEnd(maxUrlLength, ' ')} ${pr.title}`);
     }
+  }
+
+  if (error) {
+    console.log(`Error when processing PRs: ${error}`);
   }
 }
