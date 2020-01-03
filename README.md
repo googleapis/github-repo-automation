@@ -75,6 +75,21 @@ or all PRs with the word `test` in the title:
 
 `$ repo approve test`
 
+### repo list
+
+```sh
+$ repo list [regex]
+```
+
+Iterates over all open pull requests matching `regex` (all PRs if
+no regex is given) in all configured repositories, and prints them.
+
+`$ repo list 🚀`
+
+or all PRs with the word `test` in the title:
+
+`$ repo list test`
+
 ### repo reject
 
 ```sh
