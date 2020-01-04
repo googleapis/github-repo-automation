@@ -26,6 +26,12 @@
 Before running the samples, make sure you've followed the steps outlined in
 [Using the client library](https://github.com/googleapis/github-repo-automation#using-the-client-library).
 
+`cd samples`
+
+`npm install`
+
+`cd ..`
+
 ## Samples
 
 
@@ -39,7 +45,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node add-collaborator.js`
+`node samples/add-collaborator.js`
 
 
 -----
@@ -56,7 +62,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node change-circleci-config-in-branch.js`
+`node samples/change-circleci-config-in-branch.js`
 
 
 -----
@@ -73,7 +79,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node chmod-repo-tools.js`
+`node samples/chmod-repo-tools.js`
 
 
 -----
@@ -90,7 +96,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node commit-package-lock.js`
+`node samples/commit-package-lock.js`
 
 
 -----
@@ -107,7 +113,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node remove-node7.js`
+`node samples/remove-node7.js`
 
 
 -----
@@ -124,7 +130,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node setup-nighty-builds.js`
+`node samples/setup-nighty-builds.js`
 
 
 -----
@@ -141,7 +147,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node update-branch-protection.js`
+`node samples/update-branch-protection.js`
 
 
 -----
@@ -158,7 +164,7 @@ View the [source code](https://github.com/googleapis/github-repo-automation/blob
 __Usage:__
 
 
-`node update-kokoro-branch-protection.js`
+`node samples/update-kokoro-branch-protection.js`
 
 
 
