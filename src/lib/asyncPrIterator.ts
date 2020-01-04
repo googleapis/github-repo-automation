@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as meow from 'meow';
+import {meowFlags} from '../cli';
 import Q from 'p-queue';
 import ora = require('ora');
 
@@ -27,7 +28,7 @@ export interface PRIteratorOptions {
   processMethod: (
     repository: GitHubRepository,
     pr: PullRequest,
-    cli: meow.Result
+    cli: meow.Result<typeof meowFlags>
   ) => Promise<boolean>;
 }
 
@@ -37,7 +38,10 @@ export interface PRIteratorOptions {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-export async function process(cli: meow.Result, options: PRIteratorOptions) {
+export async function process(
+  cli: meow.Result<typeof meowFlags>,
+  options: PRIteratorOptions
+) {
   if (cli.input.length < 2 || !cli.input[1]) {
     console.log(`Usage: repo ${options.commandName} [regex]`);
     console.log(options.commandDesc);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as meow from 'meow';
+import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
 import {process} from './lib/asyncPrIterator';
@@ -20,7 +21,7 @@ import {process} from './lib/asyncPrIterator';
 async function processMethod(
   repository: GitHubRepository,
   pr: PullRequest,
-  cli: meow.Result
+  cli: meow.Result<typeof meowFlags>
 ) {
   try {
     await repository.tagPullRequest(pr, cli.input.slice(2));
@@ -31,7 +32,7 @@ async function processMethod(
   return true;
 }
 
-export async function tag(cli: meow.Result) {
+export async function tag(cli: meow.Result<typeof meowFlags>) {
   return process(cli, {
     commandName: 'tag',
     commandActive: 'tagging',

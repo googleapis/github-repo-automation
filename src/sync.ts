@@ -20,6 +20,7 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as meow from 'meow';
+import {meowFlags} from './cli';
 import ora = require('ora');
 import Q from 'p-queue';
 import * as path from 'path';
@@ -48,7 +49,7 @@ function print(res: {stdout: string; stderr: string}) {
  * Clone all repositories into ~/.repo.
  * If repo already exists, fetch and reset.
  */
-export async function sync(cli: meow.Result) {
+export async function sync(cli: meow.Result<typeof meowFlags>) {
   const repos = await getRepos();
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
@@ -79,7 +80,7 @@ export async function sync(cli: meow.Result) {
   orb.succeed('Repo sync complete.');
 }
 
-export async function exec(cli: meow.Result) {
+export async function exec(cli: meow.Result<typeof meowFlags>) {
   const command = cli.input.slice(1);
   const rootPath = await getRootPath();
 
