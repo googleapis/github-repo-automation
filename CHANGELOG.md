@@ -4,6 +4,20 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.3.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.2.2...v2.3.0) (2020-01-06)
+
+
+### Features
+
+* repo list, and pretty printing PRs ([#346](https://www.github.com/googleapis/github-repo-automation/issues/346)) ([44fd2d2](https://www.github.com/googleapis/github-repo-automation/commit/44fd2d20c32f8f9287328dbb9d70b1fb5b4f9b5d))
+
+
+### Bug Fixes
+
+* **deps:** update dependency chalk to v3 ([#332](https://www.github.com/googleapis/github-repo-automation/issues/332)) ([aa00d00](https://www.github.com/googleapis/github-repo-automation/commit/aa00d0040e62889fe6ff3cf7619210b6f6fcf414))
+* **deps:** update dependency update-notifier to v4 ([#339](https://www.github.com/googleapis/github-repo-automation/issues/339)) ([ef45dc0](https://www.github.com/googleapis/github-repo-automation/commit/ef45dc0027873387693fd75aa09ef37e10184b3f))
+* **deps:** use meow v6.0.0 with its own types ([#348](https://www.github.com/googleapis/github-repo-automation/issues/348)) ([573a985](https://www.github.com/googleapis/github-repo-automation/commit/573a98596b8eb82490e5b2b665ed5843b4a8dc0f))
+
 ### [2.2.2](https://www.github.com/googleapis/github-repo-automation/compare/v2.2.1...v2.2.2) (2019-10-12)
 
 
