@@ -22,6 +22,7 @@ const commandLineUsage = require('command-line-usage');
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
 import * as meow from 'meow';
+import {meowFlags} from './cli';
 
 // tslint:disable-next-line:no-any
 const exec = (command: string, options?: object): Promise<string> =>
@@ -119,7 +120,7 @@ async function getFilesToCommit() {
  * @param {Object} options Options object, as returned by meow.
  * @returns {Boolean} True if OK to continue, false otherwise.
  */
-function checkOptions(cli: meow.Result) {
+function checkOptions(cli: meow.Result<typeof meowFlags>) {
   if (cli.flags.help) {
     console.log(commandLineUsage(helpSections));
     return false;
@@ -163,7 +164,10 @@ function checkOptions(cli: meow.Result) {
  * @returns {Promise<string[]>} A promise resolving to a list of files to
  * commit.
  */
-async function updateCallback(cli: meow.Result, repoPath: string) {
+async function updateCallback(
+  cli: meow.Result<typeof meowFlags>,
+  repoPath: string
+) {
   const cwd = process.cwd();
   try {
     process.chdir(repoPath);
@@ -198,7 +202,7 @@ async function updateCallback(cli: meow.Result, repoPath: string) {
 /**
  * Main function.
  */
-export async function main(cli: meow.Result) {
+export async function main(cli: meow.Result<typeof meowFlags>) {
   if (!checkOptions(cli)) {
     return;
   }
@@ -209,7 +213,9 @@ export async function main(cli: meow.Result) {
     comment: cli.flags.comment,
   } as UpdateRepoOptions;
   if (cli.flags.reviewers !== undefined) {
-    updateRepoOptions.reviewers = cli.flags.reviewers.split(/\s*,\s*/);
+    updateRepoOptions.reviewers = (cli.flags.reviewers as string).split(
+      /\s*,\s*/
+    );
   }
   await updateRepo(updateRepoOptions);
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as meow from 'meow';
+import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
 import {process} from './lib/asyncPrIterator';
@@ -24,7 +25,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
-export async function rename(cli: meow.Result) {
+export async function rename(cli: meow.Result<typeof meowFlags>) {
   title = cli.input[2];
   console.log(`title: ${title}`);
   return process(cli, {

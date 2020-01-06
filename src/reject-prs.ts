@@ -19,6 +19,7 @@
  */
 
 import * as meow from 'meow';
+import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
 import {process} from './lib/asyncPrIterator';
@@ -33,7 +34,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
-export async function reject(cli: meow.Result) {
+export async function reject(cli: meow.Result<typeof meowFlags>) {
   return process(cli, {
     commandName: 'reject',
     commandActive: 'rejecting',

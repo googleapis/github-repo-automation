@@ -30,6 +30,36 @@ const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();
 
+export const meowFlags: {
+  [key: string]: {type: 'string' | 'boolean'; alias?: string};
+} = {
+  branch: {
+    type: 'string',
+    alias: 'b',
+  },
+  message: {
+    type: 'string',
+    alias: 'm',
+  },
+  comment: {
+    type: 'string',
+    alias: 'c',
+  },
+  reviewers: {
+    type: 'string',
+    alias: 'r',
+  },
+  silent: {
+    type: 'boolean',
+    alias: 'q',
+  },
+  auto: {type: 'boolean'},
+  concurrency: {type: 'string'},
+};
+const meowOptions: meow.Options<typeof meowFlags> = {
+  flags: meowFlags,
+};
+
 const cli = meow(
   `
 	Usage
@@ -49,32 +79,7 @@ const cli = meow(
     $ repo exec -- git status
     $ repo exec --concurrency 10 -- git status
 `,
-  {
-    flags: {
-      branch: {
-        type: 'string',
-        alias: 'b',
-      },
-      message: {
-        type: 'string',
-        alias: 'm',
-      },
-      comment: {
-        type: 'string',
-        alias: 'c',
-      },
-      reviewers: {
-        type: 'string',
-        alias: 'r',
-      },
-      silent: {
-        type: 'boolean',
-        alias: 'q',
-      },
-      auto: {type: 'boolean'},
-      concurrency: {type: 'string'},
-    },
-  }
+  meowOptions
 );
 
 if (cli.input.length < 1) {
