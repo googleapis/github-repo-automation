@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.4.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.3.0...v2.4.0) (2020-01-28)
+
+
+### Features
+
+* implement --branch for repo commands ([#357](https://www.github.com/googleapis/github-repo-automation/issues/357)) ([e56839c](https://www.github.com/googleapis/github-repo-automation/commit/e56839c883511df0593dceb31d753e6e74a17ac1))
+
 ## [2.3.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.2.2...v2.3.0) (2020-01-06)
 
 
