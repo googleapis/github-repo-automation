@@ -42,8 +42,9 @@ export async function process(
   cli: meow.Result<typeof meowFlags>,
   options: PRIteratorOptions
 ) {
-  if (cli.input.length < 2 || !cli.input[1]) {
-    console.log(`Usage: repo ${options.commandName} [regex]`);
+  if (!cli.input[1] && !cli.flags.branch) {
+    console.log(`Usage: repo ${options.commandName} [--branch branch] [regex]`);
+    console.log(`Either branch name or regex must present.`);
     console.log(options.commandDesc);
     return;
   }
@@ -88,8 +89,11 @@ export async function process(
   );
   await q.onIdle();
 
-  // Filter the list of PRs to ones who match the PR title
+  // Filter the list of PRs to ones who match the PR title and/or the branch name
   prs = prs.filter(prSet => prSet.pr.title.match(regex));
+  if (cli.flags.branch) {
+    prs = prs.filter(prSet => prSet.pr.head.ref === cli.flags.branch);
+  }
   orb1.succeed(
     `[${scanned}/${repos.length}] repositories scanned, ${prs.length} matching PRs found`
   );

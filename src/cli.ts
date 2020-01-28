@@ -66,13 +66,13 @@ const cli = meow(
 	  $ repo <command>
 
   Examples
-    $ repo list /regex/
-    $ repo approve /regex/
-    $ repo update /regex/
-    $ repo merge /regex/
-    $ repo reject /regex/
-    $ repo rename /regex/ 'new PR title'
-    $ repo tag /regex/ label1 label2 ...
+    $ repo list [--branch branch] [regex]
+    $ repo approve [--branch branch] [regex]
+    $ repo update [--branch branch] [regex]
+    $ repo merge [--branch branch] [regex]
+    $ repo reject [--branch branch] [regex]
+    $ repo rename [--branch branch] regex 'new PR title'
+    $ repo tag [--branch branch] regex label1 label2 ...
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
     $ repo sync
