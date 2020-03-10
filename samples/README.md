@@ -16,6 +16,7 @@
   * [Change-circleci-config-in-branch](#change-circleci-config-in-branch)
   * [Chmod-repo-tools](#chmod-repo-tools)
   * [Commit-package-lock](#commit-package-lock)
+  * [Create-secret](#create-secret)
   * [Remove-node7](#remove-node7)
   * [Setup-nighty-builds](#setup-nighty-builds)
   * [Update-branch-protection](#update-branch-protection)
@@ -97,6 +98,23 @@ __Usage:__
 
 
 `node samples/commit-package-lock.js`
+
+
+-----
+
+
+
+
+### Create-secret
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/create-secret.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/create-secret.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/create-secret.js`
 
 
 -----
