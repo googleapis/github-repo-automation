@@ -94,6 +94,9 @@ export async function process(
   if (cli.flags.branch) {
     prs = prs.filter(prSet => prSet.pr.head.ref === cli.flags.branch);
   }
+  if (cli.flags.author) {
+    prs = prs.filter(prSet => prSet.pr.user.login === cli.flags.author);
+  }
   orb1.succeed(
     `[${scanned}/${repos.length}] repositories scanned, ${prs.length} matching PRs found`
   );

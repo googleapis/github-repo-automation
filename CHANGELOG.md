@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.5.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.4.0...v2.5.0) (2020-03-24)
+
+
+### Features
+
+* **samples:** add sample demonstrating populating secrets for GitHub… ([#374](https://www.github.com/googleapis/github-repo-automation/issues/374)) ([a71bafd](https://www.github.com/googleapis/github-repo-automation/commit/a71bafd08b543077991265bd88c943bab4c3c1ba))
+* add option for filtering by pr author ([#383](https://www.github.com/googleapis/github-repo-automation/issues/383)) ([484ab19](https://www.github.com/googleapis/github-repo-automation/commit/484ab19a07c6183a6fcb7a6e3583546e89cdf8b9))
+
 ## [2.4.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.3.0...v2.4.0) (2020-01-28)
 
 
