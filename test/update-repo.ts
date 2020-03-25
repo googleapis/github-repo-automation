@@ -22,7 +22,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
-import * as rejects from 'assert-rejects';
 
 import * as fakeGitHub from './fakes/fake-github';
 import * as fakeTmp from './fakes/fake-tmp';
@@ -214,7 +213,7 @@ describe('UpdateRepo', () => {
 
   it('should require updateCallback parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateRepo({
           branch,
           message,
@@ -228,7 +227,7 @@ describe('UpdateRepo', () => {
 
   it('should require branch parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateRepo({
           updateCallback: () => {
             return Promise.resolve();
@@ -244,7 +243,7 @@ describe('UpdateRepo', () => {
 
   it('should require message parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateRepo({
           updateCallback: () => {
             return;

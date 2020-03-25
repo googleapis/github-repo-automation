@@ -20,7 +20,6 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
-import * as rejects from 'assert-rejects';
 import * as fakeGitHub from './fakes/fake-github';
 const {updateFileInBranch} = proxyquire('../src/lib/update-file-in-branch', {
   './github': {GitHub: fakeGitHub.FakeGitHub},
@@ -115,7 +114,7 @@ describe('UpdateFileInBranch', () => {
 
   it('should require path parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateFileInBranch({
           patchFunction: (str: string) => {
             if (str === originalContent) {
@@ -133,7 +132,7 @@ describe('UpdateFileInBranch', () => {
 
   it('should require patchFunction parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateFileInBranch({path, branch, message}),
         /patchFunction is required/
       );
@@ -142,7 +141,7 @@ describe('UpdateFileInBranch', () => {
 
   it('should require branch parameter', async () => {
     await suppressConsole(async () => {
-      await rejects(
+      await assert.rejects(
         updateFileInBranch({
           path,
           patchFunction: (str: string) => {
@@ -159,7 +158,7 @@ describe('UpdateFileInBranch', () => {
 
     it('should require message parameter', async () => {
       await suppressConsole(async () => {
-        await rejects(
+        await assert.rejects(
           updateFileInBranch({
             path,
             patchFunction: (str: string) => {
