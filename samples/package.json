@@ -3,8 +3,11 @@
   "license": "Apache-2.0",
   "author": "Google LLC",
   "engines": {
-    "node": ">=10"
+    "node": ">=8"
   },
+  "files": [
+    "*.js"
+  ],
   "repository": "googleapis/github-repo-automation",
   "private": true,
   "scripts": {
