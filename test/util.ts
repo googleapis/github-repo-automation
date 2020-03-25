@@ -3,6 +3,8 @@ const consoleWarn = console.warn;
 const consoleError = console.error;
 
 function noConsole() {
+  // This check will be disabled in the new gts
+  /* eslint-disable @typescript-eslint/no-empty-function */
   console.log = () => {};
   console.warn = () => {};
   console.error = () => {};

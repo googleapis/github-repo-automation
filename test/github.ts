@@ -40,9 +40,7 @@ describe('GitHub', () => {
       '/orgs/test-organization/repos?type=public&page=1&per_page=100';
     const name = 'matches';
     const owner = {login: 'test-organization'};
-    const scope = nock(url)
-      .get(path)
-      .reply(200, [{name, owner}]);
+    const scope = nock(url).get(path).reply(200, [{name, owner}]);
     const repos = await github.getRepositories();
     scope.done();
     assert.strictEqual(repos.length, 1);

@@ -20,7 +20,7 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
-const rejects = require('assert-rejects');
+import * as rejects from 'assert-rejects';
 import * as fakeGitHub from './fakes/fake-github';
 const {updateFile} = proxyquire('../src/lib/update-file', {
   './config': {getConfig: () => Promise.resolve({})},
@@ -37,7 +37,7 @@ describe('UpdateFile', () => {
   const message = 'test-message';
   const comment = 'test-comment';
   const reviewers = ['test-reviewer-1', 'test-reviewer-2'];
-
+  // eslint-disable-next-line no-undef
   beforeEach(() => {
     fakeGitHub.repository.reset();
     fakeGitHub.repository.testSetFile(
@@ -46,7 +46,8 @@ describe('UpdateFile', () => {
       Buffer.from(originalContent).toString('base64')
     );
   });
-
+  /* eslint-disable @typescript-eslint/no-empty-function */
+  // eslint-disable-next-line no-undef
   afterEach(() => {});
 
   const attemptUpdate = async () => {

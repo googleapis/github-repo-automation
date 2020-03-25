@@ -20,7 +20,7 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
-const rejects = require('assert-rejects');
+import * as rejects from 'assert-rejects';
 import * as fakeGitHub from './fakes/fake-github';
 const {updateFileInBranch} = proxyquire('../src/lib/update-file-in-branch', {
   './github': {GitHub: fakeGitHub.FakeGitHub},
@@ -35,7 +35,7 @@ describe('UpdateFileInBranch', () => {
   const changedContent = 'changed content';
   const branch = 'test-branch';
   const message = 'test-message';
-
+  // eslint-disable-next-line no-undef
   beforeEach(() => {
     fakeGitHub.repository.reset();
     fakeGitHub.repository.testSetFile(
@@ -44,7 +44,9 @@ describe('UpdateFileInBranch', () => {
       Buffer.from(originalContent).toString('base64')
     );
   });
-
+  // This check will be disabled in the new gts
+  /* eslint-disable @typescript-eslint/no-empty-function */
+  // eslint-disable-next-line no-undef
   afterEach(() => {});
 
   const attemptUpdate = async () => {

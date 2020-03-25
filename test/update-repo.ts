@@ -22,11 +22,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
-const rejects = require('assert-rejects');
+import * as rejects from 'assert-rejects';
 
 import * as fakeGitHub from './fakes/fake-github';
 import * as fakeTmp from './fakes/fake-tmp';
-const tmp = require('tmp-promise');
+import * as tmp from 'tmp-promise';
 import {suppressConsole} from './util';
 
 const execCallback = sinon.spy();
@@ -56,12 +56,13 @@ describe('UpdateRepo', () => {
   let realTmpDir;
   let tmpDir: string;
 
+  // eslint-disable-next-line no-undef
   before(async () => {
     realTmpDir = await tmp.dir({unsafeCleanup: true});
     fakeTmp.setDirName(realTmpDir.path);
     tmpDir = fakeTmp.getDirName();
   });
-
+  // eslint-disable-next-line no-undef
   beforeEach(() => {
     execCallback.resetHistory();
     fakeGitHub.repository.reset();

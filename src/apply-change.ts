@@ -18,7 +18,7 @@
  */
 
 import * as childProcess from 'child_process';
-const commandLineUsage = require('command-line-usage');
+import * as commandLineUsage from 'command-line-usage';
 import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
 import {question} from './lib/question';
 import * as meow from 'meow';
@@ -173,7 +173,7 @@ async function updateCallback(
     process.chdir(repoPath);
     const command = cli.input.slice(1).join(' ');
     console.log('Executing command:', command);
-    const execResult = await exec(command); // will throw an error if non-zero exit code
+    await exec(command); // will throw an error if non-zero exit code
     const files = await getFilesToCommit();
     if (files.length > 0 && !cli.flags.silent) {
       for (;;) {

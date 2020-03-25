@@ -23,6 +23,7 @@ import * as path from 'path';
 import {promisify} from 'util';
 const exec = promisify(child_process.exec);
 const readFile = promisify(fs.readFile);
+/* eslint-disable @typescript-eslint/no-var-requires */
 const tmp = require('tmp-promise');
 
 import {GitHub, GitHubRepository} from './github';
