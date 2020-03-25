@@ -83,7 +83,7 @@ export class GitHub {
     }
     const language = this.config.reposList.language;
     const reposJson = await axios.get(this.config.reposList.uri);
-    let reposList: Array<{repo: string; language: string}> =
+    let reposList: Array<{repo: string; language: string; skipExec: boolean}> =
       reposJson.data.repos;
     if (language) {
       reposList = reposList.filter(repo => repo.language === language);
@@ -91,6 +91,7 @@ export class GitHub {
     const repos = new Array<GitHubRepository>();
     for (const repo of reposList) {
       const [org, name] = repo.repo.split('/');
+      const skipExec = !!repo.skipExec;
       if (!org || !name) {
         console.warn(`Warning: repository name ${repo.repo} cannot be parsed.`);
       }
@@ -98,6 +99,7 @@ export class GitHub {
         owner: {login: org},
         name,
         ssh_url: `git@github.com:${org}/${name}.git`,
+        skipExec,
       };
       repos.push(new GitHubRepository(this.client, repository, org));
     }
@@ -536,6 +538,7 @@ export interface Repository {
   owner: User;
   clone_url?: string;
   archived?: boolean;
+  skipExec?: boolean;
   ssh_url?: string;
 }
 

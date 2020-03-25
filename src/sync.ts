@@ -130,7 +130,12 @@ async function getRepos() {
   const config = await getConfig();
   const github = new GitHub(config);
   const repos = await github.getRepositories();
-  return repos.filter(x => !x.repository.archived);
+  return repos.filter(x => {
+    console.info(
+      `skipping ${x.repository.name}, remove "skipExec" in sloth to enable`
+    );
+    return !x.repository.archived && !x.repository.skipExec;
+  });
 }
 
 async function getRootPath() {
