@@ -25,7 +25,7 @@ import * as path from 'path';
 
 import {Config, getConfig} from '../src/lib/config';
 
-const tmp = require('tmp-promise');
+import * as tmp from 'tmp-promise';
 
 const clonePath = path.join(os.homedir(), '.repo');
 
@@ -45,6 +45,7 @@ describe('Config', () => {
   const envCache = process.env.REPO_CONFIG_PATH;
   const cwd = process.cwd();
   let tmpDir;
+  // eslint-disable-next-line no-undef
   before(async () => {
     tmpDir = await tmp.dir({unsafeCleanup: true});
     process.chdir(tmpDir.path);
@@ -54,6 +55,7 @@ describe('Config', () => {
     fs.writeFileSync('./config.yaml', configYaml1);
     fs.writeFileSync('./config2.yaml', configYaml2);
   });
+  // eslint-disable-next-line no-undef
   after(() => {
     process.env.REPO_CONFIG_PATH = envCache;
     process.chdir(cwd);
@@ -83,6 +85,8 @@ describe('Config', () => {
   });
 
   it('should fail if configuration file does not exist', done => {
+    // This check will be disabled in the new gts
+    /* eslint-disable @typescript-eslint/no-empty-function */
     console.error = () => {};
     getConfig('./config3.yaml').catch(err => {
       assert(err instanceof Error);

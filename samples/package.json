@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=8"
   },
+  "files": [
+    "*.js"
+  ],
   "repository": "googleapis/github-repo-automation",
   "private": true,
   "scripts": {

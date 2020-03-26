@@ -26,6 +26,7 @@ import {sync, exec} from './sync';
 import * as meow from 'meow';
 import * as updateNotifier from 'update-notifier';
 import {tag} from './tag-prs';
+/* eslint-disable @typescript-eslint/no-var-requires */
 const pkg = require('../../package.json');
 
 updateNotifier({pkg}).notify();

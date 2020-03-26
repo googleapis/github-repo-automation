@@ -25,9 +25,9 @@ function hash(input: string) {
 }
 
 export class FakeGitHubRepository {
-  // tslint:disable-next-line no-any
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   branches: any;
-  // tslint:disable-next-line no-any
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   prs: any;
 
   _name?: string;
@@ -82,14 +82,19 @@ export class FakeGitHubRepository {
     }
     if (this.branches['master']['_latest'] !== latestSha) {
       return Promise.reject(
-          `SHA ${latestSha} is not found in branch ${branch}`);
+        `SHA ${latestSha} is not found in branch ${branch}`
+      );
     }
     this.branches[branch] = Object.assign({}, this.branches['master']);
     return Promise.resolve({});
   }
 
   async createFileInBranch(
-      branch: string, path: string, message: string, content: string) {
+    branch: string,
+    path: string,
+    message: string,
+    content: string
+  ) {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
@@ -104,8 +109,12 @@ export class FakeGitHubRepository {
   }
 
   async updateFileInBranch(
-      branch: string, path: string, message: string, content: string,
-      oldFileSha: string) {
+    branch: string,
+    path: string,
+    message: string,
+    content: string,
+    oldFileSha: string
+  ) {
     if (this.branches[branch] === undefined) {
       return Promise.reject(`Branch ${branch} does not exist`);
     }
@@ -114,8 +123,9 @@ export class FakeGitHubRepository {
     }
     const file = this.branches[branch][path];
     if (file['sha'] !== oldFileSha) {
-      return Promise.reject(`SHA of file ${path} in branch ${branch} is ${
-          file['sha']} but not ${oldFileSha}`);
+      return Promise.reject(
+        `SHA of file ${path} in branch ${branch} is ${file['sha']} but not ${oldFileSha}`
+      );
     }
     const sha = hash(content);
     const newFile = {content, sha, message};

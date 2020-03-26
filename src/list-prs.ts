@@ -17,7 +17,7 @@ import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
 import {process} from './lib/asyncPrIterator';
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
