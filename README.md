@@ -61,11 +61,11 @@ Now you are good to go!
 ### repo approve
 
 ```sh
-$ repo approve [regex]
+$ repo approve [--title title]
 ```
 
-Iterates over all open pull requests matching `regex` (all PRs if
-no regex is given) in all configured repositories.
+Iterates over all open pull requests matching `title` (all PRs if
+no regex for title is given) in all configured repositories.
 For each pull request, asks (in console) if it should be approved
 and merged. Useful for managing GreenKeeper's PRs:
 
@@ -78,36 +78,36 @@ or all PRs with the word `test` in the title:
 ### repo list
 
 ```sh
-$ repo list [regex]
+$ repo list [--title title]
 ```
 
-Iterates over all open pull requests matching `regex` (all PRs if
-no regex is given) in all configured repositories, and prints them.
+Iterates over all open pull requests matching `title` (all PRs if
+no regex for title is given) in all configured repositories, and prints them.
 
-`$ repo list 🚀`
+`$ repo list --title 🚀`
 
 or all PRs with the word `test` in the title:
 
-`$ repo list test`
+`$ repo list --title test`
 
 ### repo reject
 
 ```sh
-$ repo reject [regex]
+$ repo reject [--title title]
 ```
 
-Iterates over all open pull requests matching `regex`, and closes
+Iterates over all open pull requests matching `title`, and closes
 them. For example, close all PRs with the word `test` in the title:
 
-`$ repo reject test`
+`$ repo reject --title test`
 
 ### repo rename
 
 ```sh
-$ repo rename 'title to match' 'new title'
+$ repo rename --title title 'new title'
 ```
 
-Iterates over all open pull requests matching `regex`, and renames
+Iterates over all open pull requests matching `title`, and renames
 them.
 
 ### repo apply
