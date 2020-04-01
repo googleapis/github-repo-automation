@@ -24,7 +24,7 @@ async function processMethod(
   cli: meow.Result<typeof meowFlags>
 ) {
   try {
-    await repository.tagPullRequest(pr, cli.input.slice(2));
+    await repository.tagPullRequest(pr, cli.input.slice(1));
   } catch (err) {
     console.warn(`    error trying to tag PR ${pr.html_url}:`, err.toString());
     return false;

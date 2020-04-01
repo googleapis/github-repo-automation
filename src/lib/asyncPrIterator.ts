@@ -42,9 +42,13 @@ export async function process(
   cli: meow.Result<typeof meowFlags>,
   options: PRIteratorOptions
 ) {
-  if (!cli.input[1] && !cli.flags.branch) {
-    console.log(`Usage: repo ${options.commandName} [--branch branch] [regex]`);
-    console.log(`Either branch name or regex must present.`);
+  console.warn('cli.input[] : ', cli.input);
+  console.warn('cli.flags : ', cli.flags);
+  if (!cli.flags.title && !cli.flags.branch) {
+    console.log(
+      `Usage: repo ${options.commandName} [--branch branch] [--title title]`
+    );
+    console.log(`Either branch name or title regex must present.`);
     console.log(options.commandDesc);
     return;
   }
@@ -54,7 +58,7 @@ export async function process(
     : 15;
   const config = await getConfig();
   const github = new GitHub(config);
-  const regex = new RegExp(cli.input[1] || '.*');
+  const regex = new RegExp((cli.flags.title as string) || '.*');
   const repos = await github.getRepositories();
   const successful: PullRequest[] = [];
   const failed: PullRequest[] = [];
