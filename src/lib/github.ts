@@ -412,7 +412,6 @@ export class GitHubRepository {
    * @returns A list of labels that was added to the issue..
    */
   async tagPullRequest(pr: PullRequest, labels: string[]) {
-    console.warn('labels: ', labels);
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/issues/${pr.number}/labels`;

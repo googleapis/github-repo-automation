@@ -42,8 +42,6 @@ export async function process(
   cli: meow.Result<typeof meowFlags>,
   options: PRIteratorOptions
 ) {
-  console.warn('cli.input[] : ', cli.input);
-  console.warn('cli.flags : ', cli.flags);
   if (!cli.flags.title && !cli.flags.branch) {
     console.log(
       `Usage: repo ${options.commandName} [--branch branch] [--title title]`
