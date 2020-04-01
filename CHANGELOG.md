@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [2.6.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.5.0...v2.6.0) (2020-04-01)
+
+
+### Features
+
+* **deps:** update dependency & drop Node 8 ([#384](https://www.github.com/googleapis/github-repo-automation/issues/384)) ([3ecad5e](https://www.github.com/googleapis/github-repo-automation/commit/3ecad5ee821e2d4741d3752b4d9637dc7183ee2a))
+
 ## [2.5.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.4.0...v2.5.0) (2020-03-24)
 
 
