@@ -54,6 +54,10 @@ export const meowFlags: {
     type: 'boolean',
     alias: 'q',
   },
+  title: {
+    type: 'string',
+    alias: 't',
+  },
   auto: {type: 'boolean'},
   concurrency: {type: 'string'},
   author: {type: 'string'},
@@ -68,13 +72,13 @@ const cli = meow(
 	  $ repo <command>
 
   Examples
-    $ repo list [--branch branch] [--author author] [regex]
-    $ repo approve [--branch branch] [--author author] [regex]
-    $ repo update [--branch branch] [--author author] [regex]
-    $ repo merge [--branch branch] [--author author] [regex]
-    $ repo reject [--branch branch] [--author author] [regex]
-    $ repo rename [--branch branch] [--author author] regex 'new PR title'
-    $ repo tag [--branch branch] [--author author] regex label1 label2 ...
+    $ repo list [--branch branch] [--author author] [--title title]
+    $ repo approve [--branch branch] [--author author] [--title title]
+    $ repo update [--branch branch] [--author author] [--title title]
+    $ repo merge [--branch branch] [--author author] [--title title]
+    $ repo reject [--branch branch] [--author author] [--title title]
+    $ repo rename [--branch branch] [--author author] [--title title] 'new PR title'
+    $ repo tag [--branch branch] [--author author] [--title title] label1 label2 ...
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
     $ repo sync
