@@ -27,7 +27,7 @@
     "p-queue": "^6.3.0",
     "text-encoding-shim": "^1.0.5",
     "tmp-promise": "^2.0.2",
-    "tweetsodium": "0.0.4",
+    "tweetsodium": "0.0.5",
     "update-notifier": "^4.1.0"
   },
   "devDependencies": {
