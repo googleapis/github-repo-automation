@@ -83,7 +83,7 @@ describe('UpdateFile', () => {
       message,
       comment,
       reviewers,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
   });
 
@@ -198,7 +198,7 @@ describe('UpdateFile', () => {
       branch,
       message,
       comment,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
     stub.restore();
   });
@@ -306,7 +306,7 @@ describe('UpdateFile', () => {
       branch,
       message,
       comment,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
   });
 });
