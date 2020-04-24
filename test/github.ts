@@ -49,7 +49,7 @@ describe('GitHub', () => {
 
   it('should include auth headers', async () => {
     const response = {hello: 'world'};
-    const path = `/repos/test-organization/matches/contents/index.test`;
+    const path = '/repos/test-organization/matches/contents/index.test';
     const scope = nock(url)
       .get(path, undefined, {
         reqheaders: {authorization: 'token test-github-token'},

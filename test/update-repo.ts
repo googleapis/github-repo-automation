@@ -112,7 +112,7 @@ describe('UpdateRepo', () => {
       message,
       comment,
       reviewers,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
     assert(
       execCallback.calledOnceWith(
@@ -206,7 +206,7 @@ describe('UpdateRepo', () => {
       branch,
       message,
       comment,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
     stub.restore();
   });
@@ -285,7 +285,7 @@ describe('UpdateRepo', () => {
       branch,
       message,
       comment,
-      html_url: `http://example.com/pulls/1`,
+      html_url: 'http://example.com/pulls/1',
     });
   });
 

@@ -46,7 +46,7 @@ export async function process(
     console.log(
       `Usage: repo ${options.commandName} [--branch branch] [--title title]`
     );
-    console.log(`Either branch name or title regex must present.`);
+    console.log('Either branch name or title regex must present.');
     console.log(options.commandDesc);
     return;
   }
