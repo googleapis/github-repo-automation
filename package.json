@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@types/command-line-usage": "^5.0.1",
-    "@types/tmp": "^0.1.0",
+    "@types/tmp": "^0.2.0",
     "axios": "^0.19.2",
     "chalk": "^4.0.0",
     "command-line-usage": "^6.1.0",
