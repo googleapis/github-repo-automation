@@ -22,7 +22,7 @@
     "command-line-usage": "^6.1.0",
     "extend": "^3.0.2",
     "js-yaml": "^3.13.1",
-    "meow": "^6.1.0",
+    "meow": "^7.0.0",
     "ora": "^4.0.3",
     "p-queue": "^6.3.0",
     "text-encoding-shim": "^1.0.5",
