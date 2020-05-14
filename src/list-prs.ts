@@ -16,14 +16,14 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncItemIterator';
+import {processPRs} from './lib/asyncItemIterator';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
 export async function list(cli: meow.Result<typeof meowFlags>) {
-  return process(cli, {
+  return processPRs(cli, {
     commandName: 'list',
     commandNamePastTense: 'listed',
     commandActive: 'listing', // :)

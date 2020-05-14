@@ -49,7 +49,7 @@ export interface IteratorOptions {
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
-export async function process(
+async function process(
   cli: meow.Result<typeof meowFlags>,
   options: PRIteratorOptions | IssueIteratorOptions,
   processIssues = false
@@ -104,7 +104,9 @@ export async function process(
           scanned++;
           orb1.text = `[${scanned}/${repos.length}] Scanning repos for PRs`;
         } catch (err) {
-          error = `cannot list open pull requests: ${err.toString()}`;
+          error = `cannot list open ${
+            processIssues ? 'issue' : 'PR'
+          }s: ${err.toString()}`;
         }
       };
     })
@@ -153,14 +155,14 @@ export async function process(
           // process a list of issues rather than PR:
           if (processIssues) {
             const opts = options as IssueIteratorOptions;
-            const result = await opts.processMethod(
+            result = await opts.processMethod(
               itemSet.repo,
               itemSet.item as Issue,
               cli
             );
           } else {
             const opts = options as PRIteratorOptions;
-            const result = await opts.processMethod(
+            result = await opts.processMethod(
               itemSet.repo,
               itemSet.item as PullRequest,
               cli
@@ -206,7 +208,9 @@ export async function process(
   }
 
   if (failed.length > 0) {
-    console.log(`Unable to process: ${failed.length} pull requests(s)`);
+    console.log(
+      `Unable to process: ${failed.length} ${processIssues ? 'issue' : 'PR'}(s)`
+    );
     for (const item of failed) {
       console.log(`  ${item.html_url.padEnd(maxUrlLength, ' ')} ${item.title}`);
     }
@@ -219,8 +223,15 @@ export async function process(
   }
 }
 
-// Shorthand for processing list of issues rather than PRs, without setting the
-// magic third parameter:
+// Shorthand for processing list of PRs:
+export async function processPRs(
+  cli: meow.Result<typeof meowFlags>,
+  options: PRIteratorOptions | IssueIteratorOptions
+) {
+  return process(cli, options, false);
+}
+
+// Shorthand for processing list of issues:
 export async function processIssues(
   cli: meow.Result<typeof meowFlags>,
   options: PRIteratorOptions | IssueIteratorOptions

@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncItemIterator';
+import {processPRs} from './lib/asyncItemIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   try {
@@ -28,7 +28,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 }
 
 export async function approve(cli: meow.Result<typeof meowFlags>) {
-  return process(cli, {
+  return processPRs(cli, {
     commandName: 'approve',
     commandNamePastTense: 'approved',
     commandActive: 'approving',
