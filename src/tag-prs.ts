@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncPrIterator';
+import {processPRs} from './lib/asyncItemIterator';
 
 async function processMethod(
   repository: GitHubRepository,
@@ -33,7 +33,7 @@ async function processMethod(
 }
 
 export async function tag(cli: meow.Result<typeof meowFlags>) {
-  return process(cli, {
+  return processPRs(cli, {
     commandName: 'tag',
     commandActive: 'tagging',
     commandNamePastTense: 'tagged',

@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncPrIterator';
+import {processPRs} from './lib/asyncItemIterator';
 
 let title: string;
 
@@ -32,7 +32,7 @@ export async function rename(cli: meow.Result<typeof meowFlags>) {
   }
   title = cli.input[1];
   console.log(`title: ${title}`);
-  return process(cli, {
+  return processPRs(cli, {
     commandName: 'rename',
     commandNamePastTense: 'renamed',
     commandActive: 'renaming',

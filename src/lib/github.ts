@@ -232,6 +232,28 @@ export class GitHubRepository {
   }
 
   /**
+   * List issues on a repository.
+   * @param {string} state Issue state (open, closed), defaults to open.
+   * @returns {Object[]} Issue objects, as returned by GitHub API.
+   */
+  async listIssues(state: 'open' | 'closed' | 'all' = 'open') {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const prs: Issue[] = [];
+    const url = `/repos/${owner}/${repo}/issues`;
+    for (let page = 1; ; ++page) {
+      const result = await this.client.get<Issue[]>(url, {
+        params: {state, page},
+      });
+      if (result.data.length === 0) {
+        break;
+      }
+      prs.push(...result.data);
+    }
+    return prs;
+  }
+
+  /**
    * Returns latest commit to master branch of the GitHub repository.
    * @returns {Object} Commit object, as returned by GitHub API.
    */
@@ -521,14 +543,18 @@ export class GitHubRepository {
   }
 }
 
-export interface PullRequest {
-  number: number;
-  title: string;
-  html_url: string;
+export interface PullRequest extends Issue {
   patch_url: string;
-  user: User;
   base: {sha: string};
   head: {ref: string; label: string};
+}
+
+export interface Issue {
+  number: number;
+  title: string;
+  body: string;
+  html_url: string;
+  user: User;
 }
 
 export interface Repository {
