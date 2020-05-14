@@ -18,35 +18,47 @@ import Q from 'p-queue';
 import ora = require('ora');
 
 import {getConfig} from './config';
-import {GitHub, GitHubRepository, PullRequest} from './github';
+import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
 
-export interface PRIteratorOptions {
-  commandName: string; // approve
-  commandNamePastTense: string; // approved
-  commandActive: string; // approving
-  commandDesc: string;
+export interface PRIteratorOptions extends IteratorOptions {
   processMethod: (
     repository: GitHubRepository,
-    pr: PullRequest,
+    entity: PullRequest,
     cli: meow.Result<typeof meowFlags>
   ) => Promise<boolean>;
 }
 
+export interface IssueIteratorOptions extends IteratorOptions {
+  processMethod: (
+    repository: GitHubRepository,
+    entity: Issue,
+    cli: meow.Result<typeof meowFlags>
+  ) => Promise<boolean>;
+}
+
+export interface IteratorOptions {
+  commandName: string; // approve
+  commandNamePastTense: string; // approved
+  commandActive: string; // approving
+  commandDesc: string;
+}
+
 /**
- * Main function. Iterates all open pull request in the repositories of the
+ * Main function. Iterates pull requests or issues in the repositories of the
  * given organization matching given filters. Organization, filters, and GitHub
  * token should be given in the configuration file.
  * @param {string[]} args Command line arguments.
  */
 export async function process(
   cli: meow.Result<typeof meowFlags>,
-  options: PRIteratorOptions
+  options: PRIteratorOptions | IssueIteratorOptions,
+  processIssues = false
 ) {
-  if (!cli.flags.title && !cli.flags.branch) {
+  if (!cli.flags.title && !cli.flags.branch && !cli.flags.body) {
     console.log(
-      `Usage: repo ${options.commandName} [--branch branch] [--title title]`
+      `Usage: repo ${options.commandName} [--branch branch] [--title title] [--body body]`
     );
-    console.log('Either branch name or title regex must present.');
+    console.log('Either branch name, body, or title regex must present.');
     console.log(options.commandDesc);
     return;
   }
@@ -57,28 +69,36 @@ export async function process(
   const config = await getConfig();
   const github = new GitHub(config);
   const regex = new RegExp((cli.flags.title as string) || '.*');
+  const bodyRe = new RegExp((cli.flags.body as string) || '.*');
   const repos = await github.getRepositories();
-  const successful: PullRequest[] = [];
-  const failed: PullRequest[] = [];
+  const successful: Issue[] = [];
+  const failed: Issue[] = [];
   let error: string | undefined;
   let processed = 0;
   let scanned = 0;
-  let prs = new Array<{repo: GitHubRepository; pr: PullRequest}>();
+  let items = new Array<{repo: GitHubRepository; item: PullRequest | Issue}>();
 
   const orb1 = ora(
-    `[${scanned}/${repos.length}] Scanning repos for PRs`
+    `[${scanned}/${repos.length}] Scanning repos for ${
+      processIssues ? 'issues' : 'PR'
+    }s`
   ).start();
 
-  // Concurrently find all PRs in all relevant repositories
+  // Concurrently find all PRs or issues in all relevant repositories
   const q = new Q({concurrency});
   q.addAll(
     repos.map(repo => {
       return async () => {
         try {
-          const localPRs = await repo.listPullRequests();
-          prs.push(
-            ...localPRs.map(pr => {
-              return {repo, pr};
+          let localItems;
+          if (processIssues) {
+            localItems = await repo.listIssues();
+          } else {
+            localItems = await repo.listPullRequests();
+          }
+          items.push(
+            ...localItems.map(item => {
+              return {repo, item};
             })
           );
           scanned++;
@@ -91,36 +111,70 @@ export async function process(
   );
   await q.onIdle();
 
-  // Filter the list of PRs to ones who match the PR title and/or the branch name
-  prs = prs.filter(prSet => prSet.pr.title.match(regex));
-  if (cli.flags.branch) {
-    prs = prs.filter(prSet => prSet.pr.head.ref === cli.flags.branch);
+  // Filter the list of PRs or Issues to ones who match the PR title and/or the branch name
+  items = items.filter(itemSet => itemSet.item.title.match(regex));
+  if (cli.flags.branch && processIssues) {
+    items = items.filter(itemSet => {
+      const pr = itemSet.item as PullRequest;
+      return pr.head.ref === cli.flags.branch;
+    });
+  }
+  if (cli.flags.body) {
+    items = items.filter(itemSet => {
+      if (!itemSet.item.body) return false;
+      else return itemSet.item.body.match(bodyRe);
+    });
   }
   if (cli.flags.author) {
-    prs = prs.filter(prSet => prSet.pr.user.login === cli.flags.author);
+    items = items.filter(
+      itemSet => itemSet.item.user.login === cli.flags.author
+    );
   }
   orb1.succeed(
-    `[${scanned}/${repos.length}] repositories scanned, ${prs.length} matching PRs found`
+    `[${scanned}/${repos.length}] repositories scanned, ${
+      items.length
+    } matching ${processIssues ? 'issues' : 'PR'}s found`
   );
 
-  // Concurrently process each relevant PR
+  // Concurrently process each relevant PR or Issue
   const orb2 = ora(
-    `[${processed}/${prs.length}] ${options.commandNamePastTense}`
+    `[${processed}/${items.length}] ${options.commandNamePastTense}`
   ).start();
   q.addAll(
-    prs.map(prSet => {
+    items.map(itemSet => {
       return async () => {
-        const title = prSet.pr.title!;
+        const title = itemSet.item.title!;
         if (title.match(regex)) {
-          orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
-          const result = await options.processMethod(prSet.repo, prSet.pr, cli);
-          if (result) {
-            successful.push(prSet.pr);
+          orb2.text = `[${processed}/${items.length}] ${
+            options.commandActive
+          } ${processIssues ? 'issues' : 'PR'}s`;
+          let result;
+          // By setting the process issues flag, the iterator can be made to
+          // process a list of issues rather than PR:
+          if (processIssues) {
+            const opts = options as IssueIteratorOptions;
+            const result = await opts.processMethod(
+              itemSet.repo,
+              itemSet.item as Issue,
+              cli
+            );
           } else {
-            failed.push(prSet.pr);
+            const opts = options as PRIteratorOptions;
+            const result = await opts.processMethod(
+              itemSet.repo,
+              itemSet.item as PullRequest,
+              cli
+            );
+          }
+          if (result) {
+            successful.push(itemSet.item);
+          } else {
+            failed.push(itemSet.item);
           }
           processed++;
-          orb2.text = `[${processed}/${prs.length}] ${options.commandActive} PRs`;
+          orb2.text = `[${processed}/${items.length}] ${
+            options.commandActive
+          } ${processIssues ? 'issues' : 'PR'}s`;
         }
       };
     })
@@ -128,31 +182,49 @@ export async function process(
   await q.onIdle();
 
   orb2.succeed(
-    `[${processed}/${prs.length}] PRs ${options.commandNamePastTense}`
+    `[${processed}/${items.length}] ${processIssues ? 'issues' : 'PR'}s ${
+      options.commandNamePastTense
+    }`
   );
 
   // Pretty-print as a table
-  const maxUrlLength = prs
-    .map(pr => pr.pr)
+  const maxUrlLength = items
+    .map(item => item.item)
     .reduce(
-      (maxLength: number, pr: PullRequest) =>
-        pr.html_url.length > maxLength ? pr.html_url.length : maxLength,
+      (maxLength: number, item: Issue | PullRequest) =>
+        item.html_url.length > maxLength ? item.html_url.length : maxLength,
       0
     );
 
-  console.log(`Successfully processed: ${successful.length} pull request(s)`);
-  for (const pr of successful) {
-    console.log(`  ${pr.html_url.padEnd(maxUrlLength, ' ')} ${pr.title}`);
+  console.log(
+    `Successfully processed: ${successful.length} ${
+      processIssues ? 'issues' : 'PR'
+    }s`
+  );
+  for (const item of successful) {
+    console.log(`  ${item.html_url.padEnd(maxUrlLength, ' ')} ${item.title}`);
   }
 
   if (failed.length > 0) {
     console.log(`Unable to process: ${failed.length} pull requests(s)`);
-    for (const pr of failed) {
-      console.log(`  ${pr.html_url.padEnd(maxUrlLength, ' ')} ${pr.title}`);
+    for (const item of failed) {
+      console.log(`  ${item.html_url.padEnd(maxUrlLength, ' ')} ${item.title}`);
     }
   }
 
   if (error) {
-    console.log(`Error when processing PRs: ${error}`);
+    console.log(
+      `Error when processing ${processIssues ? 'issues' : 'PR'}s: ${error}`
+    );
   }
+}
+
+// Shorthand for processing list of issues rather than PRs, without setting the
+// magic third parameter:
+export async function processIssues(
+  cli: meow.Result<typeof meowFlags>,
+  options: PRIteratorOptions | IssueIteratorOptions,
+  processIssues = false
+) {
+  return process(cli, options, true);
 }
