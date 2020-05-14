@@ -23,7 +23,7 @@ import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
 export interface PRIteratorOptions extends IteratorOptions {
   processMethod: (
     repository: GitHubRepository,
-    entity: PullRequest,
+    item: PullRequest,
     cli: meow.Result<typeof meowFlags>
   ) => Promise<boolean>;
 }
@@ -31,7 +31,7 @@ export interface PRIteratorOptions extends IteratorOptions {
 export interface IssueIteratorOptions extends IteratorOptions {
   processMethod: (
     repository: GitHubRepository,
-    entity: Issue,
+    item: Issue,
     cli: meow.Result<typeof meowFlags>
   ) => Promise<boolean>;
 }
@@ -133,7 +133,7 @@ export async function process(
   orb1.succeed(
     `[${scanned}/${repos.length}] repositories scanned, ${
       items.length
-    } matching ${processIssues ? 'issues' : 'PR'}s found`
+    } matching ${processIssues ? 'issue' : 'PR'}s found`
   );
 
   // Concurrently process each relevant PR or Issue
@@ -147,7 +147,7 @@ export async function process(
         if (title.match(regex)) {
           orb2.text = `[${processed}/${items.length}] ${
             options.commandActive
-          } ${processIssues ? 'issues' : 'PR'}s`;
+          } ${processIssues ? 'issue' : 'PR'}s`;
           let result;
           // By setting the process issues flag, the iterator can be made to
           // process a list of issues rather than PR:
@@ -174,7 +174,7 @@ export async function process(
           processed++;
           orb2.text = `[${processed}/${items.length}] ${
             options.commandActive
-          } ${processIssues ? 'issues' : 'PR'}s`;
+          } ${processIssues ? 'issue' : 'PR'}s`;
         }
       };
     })
@@ -182,7 +182,7 @@ export async function process(
   await q.onIdle();
 
   orb2.succeed(
-    `[${processed}/${items.length}] ${processIssues ? 'issues' : 'PR'}s ${
+    `[${processed}/${items.length}] ${processIssues ? 'issue' : 'PR'}s ${
       options.commandNamePastTense
     }`
   );
@@ -198,7 +198,7 @@ export async function process(
 
   console.log(
     `Successfully processed: ${successful.length} ${
-      processIssues ? 'issues' : 'PR'
+      processIssues ? 'issue' : 'PR'
     }s`
   );
   for (const item of successful) {
@@ -214,7 +214,7 @@ export async function process(
 
   if (error) {
     console.log(
-      `Error when processing ${processIssues ? 'issues' : 'PR'}s: ${error}`
+      `Error when processing ${processIssues ? 'issue' : 'PR'}s: ${error}`
     );
   }
 }
@@ -223,8 +223,7 @@ export async function process(
 // magic third parameter:
 export async function processIssues(
   cli: meow.Result<typeof meowFlags>,
-  options: PRIteratorOptions | IssueIteratorOptions,
-  processIssues = false
+  options: PRIteratorOptions | IssueIteratorOptions
 ) {
   return process(cli, options, true);
 }

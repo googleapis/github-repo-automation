@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncPrIterator';
+import {process} from './lib/asyncItemIterator';
 
 async function processMethod(
   repository: GitHubRepository,

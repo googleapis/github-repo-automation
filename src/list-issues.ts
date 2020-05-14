@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, Issue} from './lib/github';
-import {processIssues} from './lib/asyncPrIterator';
+import {processIssues} from './lib/asyncItemIterator';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function processMethod(repository: GitHubRepository, issue: Issue) {
   return true;
