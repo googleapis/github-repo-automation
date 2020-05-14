@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,25 +15,19 @@
 import * as meow from 'meow';
 import {meowFlags} from './cli';
 
-import {GitHubRepository, PullRequest} from './lib/github';
-import {processPRs} from './lib/asyncItemIterator';
-
-async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  try {
-    await repository.approvePullRequest(pr);
-  } catch (err) {
-    return false;
-  }
+import {GitHubRepository, Issue} from './lib/github';
+import {processIssues} from './lib/asyncItemIterator';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+async function processMethod(repository: GitHubRepository, issue: Issue) {
   return true;
 }
 
-export async function approve(cli: meow.Result<typeof meowFlags>) {
-  return processPRs(cli, {
-    commandName: 'approve',
-    commandNamePastTense: 'approved',
-    commandActive: 'approving',
-    commandDesc:
-      'Will show all open PRs with title matching regex and approve them.',
+export async function listIssues(cli: meow.Result<typeof meowFlags>) {
+  return processIssues(cli, {
+    commandName: 'list-issues',
+    commandNamePastTense: 'listed',
+    commandActive: 'listing', // :)
+    commandDesc: 'Will list issues on a repository.',
     processMethod,
   });
 }

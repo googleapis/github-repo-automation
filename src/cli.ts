@@ -16,6 +16,7 @@
 
 import {main as apply} from './apply-change';
 import {list} from './list-prs';
+import {listIssues} from './list-issues';
 import {approve} from './approve-prs';
 import {rename} from './rename-prs';
 import {reject} from './reject-prs';
@@ -73,6 +74,7 @@ const cli = meow(
 
   Examples
     $ repo list [--branch branch] [--author author] [--title title]
+    $ repo list-issues [--branch branch] [--author author] [--title title] [--body body]
     $ repo approve [--branch branch] [--author author] [--title title]
     $ repo update [--branch branch] [--author author] [--title title]
     $ repo merge [--branch branch] [--author author] [--title title]
@@ -96,6 +98,9 @@ let p: Promise<void>;
 switch (cli.input[0]) {
   case 'list':
     p = list(cli);
+    break;
+  case 'list-issues':
+    p = listIssues(cli);
     break;
   case 'approve':
     p = approve(cli);

@@ -22,7 +22,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
-import {process} from './lib/asyncPrIterator';
+import {processPRs} from './lib/asyncItemIterator';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const htmlUrl = pr.html_url;
@@ -57,7 +57,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 }
 
 export async function update(cli: meow.Result<typeof meowFlags>) {
-  return process(cli, {
+  return processPRs(cli, {
     commandName: 'update',
     commandActive: 'updating',
     commandNamePastTense: 'updated',
