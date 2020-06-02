@@ -4,6 +4,29 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [3.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.5.0...v3.0.0) (2020-05-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename regex match as --title option (#388)
+
+### Features
+
+* **deps:** update dependency & drop Node 8 ([#384](https://www.github.com/googleapis/github-repo-automation/issues/384)) ([3ecad5e](https://www.github.com/googleapis/github-repo-automation/commit/3ecad5ee821e2d4741d3752b4d9637dc7183ee2a))
+* adds support for performing mass operations on issues ([#407](https://www.github.com/googleapis/github-repo-automation/issues/407)) ([0cc958c](https://www.github.com/googleapis/github-repo-automation/commit/0cc958c87af1e749c0c14198d03711f060952ade))
+* rename regex match as --title option ([#388](https://www.github.com/googleapis/github-repo-automation/issues/388)) ([410f274](https://www.github.com/googleapis/github-repo-automation/commit/410f27435c43938bf6a7e5b54e7febca225400ad))
+
+
+### Bug Fixes
+
+* apache license URL ([#468](https://www.github.com/googleapis/github-repo-automation/issues/468)) ([#394](https://www.github.com/googleapis/github-repo-automation/issues/394)) ([5a1cb9c](https://www.github.com/googleapis/github-repo-automation/commit/5a1cb9c14fd7ab27e2142a779d2928d951e37e8a))
+* **deps:** update dependency @types/tmp to ^0.2.0 ([#402](https://www.github.com/googleapis/github-repo-automation/issues/402)) ([ebdf1cf](https://www.github.com/googleapis/github-repo-automation/commit/ebdf1cfe6376f9b8706a664649561b5726708934))
+* **deps:** update dependency chalk to v4 ([#391](https://www.github.com/googleapis/github-repo-automation/issues/391)) ([044c767](https://www.github.com/googleapis/github-repo-automation/commit/044c76728745cb02a2f6ab308b66af21d2a270c1))
+* **deps:** update dependency meow to v7 ([#404](https://www.github.com/googleapis/github-repo-automation/issues/404)) ([897ff19](https://www.github.com/googleapis/github-repo-automation/commit/897ff196c8f2d272a2c83c988fb4a936b8852d73))
+* **deps:** update dependency tmp-promise to v3 ([#406](https://www.github.com/googleapis/github-repo-automation/issues/406)) ([c4b4f40](https://www.github.com/googleapis/github-repo-automation/commit/c4b4f40a3bf7a9e66d552ac377798dfa6ad030ae))
+* **deps:** update dependency tweetsodium to v0.0.5 ([#395](https://www.github.com/googleapis/github-repo-automation/issues/395)) ([ca44539](https://www.github.com/googleapis/github-repo-automation/commit/ca44539949a7c5994a222108b45da6bc626449f0))
+
 ## [2.5.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.4.0...v2.5.0) (2020-03-24)
 
 
