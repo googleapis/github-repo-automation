@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [3.0.1](https://www.github.com/googleapis/github-repo-automation/compare/v3.0.0...v3.0.1) (2020-06-08)
+
+
+### Bug Fixes
+
+* push empty commit to trigger release PR ([#411](https://www.github.com/googleapis/github-repo-automation/issues/411)) ([a98d275](https://www.github.com/googleapis/github-repo-automation/commit/a98d275b0ddd470cb2e16daad6728721b4de7a9f))
+
 ## [3.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v2.5.0...v3.0.0) (2020-05-14)
 
 
