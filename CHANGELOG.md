@@ -4,6 +4,17 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v3.0.1...v4.0.0) (2020-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* This PR removes support for using `repos.json` as a source of repositories, and adds support for using GitHub's [repository search API](https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories) instead. To upgrade to this version of the module, you need to modify your `.repo.yaml` file to use the new config language:
+
+### Features
+
+* use GitHub repo search for identifying repositories ([#418](https://www.github.com/googleapis/github-repo-automation/issues/418)) ([320af6c](https://www.github.com/googleapis/github-repo-automation/commit/320af6cb029685ee2d5b9bdf011c08ef70935ead))
+
 ### [3.0.1](https://www.github.com/googleapis/github-repo-automation/compare/v3.0.0...v3.0.1) (2020-06-08)
 
 
