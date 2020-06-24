@@ -17,7 +17,7 @@
  * greenkeeper enabled, master branch protected, README links valid, etc.
  */
 
-import axios from 'axios';
+import {request, GaxiosResponse} from 'gaxios';
 
 import {getConfig} from './lib/config';
 import {GitHub, GitHubRepository} from './lib/github';
@@ -169,25 +169,27 @@ async function checkSamplesPackageDependency(
 ) {
   let response;
   try {
-    response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/package.json`
-    );
+    response = await request({
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/package.json`,
+    });
   } catch (err) {
     logger.error(
       `${repository.name}: [!] cannot download package.json: ${err.toString()}`
     );
     return;
   }
-  const packageJson = response.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const packageJson: any = response.data;
   try {
-    response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/samples/package.json`
-    );
+    response = await request({
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/samples/package.json`,
+    });
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
     return;
   }
-  const samplesPackageJson = response.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const samplesPackageJson: any = response.data;
   try {
     const mainVersion = packageJson['version'];
     const mainName = packageJson['name'];
@@ -214,11 +216,11 @@ async function checkSamplesPackageDependency(
  * @param {GitHubRepository} repository Repository object.
  */
 async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
-  let response;
+  let response: GaxiosResponse<string>;
   try {
-    response = await axios.get(
-      `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/README.md`
-    );
+    response = await request<string>({
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/README.md`,
+    });
   } catch (err) {
     logger.error(
       `${repository.name}: [!] cannot download README.md: ${err.toString()}`
@@ -257,7 +259,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
     }
 
     try {
-      await axios.get(link);
+      await request({url: link});
     } catch (err) {
       logger.error(
         `${repository.name}: [!] README.md has link ${link} which does not work`

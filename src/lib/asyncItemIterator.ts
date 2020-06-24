@@ -116,6 +116,7 @@ async function process(
   // Filter the list of PRs or Issues to ones who match the PR title and/or the branch name
   items = items.filter(itemSet => itemSet.item.title.match(regex));
   if (cli.flags.branch && processIssues) {
+    console.log(`Branch scan: ${cli.flags.branch}`);
     items = items.filter(itemSet => {
       const pr = itemSet.item as PullRequest;
       return pr.head.ref === cli.flags.branch;

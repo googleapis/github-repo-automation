@@ -59,4 +59,24 @@ describe('GitHub', () => {
     assert.deepStrictEqual(file, response);
     scope.done();
   });
+
+  it('should get a list of repos when using the query syntax', async () => {
+    const github = new GitHub({
+      githubToken: 'test-github-token',
+      clonePath: '',
+      repoSearch: 'org:testy language:python',
+    });
+    const path =
+      '/search/repositories?q=org%3Atesty+language%3Apython&per_page=100&page=1';
+    const name = 'matches';
+    const owner = {login: 'testy'};
+    const scope = nock(url)
+      .get(path)
+      .reply(200, {
+        items: [{full_name: `${owner}/${name}`}],
+      });
+    const repos = await github.getRepositories();
+    scope.done();
+    assert.strictEqual(repos.length, 1);
+  });
 });

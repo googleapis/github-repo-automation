@@ -63,5 +63,5 @@ export interface Config {
       name?: string;
     }
   ];
-  reposList?: {uri: string; language?: string};
+  repoSearch?: string;
 }

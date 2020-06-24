@@ -14,10 +14,12 @@
 
 ---
 githubToken: your-github-token
-reposList:
-  uri: https://raw.githubusercontent.com/GoogleCloudPlatform/sloth/master/repos.json
-  language: nodejs
-# You can also add repos not listed in the published JSON config:
+
+# You can search for repositories using GitHub's repo search syntax
+# https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories
+repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
+
+# Alternatively, you can specify repositories explicitly like this:
 # repos:
 #   - org: googleapis
 #     regex: nodejs-.*

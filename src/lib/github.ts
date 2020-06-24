@@ -16,14 +16,20 @@
  * @fileoverview Wraps some octokit GitHub API calls.
  */
 
-import axios, {AxiosInstance} from 'axios';
+import {Gaxios} from 'gaxios';
 import {Config} from './config';
 
 function getClient(config: Config) {
-  return axios.create({
+  return new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
   });
+}
+
+interface SearchReposResponse {
+  items: {
+    full_name: string;
+  }[];
 }
 
 /**
@@ -31,7 +37,7 @@ function getClient(config: Config) {
  */
 export class GitHub {
   protected config: Config;
-  protected client: AxiosInstance;
+  protected client: Gaxios;
 
   constructor(config: Config) {
     this.config = config;
@@ -47,17 +53,17 @@ export class GitHub {
     const proms = this.config.repos.map(async repo => {
       const org = repo.org;
       if (repo.name) {
-        const res = await this.client.get<Repository>(
-          `/repos/${org}/${repo.name}`
-        );
+        const res = await this.client.request<Repository>({
+          url: `/repos/${org}/${repo.name}`,
+        });
         repos.push(new GitHubRepository(this.client, res.data, org));
       } else if (repo.regex) {
         const repoNameRegex = new RegExp(repo.regex);
         for (let page = 1; ; ++page) {
-          const result = await this.client.get<Repository[]>(
-            `/orgs/${org}/repos`,
-            {params: {type, page, per_page: 100}}
-          );
+          const result = await this.client.request<Repository[]>({
+            url: `/orgs/${org}/repos`,
+            params: {type, page, per_page: 100},
+          });
           for (const repo of result.data) {
             if (repo.name.match(repoNameRegex)) {
               repos.push(new GitHubRepository(this.client, repo, org));
@@ -78,21 +84,30 @@ export class GitHub {
   }
 
   async fetchRepositoriesFromJson(): Promise<GitHubRepository[]> {
-    if (!this.config.reposList || !this.config.reposList.uri) {
+    if (!this.config.repoSearch) {
       return [];
     }
-    const language = this.config.reposList.language;
-    const reposJson = await axios.get(this.config.reposList.uri);
-    let reposList: Array<{repo: string; language: string}> =
-      reposJson.data.repos;
-    if (language) {
-      reposList = reposList.filter(repo => repo.language === language);
+    const repoList = [];
+    for (let page = 1; ; ++page) {
+      const res = await this.client.request<SearchReposResponse>({
+        url: '/search/repositories',
+        params: {
+          per_page: 100,
+          page,
+          q: this.config.repoSearch,
+        },
+      });
+      repoList.push(...res.data.items.map(r => r.full_name));
+      if (res.data.items.length < 100) {
+        break;
+      }
     }
+
     const repos = new Array<GitHubRepository>();
-    for (const repo of reposList) {
-      const [org, name] = repo.repo.split('/');
+    for (const repo of repoList) {
+      const [org, name] = repo.split('/');
       if (!org || !name) {
-        console.warn(`Warning: repository name ${repo.repo} cannot be parsed.`);
+        console.warn(`Warning: repository name ${repo} cannot be parsed.`);
       }
       const repository = {
         owner: {login: org},
@@ -133,7 +148,7 @@ export class GitHub {
 
     if (repos.length === 0) {
       throw new Error(
-        'No repositories configured. Use config.repos and/or config.reposList.uri.'
+        'No repositories configured. Use config.repos and/or config.repoSearch.'
       );
     }
     console.log(`Total ${repos.length} unique repositories loaded.`);
@@ -147,7 +162,7 @@ export class GitHub {
 export class GitHubRepository {
   repository: Repository;
   organization: string;
-  protected client: AxiosInstance;
+  protected client: Gaxios;
 
   /**
    * Creates an object to work with the given GitHub repository.
@@ -156,11 +171,7 @@ export class GitHubRepository {
    * @param {Object} repository Repository object, as returned by GitHub API.
    * @param {string} organization Name of GitHub organization.
    */
-  constructor(
-    client: AxiosInstance,
-    repository: Repository,
-    organization: string
-  ) {
+  constructor(client: Gaxios, repository: Repository, organization: string) {
     this.client = client;
     this.repository = repository;
     this.organization = organization;
@@ -191,7 +202,7 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
-    const res = await this.client.get<File>(url);
+    const res = await this.client.request<File>({url});
     return res.data;
   }
 
@@ -205,7 +216,7 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
-    const res = await this.client.get<File>(url, {params: {ref: branch}});
+    const res = await this.client.request<File>({url, params: {ref: branch}});
     return res.data;
   }
 
@@ -220,7 +231,8 @@ export class GitHubRepository {
     const prs: PullRequest[] = [];
     const url = `/repos/${owner}/${repo}/pulls`;
     for (let page = 1; ; ++page) {
-      const result = await this.client.get<PullRequest[]>(url, {
+      const result = await this.client.request<PullRequest[]>({
+        url,
         params: {state, page},
       });
       if (result.data.length === 0) {
@@ -242,7 +254,8 @@ export class GitHubRepository {
     const prs: Issue[] = [];
     const url = `/repos/${owner}/${repo}/issues`;
     for (let page = 1; ; ++page) {
-      const result = await this.client.get<Issue[]>(url, {
+      const result = await this.client.request<Issue[]>({
+        url,
         params: {state, page},
       });
       if (result.data.length === 0) {
@@ -262,11 +275,12 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const ref = 'heads/master';
     const shaUrl = `/repos/${owner}/${repo}/commits/${ref}`;
-    const {data: sha} = await this.client.get<string>(shaUrl, {
+    const {data: sha} = await this.client.request<string>({
+      url: shaUrl,
       headers: {accept: 'application/vnd.github.VERSION.sha'},
     });
     const url = `/repos/${owner}/${repo}/commits/${sha}`;
-    const result = await this.client.get(url);
+    const result = await this.client.request({url});
     return result.data;
   }
 
@@ -281,7 +295,11 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const ref = `refs/heads/${branch}`;
     const url = `/repos/${owner}/${repo}/git/refs`;
-    const result = await this.client.post(url, {ref, sha});
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {ref, sha},
+    });
     return result.data;
   }
 
@@ -294,7 +312,10 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const ref = `heads/${branch}`;
     const url = `/repos/${owner}/${repo}/git/refs/${ref}`;
-    await this.client.delete(url);
+    await this.client.request({
+      url,
+      method: 'DELETE',
+    });
   }
 
   /**
@@ -308,7 +329,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/merges`;
-    const result = await this.client.post(url, {base, head});
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {base, head},
+    });
     return result.data;
   }
 
@@ -330,10 +355,14 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
-    const result = await this.client.put(url, {
-      message,
-      content,
-      branch,
+    const result = await this.client.request({
+      url,
+      method: 'PUT',
+      data: {
+        message,
+        content,
+        branch,
+      },
     });
     return result.data;
   }
@@ -358,7 +387,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/contents/${path}`;
-    const result = await this.client.put(url, {message, content, sha, branch});
+    const result = await this.client.request({
+      url,
+      method: 'PUT',
+      data: {message, content, sha, branch},
+    });
     return result.data;
   }
 
@@ -375,11 +408,15 @@ export class GitHubRepository {
     const head = `refs/heads/${branch}`;
     const base = 'refs/heads/master';
     const url = `/repos/${owner}/${repo}/pulls`;
-    const result = await this.client.post(url, {
-      head,
-      base,
-      title,
-      body,
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {
+        head,
+        base,
+        title,
+        body,
+      },
     });
     return result.data;
   }
@@ -394,8 +431,12 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/pulls/${prNumber}/requested_reviewers`;
-    const result = await this.client.post(url, {
-      reviewers,
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {
+        reviewers,
+      },
     });
     return result.data;
   }
@@ -409,7 +450,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/pulls/${pr.number}/reviews`;
-    const result = await this.client.post(url, {event: 'APPROVE'});
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {event: 'APPROVE'},
+    });
     return result.data;
   }
 
@@ -423,7 +468,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/pulls/${pr.number}`;
-    const result = await this.client.patch(url, {title});
+    const result = await this.client.request({
+      url,
+      method: 'PATCH',
+      data: {title},
+    });
     return result.data;
   }
 
@@ -437,7 +486,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/issues/${pr.number}/labels`;
-    const result = await this.client.post(url, {labels});
+    const result = await this.client.request({
+      url,
+      method: 'POST',
+      data: {labels},
+    });
     return result.data;
   }
 
@@ -449,7 +502,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/pulls/${pr.number}`;
-    const result = await this.client.patch(url, {state: 'closed'});
+    const result = await this.client.request({
+      url,
+      method: 'PATCH',
+      data: {state: 'closed'},
+    });
     return result.data;
   }
 
@@ -463,9 +520,13 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const title = pr.title;
     const url = `/repos/${owner}/${repo}/pulls/${pr.number}/merge`;
-    const result = await this.client.put(url, {
-      merge_method: 'squash',
-      commit_title: title,
+    const result = await this.client.request({
+      url,
+      method: 'PUT',
+      data: {
+        merge_method: 'squash',
+        commit_title: title,
+      },
     });
     return result.data;
   }
@@ -479,7 +540,7 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/branches/${branch}`;
-    const result = await this.client.get<Branch>(url);
+    const result = await this.client.request<Branch>({url});
     return result.data;
   }
 
@@ -492,7 +553,7 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const branch = 'master';
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection`;
-    const result = await this.client.get(url);
+    const result = await this.client.request({url});
     return result.data;
   }
 
@@ -505,7 +566,7 @@ export class GitHubRepository {
     const repo = this.repository.name;
     const branch = 'master';
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
-    const result = await this.client.get<StatusCheck[]>(url);
+    const result = await this.client.request<StatusCheck[]>({url});
     return result.data;
   }
 
@@ -520,7 +581,11 @@ export class GitHubRepository {
     const branch = 'master';
     const strict = true;
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
-    const result = await this.client.patch(url, {strict, contexts});
+    const result = await this.client.request({
+      url,
+      method: 'PATCH',
+      data: {strict, contexts},
+    });
     return result.data;
   }
 
@@ -538,7 +603,11 @@ export class GitHubRepository {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/collaborators/${username}`;
-    const result = await axios.put(url, {permission});
+    const result = await this.client.request({
+      url,
+      method: 'PUT',
+      data: {permission},
+    });
     return result.data;
   }
 }
