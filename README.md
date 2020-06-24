@@ -32,22 +32,10 @@ $ cat /User/beckwith/.repo.yaml
 ---
 githubToken: your-github-token
 clonePath: /User/beckwith/.repo # optional
-repos:
-  - org: googleapis
-    regex: nodejs-.*
-  - org: googleapis
-    name: github-repo-automation
-  - org: GoogleCloudPlatform
-    regex: ^cloud-[a-z]*-nodejs$
-  - org: google
-    name: google-api-nodejs-client
-  - org: google
-    name: google-auth-library-nodejs
-  - org: google
-    name: google-p12-pem
-  - org: google
-    name: node-gtoken
+repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
 ```
+
+The `repoSearch` field uses the [GitHub Repository Search syntax](https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories).
 
 ```sh
 $ echo $REPO_CONFIG_PATH
@@ -82,7 +70,7 @@ $ repo list [--title title]
 ```
 
 Iterates over all open pull requests matching `title` (this can be a regex,
-and all PRs will be processed if no regex for title is given) 
+and all PRs will be processed if no regex for title is given)
 in all configured repositories, and prints them.
 
 `$ repo list --title 🚀`
