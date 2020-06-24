@@ -1,6 +1,6 @@
 {
   "name": "@google/repo",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "repository": "googleapis/github-repo-automation",
   "description": "A tool for automating multiple GitHub repositories.",
   "engines": {
