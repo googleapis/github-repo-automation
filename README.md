@@ -82,7 +82,7 @@ or all PRs with the word `test` in the title:
 ### repo reject
 
 ```sh
-$ repo reject [--title title]
+$ repo reject [--title title] [--clean]
 ```
 
 Iterates over all open pull requests matching `title` (this can be a regex,
@@ -90,6 +90,8 @@ and all PRs will be processed if no regex for title is given) and closes
 them. For example, close all PRs with the word `test` in the title:
 
 `$ repo reject --title test`
+
+If `--clean` is specified, the branch associated with the PR will also be deleted. Branches on forked PRs will be ignored.
 
 ### repo rename
 

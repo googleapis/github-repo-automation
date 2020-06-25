@@ -41,6 +41,7 @@ export interface IteratorOptions {
   commandNamePastTense: string; // approved
   commandActive: string; // approving
   commandDesc: string;
+  additionalFlags?: string[];
 }
 
 /**
@@ -56,7 +57,11 @@ async function process(
 ) {
   if (!cli.flags.title && !cli.flags.branch && !cli.flags.body) {
     console.log(
-      `Usage: repo ${options.commandName} [--branch branch] [--title title] [--body body]`
+      `Usage: repo ${
+        options.commandName
+      } [--branch branch] [--title title] [--body body] ${options?.additionalFlags?.join(
+        ' '
+      )}`
     );
     console.log('Either branch name, body, or title regex must present.');
     console.log(options.commandDesc);
