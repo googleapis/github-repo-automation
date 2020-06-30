@@ -28,7 +28,7 @@ $ npm install -g @google/repo
 You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/master/config.yaml.default) and put your GitHub token there. You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
 
 ```sh
-$ cat /User/beckwith/.repo.yaml
+$ cat /User/beckwith/.config.yaml
 ---
 githubToken: your-github-token
 clonePath: /User/beckwith/.repo # optional
@@ -39,7 +39,7 @@ The `repoSearch` field uses the [GitHub Repository Search syntax](https://help.g
 
 ```sh
 $ echo $REPO_CONFIG_PATH
-/User/beckwith/.repo.yaml
+/User/beckwith/.config.yaml
 ```
 
 Now you are good to go!
