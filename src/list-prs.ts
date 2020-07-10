@@ -14,13 +14,7 @@
 
 import * as meow from 'meow';
 import {meowFlags} from './cli';
-
-import {GitHubRepository, PullRequest} from './lib/github';
 import {processPRs} from './lib/asyncItemIterator';
-/* eslint-disable @typescript-eslint/no-unused-vars */
-async function processMethod(repository: GitHubRepository, pr: PullRequest) {
-  return true;
-}
 
 export async function list(cli: meow.Result<typeof meowFlags>) {
   return processPRs(cli, {
@@ -28,6 +22,6 @@ export async function list(cli: meow.Result<typeof meowFlags>) {
     commandNamePastTense: 'listed',
     commandActive: 'listing', // :)
     commandDesc: 'Will list all open PRs with title matching regex.',
-    processMethod,
+    processMethod: async () => true,
   });
 }
