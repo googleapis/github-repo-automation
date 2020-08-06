@@ -30,6 +30,14 @@ const testConfig: Config = {
   repos: [{org: 'test-organization', regex: 'matches'}],
 };
 
+const testConfigBaseBranchOverride: Config = {
+  githubToken: 'test-github-token',
+  clonePath: '',
+  repos: [
+    {org: 'test-organization', regex: 'matches', baseBranchOverride: 'main'},
+  ],
+};
+
 const url = 'https://api.github.com';
 let repo: GitHubRepository;
 
@@ -44,6 +52,23 @@ describe('GitHub', () => {
     const repos = await github.getRepositories();
     scope.done();
     assert.strictEqual(repos.length, 1);
+    repo = repos[0];
+  });
+
+  it('should honor a base branch override', async () => {
+    const github = new GitHub(testConfigBaseBranchOverride);
+    const path =
+      '/orgs/test-organization/repos?type=public&page=1&per_page=100';
+    const name = 'matches';
+    const owner = {login: 'test-organization'};
+    const scope = nock(url).get(path).reply(200, [{name, owner}]);
+    const repos = await github.getRepositories();
+    scope.done();
+    assert.strictEqual(repos.length, 1);
+    assert.strictEqual(
+      repos[0].baseBranch,
+      testConfigBaseBranchOverride.baseBranchOverride
+    );
     repo = repos[0];
   });
 
@@ -73,7 +98,7 @@ describe('GitHub', () => {
     const scope = nock(url)
       .get(path)
       .reply(200, {
-        items: [{full_name: `${owner}/${name}`}],
+        items: [{full_name: `${owner}/${name}`, default_branch: 'master'}],
       });
     const repos = await github.getRepositories();
     scope.done();

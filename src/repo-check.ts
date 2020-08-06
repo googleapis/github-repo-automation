@@ -14,7 +14,7 @@
 
 /**
  * @fileoverview Verifies that the repository is compliant: CI running,
- * greenkeeper enabled, master branch protected, README links valid, etc.
+ * greenkeeper enabled, the base branch protected, README links valid, etc.
  */
 
 import {request, GaxiosResponse} from 'gaxios';
@@ -61,18 +61,18 @@ class Logger {
 }
 
 /**
- * Checks GitHub master branch protection settings.
+ * Checks GitHub base branch protection settings.
  * Logs all errors and warnings.
  * @param {GitHubRepository} repository Repository object.
  * @param {Logger} logger Logger object.
  */
-async function checkGithubMasterBranchProtection(
+async function checkGithubBaseBranchProtection(
   logger: Logger,
   repository: GitHubRepository
 ) {
   let getBranchRes;
   try {
-    getBranchRes = await repository.getBranch('master');
+    getBranchRes = await repository.getBranch(repository.baseBranch);
   } catch (err) {
     logger.error(
       `${repository.name}: [!] cannot fetch branch information, no access?`
@@ -81,14 +81,14 @@ async function checkGithubMasterBranchProtection(
   }
   if (!getBranchRes.protected) {
     logger.error(
-      `${repository.name}: [!] branch protection for master branch is disabled`
+      `${repository.name}: [!] branch protection for ${repository.baseBranch} branch is disabled`
     );
     return;
   }
 
   let response;
   try {
-    response = await repository.getRequiredMasterBranchProtection();
+    response = await repository.getRequiredBaseBranchProtection();
   } catch (err) {
     logger.error(
       `${repository.name}: [!] cannot fetch branch protection settings, no access?`
@@ -97,7 +97,7 @@ async function checkGithubMasterBranchProtection(
   }
   if (response['required_pull_request_reviews'] === undefined) {
     logger.error(
-      `${repository.name}: [!] branch protection for master branch - pull request reviews are not required`
+      `${repository.name}: [!] branch protection for ${repository.baseBranch} branch - pull request reviews are not required`
     );
   }
 
@@ -121,13 +121,13 @@ async function checkGithubMasterBranchProtection(
       }
       if (!enabled) {
         logger.error(
-          `${repository.name}: [!] branch protection for master branch - status check ${check} is not required`
+          `${repository.name}: [!] branch protection for ${repository.baseBranch} branch - status check ${check} is not required`
         );
       }
     }
   } else {
     logger.error(
-      `${repository.name}: [!] branch protection for master branch - status checks are not enabled`
+      `${repository.name}: [!] branch protection for ${repository.baseBranch} branch - status checks are not enabled`
     );
   }
 }
@@ -170,7 +170,7 @@ async function checkSamplesPackageDependency(
   let response;
   try {
     response = await request({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/package.json`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/package.json`,
     });
   } catch (err) {
     logger.error(
@@ -182,7 +182,7 @@ async function checkSamplesPackageDependency(
   const packageJson: any = response.data;
   try {
     response = await request({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/samples/package.json`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/samples/package.json`,
     });
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
@@ -219,7 +219,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
   let response: GaxiosResponse<string>;
   try {
     response = await request<string>({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/master/README.md`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/README.md`,
     });
   } catch (err) {
     logger.error(
@@ -284,7 +284,7 @@ async function checkAllRepositories(logger: Logger) {
     );
 
     const errorCounter = logger.errorCount;
-    await checkGithubMasterBranchProtection(logger, repository);
+    await checkGithubBaseBranchProtection(logger, repository);
     await checkRenovate(logger, repository);
     await checkSamplesPackageDependency(logger, repository);
     await checkReadmeLinks(logger, repository);

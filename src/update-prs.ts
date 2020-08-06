@@ -31,10 +31,10 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
 
   let latestCommit: {[index: string]: string};
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    latestCommit = await repository.getLatestCommitToBaseBranch();
   } catch (err) {
     console.warn(
-      '    cannot get sha of latest commit to master, skipping:',
+      '    cannot get sha of latest commit to the base branch, skipping:',
       err.toString()
     );
     return false;
@@ -43,7 +43,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const latestMasterSha = latestCommit['sha'];
   if (latestMasterSha !== baseSha) {
     try {
-      await repository.updateBranch(ref, 'master');
+      await repository.updateBranch(ref, repository.baseBranch);
     } catch (err) {
       console.warn(
         `    cannot update branch for PR ${htmlUrl}, skipping:`,
@@ -62,7 +62,7 @@ export async function update(cli: meow.Result<typeof meowFlags>) {
     commandActive: 'updating',
     commandNamePastTense: 'updated',
     commandDesc:
-      'Iterates over all PRs matching the regex, and updates them, to the latest on master.',
+      'Iterates over all PRs matching the regex, and updates them, to the latest on the base branch.',
     processMethod,
   });
 }

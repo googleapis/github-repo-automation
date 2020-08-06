@@ -31,7 +31,7 @@ import {GitHub, GitHubRepository} from './github';
  * @param {string} message Commit message and pull request title.
  * @param {string} comment Pull request body.
  * @param {string[]} reviewers Reviewers' GitHub logins for the pull request.
- * @returns {undefined} No return value. Prints its progress to the console.
+a * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
   repository: GitHubRepository,
@@ -70,7 +70,7 @@ async function processRepository(
 
   let latestCommit: {[index: string]: string};
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    latestCommit = await repository.getLatestCommitToBaseBranch();
   } catch (err) {
     console.warn(
       '  cannot get sha of latest commit, skipping this repository:',
@@ -111,7 +111,7 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-      `  cannot create pull request for branch ${branch}! Branch is still there.`,
+      `  cannot create pull request for branch ${branch} -> base ${repository.baseBranch}! Branch is still there.`,
       err.toString()
     );
     return;
