@@ -62,7 +62,7 @@ export class GitHub {
             this.client,
             res.data,
             org,
-            this.config.baseBranchOverride
+            repo.baseBranchOverride
           )
         );
       } else if (repo.regex) {
@@ -72,14 +72,14 @@ export class GitHub {
             url: `/orgs/${org}/repos`,
             params: {type, page, per_page: 100},
           });
-          for (const repo of result.data) {
-            if (repo.name.match(repoNameRegex)) {
+          for (const restRepo of result.data) {
+            if (restRepo.name.match(repoNameRegex)) {
               repos.push(
                 new GitHubRepository(
                   this.client,
-                  repo,
+                  restRepo,
                   org,
-                  this.config.baseBranchOverride
+                  repo.baseBranchOverride
                 )
               );
             }
