@@ -170,7 +170,7 @@ async function checkSamplesPackageDependency(
   let response;
   try {
     response = await request({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/package.json`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.baseBranch}/package.json`,
     });
   } catch (err) {
     logger.error(
@@ -182,7 +182,7 @@ async function checkSamplesPackageDependency(
   const packageJson: any = response.data;
   try {
     response = await request({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/samples/package.json`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.baseBranch}/samples/package.json`,
     });
   } catch (err) {
     logger.warning(`${repository.name}: [!] no samples/package.json.`);
@@ -219,7 +219,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
   let response: GaxiosResponse<string>;
   try {
     response = await request<string>({
-      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.repository.default_branch}/README.md`,
+      url: `https://raw.githubusercontent.com/${repository.organization}/${repository.name}/${repository.baseBranch}/README.md`,
     });
   } catch (err) {
     logger.error(

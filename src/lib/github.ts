@@ -134,7 +134,14 @@ export class GitHub {
         ssh_url: `git@github.com:${org}/${name}.git`,
         default_branch: repo.branch,
       };
-      repos.push(new GitHubRepository(this.client, repository, org));
+      repos.push(
+        new GitHubRepository(
+          this.client,
+          repository,
+          org,
+          this.config.baseBranchOverride
+        )
+      );
     }
     return repos;
   }
@@ -434,15 +441,15 @@ export class GitHubRepository {
   async createPullRequest(branch: string, title: string, body: string) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const headRef = `refs/heads/${branch}`;
-    const baseRef = `refs/heads/${this.baseBranch}`;
+    const head = branch;
+    const base = this.baseBranch;
     const url = `/repos/${owner}/${repo}/pulls`;
     const result = await this.client.request({
       url,
       method: 'POST',
       data: {
-        headRef,
-        baseRef,
+        head,
+        base,
         title,
         body,
       },

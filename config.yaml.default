@@ -19,6 +19,12 @@ githubToken: your-github-token
 # https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories
 repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
 
+# By default this toolkit will open a pull request with default branch as the base. If you want to
+# change this behavior you can uncomment the line below. This override will only apply to repositories
+# found through repoSearch (repositories found through the repos list below have their own individual
+# override configuration).
+# baseBranchOverride: main
+
 # Alternatively, you can specify repositories explicitly like this:
 # repos:
 #   - org: googleapis
@@ -27,3 +33,4 @@ repoSearch: org:googleapis language:typescript language:javascript is:public arc
 #     name: github-repo-automation
 #   - org: GoogleCloudPlatform
 #     regex: ^cloud-[a-z]*-nodejs$
+#     baseBranchOverride: master
