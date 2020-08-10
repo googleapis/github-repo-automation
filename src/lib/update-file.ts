@@ -31,7 +31,7 @@ import {GitHub, GitHubRepository} from './github';
  * @param {string} message Commit message and pull request title.
  * @param {string} comment Pull request body.
  * @param {string[]} reviewers Reviewers' GitHub logins for the pull request.
-a * @returns {undefined} No return value. Prints its progress to the console.
+ * @returns {undefined} No return value. Prints its progress to the console.
  */
 async function processRepository(
   repository: GitHubRepository,
