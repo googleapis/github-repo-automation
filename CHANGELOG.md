@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.0.3](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.2...v4.0.3) (2020-08-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency ora to v5 ([#444](https://www.github.com/googleapis/github-repo-automation/issues/444)) ([1a05cdd](https://www.github.com/googleapis/github-repo-automation/commit/1a05cdd4a1017b2ac2773be262279122873b0cb8))
+
 ### [4.0.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.1...v4.0.2) (2020-07-09)
 
 
