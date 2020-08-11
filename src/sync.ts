@@ -64,10 +64,10 @@ export async function sync(cli: meow.Result<typeof meowFlags>) {
     const cwd = path.join(rootPath, repo.name);
     return q.add(async () => {
       if (dirs.indexOf(repo.name) !== -1) {
-        await spawn('git reset --hard origin/master', {cwd});
-        await spawn('git checkout master', {cwd});
+        await spawn(`git reset --hard origin/${repo.baseBranch}`, {cwd});
+        await spawn(`git checkout ${repo.baseBranch}`, {cwd});
         await spawn('git fetch origin', {cwd});
-        await spawn('git reset --hard origin/master', {cwd});
+        await spawn(`git reset --hard origin/${repo.baseBranch}`, {cwd});
         orb.text = `[${i + 1}/${repos.length}] Synchronized ${repo.name}...`;
       } else {
         await spawn(`git clone ${cloneUrl}`, {cwd: rootPath});

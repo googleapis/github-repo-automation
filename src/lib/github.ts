@@ -29,6 +29,7 @@ function getClient(config: Config) {
 interface SearchReposResponse {
   items: {
     full_name: string;
+    default_branch: string;
   }[];
 }
 
@@ -64,9 +65,9 @@ export class GitHub {
             url: `/orgs/${org}/repos`,
             params: {type, page, per_page: 100},
           });
-          for (const repo of result.data) {
-            if (repo.name.match(repoNameRegex)) {
-              repos.push(new GitHubRepository(this.client, repo, org));
+          for (const restRepo of result.data) {
+            if (restRepo.name.match(repoNameRegex)) {
+              repos.push(new GitHubRepository(this.client, restRepo, org));
             }
           }
           if (result.data.length < 100) {
@@ -97,7 +98,11 @@ export class GitHub {
           q: this.config.repoSearch,
         },
       });
-      repoList.push(...res.data.items.map(r => r.full_name));
+      repoList.push(
+        ...res.data.items.map(r => {
+          return {name: r.full_name, branch: r.default_branch};
+        })
+      );
       if (res.data.items.length < 100) {
         break;
       }
@@ -105,7 +110,7 @@ export class GitHub {
 
     const repos = new Array<GitHubRepository>();
     for (const repo of repoList) {
-      const [org, name] = repo.split('/');
+      const [org, name] = repo.name.split('/');
       if (!org || !name) {
         console.warn(`Warning: repository name ${repo} cannot be parsed.`);
       }
@@ -113,6 +118,7 @@ export class GitHub {
         owner: {login: org},
         name,
         ssh_url: `git@github.com:${org}/${name}.git`,
+        default_branch: repo.branch,
       };
       repos.push(new GitHubRepository(this.client, repository, org));
     }
@@ -162,6 +168,7 @@ export class GitHub {
 export class GitHubRepository {
   repository: Repository;
   organization: string;
+  baseBranch: string;
   protected client: Gaxios;
 
   /**
@@ -175,6 +182,7 @@ export class GitHubRepository {
     this.client = client;
     this.repository = repository;
     this.organization = organization;
+    this.baseBranch = this.repository.default_branch;
   }
 
   /**
@@ -194,7 +202,7 @@ export class GitHubRepository {
   }
 
   /**
-   * Returns contents of the file in GitHub repository, master branch.
+   * Returns contents of the file in GitHub repository
    * @param {string} path Path to file in repository.
    * @returns {Object} File object, as returned by GitHub API.
    */
@@ -267,13 +275,14 @@ export class GitHubRepository {
   }
 
   /**
-   * Returns latest commit to master branch of the GitHub repository.
+   * Returns latest commit to the default branch of the GitHub repository.
+   * @param {string} [customBranch] Specify a branch to use other than the default base branch
    * @returns {Object} Commit object, as returned by GitHub API.
    */
-  async getLatestCommitToMaster() {
+  async getLatestCommitToBaseBranch(customBranch?: string) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const ref = 'heads/master';
+    const ref = `heads/${customBranch || this.baseBranch}`;
     const shaUrl = `/repos/${owner}/${repo}/commits/${ref}`;
     const {data: sha} = await this.client.request<string>({
       url: shaUrl,
@@ -396,7 +405,7 @@ export class GitHubRepository {
   }
 
   /**
-   * Creates a new pull request from the given branch to master.
+   * Creates a new pull request from the given branch to the base branch.
    * @param {string} branch Branch name to create a pull request from.
    * @param {string} title Pull request title.
    * @param {string} body Pull request body.
@@ -405,8 +414,8 @@ export class GitHubRepository {
   async createPullRequest(branch: string, title: string, body: string) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const head = `refs/heads/${branch}`;
-    const base = 'refs/heads/master';
+    const head = branch;
+    const base = this.baseBranch;
     const url = `/repos/${owner}/${repo}/pulls`;
     const result = await this.client.request({
       url,
@@ -545,40 +554,40 @@ export class GitHubRepository {
   }
 
   /**
-   * Returns branch protection settings for master branch.
+   * Returns branch protection settings for the base branch.
    * @returns {Object} Branch protection object, as returned by GitHub API.
    */
-  async getRequiredMasterBranchProtection() {
+  async getRequiredBaseBranchProtection() {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const branch = 'master';
+    const branch = this.baseBranch;
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection`;
     const result = await this.client.request({url});
     return result.data;
   }
 
   /**
-   * Returns branch protection status checks for master branch.
+   * Returns branch protection status checks for the base branch.
    * @returns {Object} Status checks object, as returned by GitHub API.
    */
-  async getRequiredMasterBranchProtectionStatusChecks() {
+  async getRequiredBaseBranchProtectionStatusChecks() {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const branch = 'master';
+    const branch = this.baseBranch;
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
     const result = await this.client.request<StatusCheck[]>({url});
     return result.data;
   }
 
   /**
-   * Updates branch protection status checks for master branch.
+   * Updates branch protection status checks for the base branch.
    * @param {string[]} contexts Required status checks.
    * @returns {Object} Status checks object, as returned by GitHub API.
    */
-  async updateRequiredMasterBranchProtectionStatusChecks(contexts: string[]) {
+  async updateRequiredBaseBranchProtectionStatusChecks(contexts: string[]) {
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
-    const branch = 'master';
+    const branch = this.baseBranch;
     const strict = true;
     const url = `/repos/${owner}/${repo}/branches/${branch}/protection/required_status_checks`;
     const result = await this.client.request({
@@ -629,6 +638,7 @@ export interface Issue {
 export interface Repository {
   name: string;
   owner: User;
+  default_branch: string;
   clone_url?: string;
   archived?: boolean;
   ssh_url?: string;
