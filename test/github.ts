@@ -36,14 +36,6 @@ const testConfigSearch: Config = {
   repoSearch: 'a-search',
 };
 
-const testConfigBaseBranchOverride = {
-  githubToken: 'test-github-token',
-  clonePath: '',
-  repos: [
-    {org: 'test-organization', regex: 'matches', baseBranchOverride: 'main'},
-  ],
-};
-
 const url = 'https://api.github.com';
 let repo: GitHubRepository;
 
@@ -85,51 +77,6 @@ describe('GitHub', () => {
       ssh_url: 'git@github.com:test-organization/matches.git',
       default_branch: 'master',
     });
-    repo = repos[0];
-  });
-
-  it('should honor base branch override for a repo search', async () => {
-    const overrideConfig = Object.assign(testConfigSearch, {
-      baseBranchOverride: 'main',
-    });
-    const github = new GitHub(overrideConfig);
-    const path = '/search/repositories?per_page=100&page=1&q=a-search';
-    const full_name = 'test-organization/matches';
-    const default_branch = 'master';
-    const scope = nock(url)
-      .get(path)
-      .reply(200, {
-        items: [
-          {
-            full_name,
-            default_branch,
-          },
-        ],
-      });
-    const repos = await github.getRepositories();
-    scope.done();
-    assert.strictEqual(repos.length, 1);
-    assert.strictEqual(repos[0].baseBranch, overrideConfig.baseBranchOverride);
-    assert.strictEqual(repos[0].repository.default_branch, 'master');
-    repo = repos[0];
-  });
-
-  it('should honor a base branch override for individual repos', async () => {
-    const github = new GitHub(testConfigBaseBranchOverride as Config);
-    const path =
-      '/orgs/test-organization/repos?type=public&page=1&per_page=100';
-    const name = 'matches';
-    const owner = {login: 'test-organization'};
-    const scope = nock(url).get(path).reply(200, [{name, owner}]);
-    const repos = await github.getRepositories();
-    scope.done();
-    assert.strictEqual(repos.length, 1);
-    assert.notEqual(repos[0].baseBranch, undefined);
-    assert.notStrictEqual(repos[0].baseBranch, 'master');
-    assert.strictEqual(
-      repos[0].baseBranch,
-      testConfigBaseBranchOverride.repos[0].baseBranchOverride
-    );
     repo = repos[0];
   });
 

@@ -61,9 +61,7 @@ export interface Config {
       org: string;
       regex?: string;
       name?: string;
-      baseBranchOverride?: string;
     }
   ];
   repoSearch?: string;
-  baseBranchOverride?: string;
 }

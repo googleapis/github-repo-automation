@@ -57,14 +57,7 @@ export class GitHub {
         const res = await this.client.request<Repository>({
           url: `/repos/${org}/${repo.name}`,
         });
-        repos.push(
-          new GitHubRepository(
-            this.client,
-            res.data,
-            org,
-            repo.baseBranchOverride
-          )
-        );
+        repos.push(new GitHubRepository(this.client, res.data, org));
       } else if (repo.regex) {
         const repoNameRegex = new RegExp(repo.regex);
         for (let page = 1; ; ++page) {
@@ -74,14 +67,7 @@ export class GitHub {
           });
           for (const restRepo of result.data) {
             if (restRepo.name.match(repoNameRegex)) {
-              repos.push(
-                new GitHubRepository(
-                  this.client,
-                  restRepo,
-                  org,
-                  repo.baseBranchOverride
-                )
-              );
+              repos.push(new GitHubRepository(this.client, restRepo, org));
             }
           }
           if (result.data.length < 100) {
@@ -134,14 +120,7 @@ export class GitHub {
         ssh_url: `git@github.com:${org}/${name}.git`,
         default_branch: repo.branch,
       };
-      repos.push(
-        new GitHubRepository(
-          this.client,
-          repository,
-          org,
-          this.config.baseBranchOverride
-        )
-      );
+      repos.push(new GitHubRepository(this.client, repository, org));
     }
     return repos;
   }
@@ -198,18 +177,12 @@ export class GitHubRepository {
    * @param {Object} octokit OctoKit instance.
    * @param {Object} repository Repository object, as returned by GitHub API.
    * @param {string} organization Name of GitHub organization.
-   * @param {string} [baseBranchOverride] The base branch a PR should be made against, the default branch will be used if falsey.
    */
-  constructor(
-    client: Gaxios,
-    repository: Repository,
-    organization: string,
-    baseBranchOverride?: string
-  ) {
+  constructor(client: Gaxios, repository: Repository, organization: string) {
     this.client = client;
     this.repository = repository;
     this.organization = organization;
-    this.baseBranch = baseBranchOverride || this.repository.default_branch;
+    this.baseBranch = this.repository.default_branch;
   }
 
   /**
