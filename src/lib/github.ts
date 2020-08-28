@@ -503,7 +503,7 @@ export class GitHubRepository {
     return result.data;
   }
 
-    /**
+  /**
    * Removes label with a given name to a given pull request.
    * @param {Object} pr Pull request object, as returned by GitHib API.
    * @param {Array<string>} labels Labels to apply to the PR
@@ -516,7 +516,7 @@ export class GitHubRepository {
     const result = await this.client.request({
       url,
       method: 'DELETE',
-      data: {name}
+      data: {name},
     });
     return result.data;
   }

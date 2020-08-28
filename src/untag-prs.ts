@@ -18,16 +18,16 @@ import {meowFlags} from './cli';
 import {GitHubRepository, PullRequest} from './lib/github';
 import {processPRs} from './lib/asyncItemIterator';
 
-let name: string
+let name: string;
 
-async function processMethod(
-  repository: GitHubRepository,
-  pr: PullRequest
-) {
+async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   try {
     await repository.unTagPullRequest(pr, name);
   } catch (err) {
-    console.warn(`    error trying to untag PR ${pr.html_url}:`, err.toString());
+    console.warn(
+      `    error trying to untag PR ${pr.html_url}:`,
+      err.toString()
+    );
     return false;
   }
   return true;
