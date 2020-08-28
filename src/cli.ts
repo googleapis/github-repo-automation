@@ -27,6 +27,7 @@ import {sync, exec} from './sync';
 import * as meow from 'meow';
 import * as updateNotifier from 'update-notifier';
 import {tag} from './tag-prs';
+import {untag} from './untag-prs';
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pkg = require('../../package.json');
 
@@ -122,6 +123,9 @@ switch (cli.input[0]) {
     break;
   case 'tag':
     p = tag(cli);
+    break;
+  case 'untag':
+    p = untag(cli);
     break;
   case 'check':
     p = check();
