@@ -82,6 +82,7 @@ const cli = meow(
     $ repo reject [--branch branch] [--author author] [--title title]
     $ repo rename [--branch branch] [--author author] [--title title] 'new PR title'
     $ repo tag [--branch branch] [--author author] [--title title] label1 label2 ...
+    $ repo untag [--branch branch] [--author author] [--title title] label1
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
     $ repo sync
