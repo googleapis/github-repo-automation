@@ -504,6 +504,24 @@ export class GitHubRepository {
   }
 
   /**
+   * Removes label with a given name to a given pull request.
+   * @param {Object} pr Pull request object, as returned by GitHib API.
+   * @param {Array<string>} labels Labels to apply to the PR
+   * @returns A list of labels that was added to the issue..
+   */
+  async unTagPullRequest(pr: PullRequest, name: string) {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const url = `/repos/${owner}/${repo}/issues/${pr.number}/labels/${name}`;
+    const result = await this.client.request({
+      url,
+      method: 'DELETE',
+      data: {name},
+    });
+    return result.data;
+  }
+
+  /**
    * Closes the given pull request without merging it.
    * @param {Object} pr Pull request object, as returned by GitHub API.
    */

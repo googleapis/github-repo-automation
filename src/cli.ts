@@ -27,6 +27,7 @@ import {sync, exec} from './sync';
 import * as meow from 'meow';
 import * as updateNotifier from 'update-notifier';
 import {tag} from './tag-prs';
+import {untag} from './untag-prs';
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pkg = require('../../package.json');
 
@@ -81,6 +82,7 @@ const cli = meow(
     $ repo reject [--branch branch] [--author author] [--title title]
     $ repo rename [--branch branch] [--author author] [--title title] 'new PR title'
     $ repo tag [--branch branch] [--author author] [--title title] label1 label2 ...
+    $ repo untag [--branch branch] [--author author] [--title title] label1
     $ repo apply --branch branch --message message --comment comment [--reviewers username[,username...]] [--silent] command
     $ repo check
     $ repo sync
@@ -119,6 +121,9 @@ switch (cli.input[0]) {
     break;
   case 'apply':
     p = apply(cli);
+    break;
+  case 'untag':
+    p = untag(cli);
     break;
   case 'tag':
     p = tag(cli);
