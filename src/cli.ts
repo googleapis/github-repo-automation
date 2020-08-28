@@ -121,11 +121,11 @@ switch (cli.input[0]) {
   case 'apply':
     p = apply(cli);
     break;
-  case 'tag':
-    p = tag(cli);
-    break;
   case 'untag':
     p = untag(cli);
+    break;
+  case 'tag':
+    p = tag(cli);
     break;
   case 'check':
     p = check();

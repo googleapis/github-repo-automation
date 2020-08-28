@@ -510,7 +510,6 @@ export class GitHubRepository {
    * @returns A list of labels that was added to the issue..
    */
   async unTagPullRequest(pr: PullRequest, name: string) {
-    console.log('being called?')
     const owner = this.repository.owner.login;
     const repo = this.repository.name;
     const url = `/repos/${owner}/${repo}/issues/${pr.number}/labels/${name}`;

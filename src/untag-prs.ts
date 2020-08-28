@@ -33,7 +33,6 @@ async function processMethod(
   return true;
 }
 
-//cli: meow.Result<typeof meowFlags>
 export async function untag(cli: meow.Result<typeof meowFlags>) {
   name = cli.input[1];
   return processPRs(cli, {
