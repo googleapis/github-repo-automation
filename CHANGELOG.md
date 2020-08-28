@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.2.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.1.0...v4.2.0) (2020-08-28)
+
+
+### Features
+
+* add functionality to remove labels ([#454](https://www.github.com/googleapis/github-repo-automation/issues/454)) ([2cb06b7](https://www.github.com/googleapis/github-repo-automation/commit/2cb06b7174e89aea6d4bbecac7638990afd97c16))
+
 ## [4.1.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.2...v4.1.0) (2020-08-11)
 
 
