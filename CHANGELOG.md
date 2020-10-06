@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.2.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.0...v4.2.1) (2020-10-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency update-notifier to v5 ([#458](https://www.github.com/googleapis/github-repo-automation/issues/458)) ([90c4e90](https://www.github.com/googleapis/github-repo-automation/commit/90c4e90796dfb95cfe2375d3fcf9e9d0957fc6d7))
+
 ## [4.2.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.1.0...v4.2.0) (2020-08-28)
 
 
