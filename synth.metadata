@@ -4,14 +4,14 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/github-repo-automation.git",
-        "sha": "481e1aa8f77af37b61c3c3958653cfe58ac0d3ff"
+        "sha": "c0a6be11d64f1399be7452e780523e1fe347ee21"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "5451633881133e5573cc271a18e73b18caca8b1b"
+        "sha": "f96d3b455fe27c3dc7bc37c3c9cd27b1c6d269c8"
       }
     }
   ],
