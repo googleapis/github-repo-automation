@@ -20,7 +20,7 @@
     "chalk": "^4.0.0",
     "command-line-usage": "^6.1.0",
     "extend": "^3.0.2",
-    "gaxios": "^3.0.3",
+    "gaxios": "^4.0.0",
     "js-yaml": "^3.13.1",
     "meow": "^7.0.0",
     "ora": "^5.0.0",
