@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.2.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.1...v4.2.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency gaxios to v4 ([#466](https://www.github.com/googleapis/github-repo-automation/issues/466)) ([2e1d05a](https://www.github.com/googleapis/github-repo-automation/commit/2e1d05a289c3e6c5027bf9832800adabc5a2f03b))
+
 ### [4.2.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.0...v4.2.1) (2020-10-05)
 
 
