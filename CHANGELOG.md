@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.2.3](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.2...v4.2.3) (2020-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency meow to v8 ([#472](https://www.github.com/googleapis/github-repo-automation/issues/472)) ([7825499](https://www.github.com/googleapis/github-repo-automation/commit/7825499bb6c663609360b36cb26c9d8680cd2d03))
+
 ### [4.2.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.1...v4.2.2) (2020-10-27)
 
 
