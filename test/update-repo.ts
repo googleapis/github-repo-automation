@@ -113,6 +113,45 @@ describe('UpdateRepo', () => {
       comment,
       reviewers,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
+    });
+    assert(
+      execCallback.calledOnceWith(
+        `git clone ${
+          fakeGitHub.repository.getRepository()['ssh_url']
+        } ${tmpDir}`
+      )
+    );
+  });
+
+  it('should target the base branch', async () => {
+    fakeGitHub.repository.testChangeBaseBranch('main');
+    fakeGitHub.repository.testSetFile(
+      'main',
+      pathExisting,
+      Buffer.from(originalContent).toString('base64')
+    );
+    await attemptUpdate();
+    assert.strictEqual(
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
+    assert.strictEqual(
+      fakeGitHub.repository.branches[branch][pathExisting]['content'],
+      Buffer.from(changedContent).toString('base64')
+    );
+    assert.strictEqual(
+      fakeGitHub.repository.branches[branch][pathNonExisting]['content'],
+      Buffer.from(newContent).toString('base64')
+    );
+    assert.deepStrictEqual(fakeGitHub.repository.prs[1], {
+      number: 1,
+      branch,
+      message,
+      comment,
+      reviewers,
+      html_url: 'http://example.com/pulls/1',
+      base: 'main',
     });
     assert(
       execCallback.calledOnceWith(
@@ -139,7 +178,7 @@ describe('UpdateRepo', () => {
 
   it('should not update a file if cannot get master latest sha', async () => {
     const stub = sinon
-      .stub(fakeGitHub.repository, 'getLatestCommitToMaster')
+      .stub(fakeGitHub.repository, 'getLatestCommitToBaseBranch')
       .returns(Promise.reject(new Error('Random error')));
     await attemptUpdate();
     stub.restore();
@@ -207,6 +246,7 @@ describe('UpdateRepo', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
     });
     stub.restore();
   });
@@ -286,6 +326,7 @@ describe('UpdateRepo', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
     });
   });
 

@@ -30,10 +30,10 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const ref = pr.head.ref;
   let latestCommit: {[index: string]: string};
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    latestCommit = await repository.getLatestCommitToBaseBranch();
   } catch (err) {
     console.warn(
-      '    cannot get sha of latest commit to master, skipping:',
+      '    cannot get sha of latest commit to the base branch, skipping:',
       err.toString()
     );
     return false;
@@ -41,7 +41,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const latestMasterSha = latestCommit['sha'];
   if (latestMasterSha !== baseSha) {
     try {
-      await repository.updateBranch(ref, 'master');
+      await repository.updateBranch(ref, repository.baseBranch);
       console.log(
         'You might not be able to merge immediately because CI tasks will take some time.'
       );

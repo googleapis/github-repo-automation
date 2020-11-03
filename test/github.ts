@@ -41,6 +41,13 @@ const testConfig: Config = {
 const testRepo: Repository = {
   name: 'test-repo',
   owner: {login: 'test-organization'},
+  default_branch: 'master',
+};
+
+const testConfigSearch: Config = {
+  githubToken: 'test-github-token',
+  clonePath: '',
+  repoSearch: 'a-search',
 };
 
 const url = 'https://api.github.com';
@@ -57,6 +64,33 @@ describe('GitHub', () => {
     const repos = await github.getRepositories();
     scope.done();
     assert.strictEqual(repos.length, 1);
+    repo = repos[0];
+  });
+
+  it('should search for repositories', async () => {
+    const github = new GitHub(testConfigSearch);
+    const path = '/search/repositories?per_page=100&page=1&q=a-search';
+    const full_name = 'test-organization/matches';
+    const default_branch = 'master';
+    const scope = nock(url)
+      .get(path)
+      .reply(200, {
+        items: [
+          {
+            full_name,
+            default_branch,
+          },
+        ],
+      });
+    const repos = await github.getRepositories();
+    scope.done();
+    assert.strictEqual(repos.length, 1);
+    assert.deepStrictEqual(repos[0].repository, {
+      owner: {login: 'test-organization'},
+      name: 'matches',
+      ssh_url: 'git@github.com:test-organization/matches.git',
+      default_branch: 'master',
+    });
     repo = repos[0];
   });
 
@@ -86,7 +120,7 @@ describe('GitHub', () => {
     const scope = nock(url)
       .get(path)
       .reply(200, {
-        items: [{full_name: `${owner}/${name}`}],
+        items: [{full_name: `${owner}/${name}`, default_branch: 'master'}],
       });
     const repos = await github.getRepositories();
     scope.done();

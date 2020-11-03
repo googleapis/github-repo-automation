@@ -84,6 +84,34 @@ describe('UpdateFile', () => {
       comment,
       reviewers,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
+    });
+  });
+
+  it('should target the base branch instead of master', async () => {
+    fakeGitHub.repository.testChangeBaseBranch('main');
+    fakeGitHub.repository.testSetFile(
+      'main',
+      path,
+      Buffer.from(originalContent).toString('base64')
+    );
+    await attemptUpdate();
+    assert.strictEqual(
+      fakeGitHub.repository.branches['main'][path]['content'],
+      Buffer.from(originalContent).toString('base64')
+    );
+    assert.strictEqual(
+      fakeGitHub.repository.branches[branch][path]['content'],
+      Buffer.from(changedContent).toString('base64')
+    );
+    assert.deepStrictEqual(fakeGitHub.repository.prs[1], {
+      number: 1,
+      branch,
+      message,
+      comment,
+      reviewers,
+      html_url: 'http://example.com/pulls/1',
+      base: 'main',
     });
   });
 
@@ -123,7 +151,7 @@ describe('UpdateFile', () => {
 
   it('should not update a file if cannot get master latest sha', async () => {
     const stub = sinon
-      .stub(fakeGitHub.repository, 'getLatestCommitToMaster')
+      .stub(fakeGitHub.repository, 'getLatestCommitToBaseBranch')
       .returns(Promise.reject(new Error('Random error')));
     await attemptUpdate();
     stub.restore();
@@ -199,6 +227,7 @@ describe('UpdateFile', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
     });
     stub.restore();
   });
@@ -307,6 +336,7 @@ describe('UpdateFile', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
+      base: 'master',
     });
   });
 });
