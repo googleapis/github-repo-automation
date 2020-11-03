@@ -4,6 +4,20 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.0.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.1...v4.0.2) (2020-07-09)
+
+
+### Bug Fixes
+
+* typeo in nodejs .gitattribute ([#428](https://www.github.com/googleapis/github-repo-automation/issues/428)) ([caaeb16](https://www.github.com/googleapis/github-repo-automation/commit/caaeb163fcbee6b0241a82a9bac8cf90f8718e2a))
+
+### [4.0.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.0...v4.0.1) (2020-07-01)
+
+
+### Bug Fixes
+
+* allow regex search for branch listing ([#425](https://www.github.com/googleapis/github-repo-automation/issues/425)) ([c706c78](https://www.github.com/googleapis/github-repo-automation/commit/c706c782dd4b3ceb5d1789ab7d1c3bd853685878))
+
 ## [4.0.0](https://www.github.com/googleapis/github-repo-automation/compare/v3.0.1...v4.0.0) (2020-06-24)
 
 
