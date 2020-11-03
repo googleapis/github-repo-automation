@@ -81,7 +81,7 @@ async function processRepository(
 
   let latestCommit: {[index: string]: string};
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    latestCommit = await repository.getLatestCommitToBaseBranch();
   } catch (err) {
     console.warn(
       '  cannot get sha of latest commit, skipping this repository:',

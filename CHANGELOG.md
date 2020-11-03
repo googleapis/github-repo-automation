@@ -4,6 +4,46 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.2.3](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.2...v4.2.3) (2020-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency meow to v8 ([#472](https://www.github.com/googleapis/github-repo-automation/issues/472)) ([7825499](https://www.github.com/googleapis/github-repo-automation/commit/7825499bb6c663609360b36cb26c9d8680cd2d03))
+
+### [4.2.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.1...v4.2.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency gaxios to v4 ([#466](https://www.github.com/googleapis/github-repo-automation/issues/466)) ([2e1d05a](https://www.github.com/googleapis/github-repo-automation/commit/2e1d05a289c3e6c5027bf9832800adabc5a2f03b))
+
+### [4.2.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.0...v4.2.1) (2020-10-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency update-notifier to v5 ([#458](https://www.github.com/googleapis/github-repo-automation/issues/458)) ([90c4e90](https://www.github.com/googleapis/github-repo-automation/commit/90c4e90796dfb95cfe2375d3fcf9e9d0957fc6d7))
+
+## [4.2.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.1.0...v4.2.0) (2020-08-28)
+
+
+### Features
+
+* add functionality to remove labels ([#454](https://www.github.com/googleapis/github-repo-automation/issues/454)) ([2cb06b7](https://www.github.com/googleapis/github-repo-automation/commit/2cb06b7174e89aea6d4bbecac7638990afd97c16))
+
+## [4.1.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.2...v4.1.0) (2020-08-11)
+
+
+### Features
+
+* add support for non-master default branches ([#443](https://www.github.com/googleapis/github-repo-automation/issues/443)) ([9785786](https://www.github.com/googleapis/github-repo-automation/commit/9785786db6a9d3d1b07d49b0d565dc3d5d4dd8ea))
+
+
+### Bug Fixes
+
+* **deps:** update dependency ora to v5 ([#444](https://www.github.com/googleapis/github-repo-automation/issues/444)) ([1a05cdd](https://www.github.com/googleapis/github-repo-automation/commit/1a05cdd4a1017b2ac2773be262279122873b0cb8))
+
 ### [4.0.2](https://www.github.com/googleapis/github-repo-automation/compare/v4.0.1...v4.0.2) (2020-07-09)
 
 

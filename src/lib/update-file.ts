@@ -70,7 +70,7 @@ async function processRepository(
 
   let latestCommit: {[index: string]: string};
   try {
-    latestCommit = await repository.getLatestCommitToMaster();
+    latestCommit = await repository.getLatestCommitToBaseBranch();
   } catch (err) {
     console.warn(
       '  cannot get sha of latest commit, skipping this repository:',
@@ -111,7 +111,7 @@ async function processRepository(
     pullRequest = await repository.createPullRequest(branch, message, comment);
   } catch (err) {
     console.warn(
-      `  cannot create pull request for branch ${branch}! Branch is still there.`,
+      `  cannot create pull request for branch ${branch} -> base ${repository.baseBranch}! Branch is still there.`,
       err.toString()
     );
     return;

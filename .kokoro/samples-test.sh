@@ -16,7 +16,7 @@
 
 set -eo pipefail
 
-export NPM_CONFIG_PREFIX=/home/node/.npm-global
+export NPM_CONFIG_PREFIX=${HOME}/.npm-global
 
 # Setup service account credentials.
 export GOOGLE_APPLICATION_CREDENTIALS=${KOKORO_GFILE_DIR}/service-account.json
@@ -41,7 +41,7 @@ if [ -f samples/package.json ]; then
     cd ..
     # If tests are running against master, configure Build Cop
     # to open issues on failures:
-    if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]]; then
+    if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
       export MOCHA_REPORTER_OUTPUT=test_output_sponge_log.xml
       export MOCHA_REPORTER=xunit
       cleanup() {

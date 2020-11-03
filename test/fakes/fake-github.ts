@@ -29,6 +29,8 @@ export class FakeGitHubRepository {
   branches: any;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   prs: any;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  baseBranch: any;
 
   _name?: string;
 
@@ -45,6 +47,7 @@ export class FakeGitHubRepository {
     this.prs = {
       _count: 0,
     };
+    this.baseBranch = 'master';
   }
 
   testSetFile(branch: string, path: string, content: string) {
@@ -54,6 +57,12 @@ export class FakeGitHubRepository {
     const sha = hash(content);
     const type = 'file';
     this.branches[branch][path] = {content, sha, type};
+  }
+
+  testChangeBaseBranch(newBaseBranch: string) {
+    this.baseBranch = newBaseBranch;
+    this.branches[newBaseBranch] = {_latest: this.branches.master._latest};
+    delete this.branches.master._latest;
   }
 
   getRepository() {
@@ -68,11 +77,11 @@ export class FakeGitHubRepository {
   }
 
   async getFile(path: string) {
-    return this.getFileFromBranch('master', path);
+    return this.getFileFromBranch(this.baseBranch, path);
   }
 
-  async getLatestCommitToMaster() {
-    const sha = this.branches['master']['_latest'];
+  async getLatestCommitToBaseBranch(customBranch?: string) {
+    const sha = this.branches[customBranch || this.baseBranch]['_latest'];
     return Promise.resolve({sha});
   }
 
@@ -80,12 +89,12 @@ export class FakeGitHubRepository {
     if (this.branches[branch] !== undefined) {
       return Promise.reject(`Branch ${branch} already exists`);
     }
-    if (this.branches['master']['_latest'] !== latestSha) {
+    if (this.branches[this.baseBranch]['_latest'] !== latestSha) {
       return Promise.reject(
         `SHA ${latestSha} is not found in branch ${branch}`
       );
     }
-    this.branches[branch] = Object.assign({}, this.branches['master']);
+    this.branches[branch] = Object.assign({}, this.branches[this.baseBranch]);
     return Promise.resolve({});
   }
 
@@ -140,7 +149,14 @@ export class FakeGitHubRepository {
     }
     const prNumber = ++this.prs['_count'];
     const htmlUrl = `http://example.com/pulls/${prNumber}`;
-    const pr = {number: prNumber, branch, message, comment, html_url: htmlUrl};
+    const pr = {
+      number: prNumber,
+      branch,
+      message,
+      comment,
+      base: this.baseBranch,
+      html_url: htmlUrl,
+    };
     this.prs[prNumber] = pr;
     return Promise.resolve(pr);
   }
