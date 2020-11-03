@@ -184,7 +184,6 @@ describe('GitHubRepository', () => {
       'test-organization'
     );
     const path = '/repos/test-organization/test-repo/branches/test-branch';
-    const sha = '97C0FFA2A1F8E1034924EB33567B5AF77DA18255';
     const ref = 'refs/heads/test-branch';
     const scope = nock(url).get(path).reply(200, {ref});
     const branch = await repo.getBranch('test-branch');
