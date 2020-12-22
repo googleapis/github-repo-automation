@@ -19,6 +19,7 @@
   * [Create-secret](#create-secret)
   * [Remove-node7](#remove-node7)
   * [Setup-nighty-builds](#setup-nighty-builds)
+  * [Update-admin-branch-protection](#update-admin-branch-protection)
   * [Update-branch-protection](#update-branch-protection)
   * [Update-kokoro-branch-protection](#update-kokoro-branch-protection)
 
@@ -149,6 +150,23 @@ __Usage:__
 
 
 `node samples/setup-nighty-builds.js`
+
+
+-----
+
+
+
+
+### Update-admin-branch-protection
+
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-admin-branch-protection.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-admin-branch-protection.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/update-admin-branch-protection.js`
 
 
 -----
