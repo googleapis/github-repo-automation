@@ -4,5 +4,6 @@
   "issue_tracker": "https://github.com/googleapis/github-repo-automation/issues",
   "language": "nodejs",
   "repo": "googleapis/github-repo-automation",
-  "distribution_name": "@google/repo"
+  "distribution_name": "@google/repo",
+  "codeowner_team": "@googleapis/github-automation"
 }
