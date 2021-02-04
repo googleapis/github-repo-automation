@@ -41,7 +41,7 @@ export async function getConfig(configFilename?: string) {
 
   try {
     const yamlContent = await readFile(filename, {encoding: 'utf8'});
-    const config = yaml.safeLoad(yamlContent) as Config;
+    const config = yaml.load(yamlContent) as Config;
     cache.set(filename, config);
     config.clonePath = config.clonePath || path.join(os.homedir(), '.repo');
     return config;
