@@ -21,7 +21,7 @@
     "command-line-usage": "^6.1.0",
     "extend": "^3.0.2",
     "gaxios": "^4.0.0",
-    "js-yaml": "^3.13.1",
+    "js-yaml": "^4.0.0",
     "meow": "^9.0.0",
     "ora": "^5.0.0",
     "p-queue": "^6.3.0",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.11",
-    "@types/js-yaml": "^3.12.2",
+    "@types/js-yaml": "^4.0.0",
     "@types/mocha": "^8.0.0",
     "@types/node": "^13.9.3",
     "@types/parse-link-header": "^1.0.0",
