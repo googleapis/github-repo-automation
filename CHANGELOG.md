@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.3.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.3.0...v4.3.1) (2021-02-05)
+
+
+### Bug Fixes
+
+* **deps:** upgrade to js-yaml 4.0 ([#486](https://www.github.com/googleapis/github-repo-automation/issues/486)) ([62757e8](https://www.github.com/googleapis/github-repo-automation/commit/62757e82fe1b5f8ea92ef4a76111d35b11784544))
+
 ## [4.3.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.2.3...v4.3.0) (2021-01-07)
 
 
