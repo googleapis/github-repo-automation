@@ -201,6 +201,7 @@ async function example() {
     path: 'path/to/file/in/repository',
     patchFunction: callbackFunction,
     branch: 'new-branch',
+    replaceBranch: false,
     message: 'commit message',
     comment: 'pull request comment',
     reviewers: ['github-username1', 'github-username2'],

@@ -38,6 +38,7 @@ async function processRepository(
   path: string,
   patchFunction: Function,
   branch: string,
+  replaceBranch: boolean,
   message: string,
   comment: string,
   reviewers: string[]
@@ -81,6 +82,11 @@ async function processRepository(
   const latestSha = latestCommit['sha'];
 
   try {
+    if (replaceBranch) {
+      try {
+        await repository.deleteBranch(branch);
+      } catch {}
+    }
     await repository.createBranch(branch, latestSha);
   } catch (err) {
     console.warn(
@@ -139,6 +145,7 @@ export interface UpdateFileOptions {
   path: string;
   patchFunction: Function;
   branch: string;
+  replaceBranch: boolean;
   message: string;
   comment: string;
   reviewers: string[];
@@ -154,6 +161,7 @@ export interface UpdateFileOptions {
  * @param {patchFunction} options.patchFunction Callback function that should modify the
  * file.
  * @param {string} options.branch Name for a new branch to use.
+ * @param {boolean} options.replaceBranch Delete the branch first.
  * @param {string} options.message Commit message and pull request title.
  * @param {string} options.comment Pull request body.
  * @param {string[]} options.reviewers Reviewers' GitHub logins for the pull request.
@@ -178,6 +186,7 @@ export async function updateFile(options: UpdateFileOptions) {
 
   const comment = options.comment || '';
   const reviewers = options.reviewers || [];
+  const replaceBranch = !!options.replaceBranch;
 
   const config = await getConfig();
   const github = new GitHub(config);
@@ -189,6 +198,7 @@ export async function updateFile(options: UpdateFileOptions) {
       options.path,
       options.patchFunction,
       options.branch,
+      replaceBranch,
       options.message,
       comment,
       reviewers
