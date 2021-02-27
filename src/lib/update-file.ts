@@ -85,7 +85,9 @@ async function processRepository(
     if (replaceBranch) {
       try {
         await repository.deleteBranch(branch);
-      } catch {}
+      } catch {
+        //
+      }
     }
     await repository.createBranch(branch, latestSha);
   } catch (err) {
