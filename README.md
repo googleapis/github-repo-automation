@@ -25,17 +25,17 @@ your `PATH`, and install the required dependencies:
 $ npm install -g @google/repo
 ```
 
-You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/master/config.yaml.default) and put your GitHub token there. You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
+You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/master/config.yaml.default) and put your GitHub token there. Example:
 
-```sh
-$ cat > /User/beckwith/config.yaml
----
+```
 githubToken: your-github-token
 clonePath: /User/beckwith/.repo # optional
 repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
 ```
 
 The `repoSearch` field uses the [GitHub Repository Search syntax](https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories).
+
+You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
 
 ```sh
 $ echo $REPO_CONFIG_PATH
