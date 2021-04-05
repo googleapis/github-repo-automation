@@ -617,6 +617,24 @@ export class GitHubRepository {
   }
 
   /**
+   * Updates admin enforcement for branch protection status checks for the base branch.
+   * @param {boolean} enforce Whether to enforce branch protection for admins.
+   * @returns {Object} HTTP response
+   */
+  async updateEnforceAdmin(enforce: boolean) {
+    const owner = this.repository.owner.login;
+    const repo = this.repository.name;
+    const branch = this.baseBranch;
+    const url = `/repos/${owner}/${repo}/branches/${branch}/protection/enforce_admins`;
+    const method = enforce ? 'POST' : 'DELETE';
+    const result = await this.client.request({
+      url,
+      method,
+    });
+    return result.data;
+  }
+
+  /**
    * Adds a collaborator to this repository.
    * @param {string} username Username of the new collaborator.
    * @param {string} permission Permission (pull, push, or admin, default:
