@@ -24,12 +24,30 @@ import {meowFlags} from './cli';
 import {GitHubRepository, PullRequest} from './lib/github';
 import {processPRs} from './lib/asyncItemIterator';
 
-async function processMethod(repository: GitHubRepository, pr: PullRequest) {
+async function processMethod(
+  repository: GitHubRepository,
+  pr: PullRequest,
+  cli: meow.Result<typeof meowFlags>
+) {
+  const ref = pr.head.ref;
   try {
     await repository.closePullRequest(pr);
   } catch (err) {
     console.warn('    cannot close pull request, skipping:', err.toString());
     return false;
+  }
+
+  // delete only branches that we own
+  if (
+    cli.flags.clean &&
+    pr.head.repo.owner.login === repository.repository.owner.login
+  ) {
+    try {
+      await repository.deleteBranch(ref);
+    } catch (err) {
+      console.warn(`    error trying to delete branch ${ref}: ${err}`);
+      return false;
+    }
   }
   return true;
 }
@@ -40,6 +58,7 @@ export async function reject(cli: meow.Result<typeof meowFlags>) {
     commandActive: 'rejecting',
     commandNamePastTense: 'rejected',
     commandDesc: 'Automatically reject all PRs that match a given filter.',
+    additionalFlags: ['[--clean]'],
     processMethod,
   });
 }

@@ -660,7 +660,7 @@ export class GitHubRepository {
 export interface PullRequest extends Issue {
   patch_url: string;
   base: {sha: string};
-  head: {ref: string; label: string};
+  head: {ref: string; label: string; repo: Repository};
 }
 
 export interface Issue {

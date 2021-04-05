@@ -79,7 +79,7 @@ const cli = meow(
     $ repo approve [--branch branch] [--author author] [--title title]
     $ repo update [--branch branch] [--author author] [--title title]
     $ repo merge [--branch branch] [--author author] [--title title]
-    $ repo reject [--branch branch] [--author author] [--title title]
+    $ repo reject [--branch branch] [--author author] [--title title] [--clean]
     $ repo rename [--branch branch] [--author author] [--title title] 'new PR title'
     $ repo tag [--branch branch] [--author author] [--title title] label1 label2 ...
     $ repo untag [--branch branch] [--author author] [--title title] label1

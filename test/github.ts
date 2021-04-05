@@ -20,7 +20,15 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as nock from 'nock';
 import {Config} from '../src/lib/config';
-import {GitHub, GitHubRepository} from '../src/lib/github';
+import {GitHub, GitHubRepository, Repository} from '../src/lib/github';
+import {Gaxios} from 'gaxios';
+
+function getClient(config: Config) {
+  return new Gaxios({
+    baseURL: 'https://api.github.com',
+    headers: {Authorization: `token ${config.githubToken}`},
+  });
+}
 
 nock.disableNetConnect();
 
@@ -28,6 +36,12 @@ const testConfig: Config = {
   githubToken: 'test-github-token',
   clonePath: '',
   repos: [{org: 'test-organization', regex: 'matches'}],
+};
+
+const testRepo: Repository = {
+  name: 'test-repo',
+  owner: {login: 'test-organization'},
+  default_branch: 'master',
 };
 
 const testConfigSearch: Config = {
@@ -111,5 +125,69 @@ describe('GitHub', () => {
     const repos = await github.getRepositories();
     scope.done();
     assert.strictEqual(repos.length, 1);
+  });
+});
+
+describe('GitHubRepository', () => {
+  it('should create a branch', async () => {
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path = '/repos/test-organization/test-repo/git/refs';
+    const ref = 'refs/heads/test-branch';
+    const sha = '97C0FFA2A1F8E1034924EB33567B5AF77DA18255';
+    const scope = nock(url).post(path, {ref, sha}).reply(201, {ref});
+    const branch = await repo.createBranch('test-branch', sha);
+    scope.done();
+    assert.deepEqual(branch, {ref});
+  });
+
+  it('should delete a branch', async () => {
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path =
+      '/repos/test-organization/test-repo/git/refs/heads/test-branch';
+    const scope = nock(url).delete(path).reply(204);
+    await repo.deleteBranch('test-branch');
+    scope.done();
+  });
+
+  it('should merge two branches', async () => {
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path = '/repos/test-organization/test-repo/merges';
+    const base = 'test-branch-base';
+    const head = 'test-branch-head';
+    const ref = 'test-branch-base';
+    const scope = nock(url).post(path, {base, head}).reply(201, {ref});
+    const branch = await repo.updateBranch(base, head);
+    scope.done();
+    assert.deepEqual(branch, {ref});
+  });
+
+  it('should get a branch', async () => {
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path = '/repos/test-organization/test-repo/branches/test-branch';
+    const ref = 'refs/heads/test-branch';
+    const scope = nock(url).get(path).reply(200, {ref});
+    const branch = await repo.getBranch('test-branch');
+    scope.done();
+    assert.deepEqual(branch, {ref});
   });
 });
