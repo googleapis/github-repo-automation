@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.4.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.3.1...v4.4.0) (2021-04-05)
+
+
+### Features
+
+* add optional branch cleanup to reject command ([#421](https://www.github.com/googleapis/github-repo-automation/issues/421)) ([df75eb2](https://www.github.com/googleapis/github-repo-automation/commit/df75eb2f147ac0b75e9400c05bd3ef19cab80439))
+
 ### [4.3.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.3.0...v4.3.1) (2021-02-05)
 
 
