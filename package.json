@@ -24,7 +24,7 @@
     "js-yaml": "^4.0.0",
     "meow": "^9.0.0",
     "ora": "^5.0.0",
-    "p-queue": "^6.3.0",
+    "p-queue": "^7.0.0",
     "text-encoding-shim": "^1.0.5",
     "tmp-promise": "^3.0.0",
     "tweetsodium": "0.0.5",
