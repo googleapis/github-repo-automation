@@ -4,7 +4,7 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/github-repo-automation.git",
-        "sha": "c03174311eed1fe1c5d5a40dab5006c9b3ad8da6"
+        "sha": "eb1b1766148f927817c8c387f37603ad80b83ec6"
       }
     },
     {
