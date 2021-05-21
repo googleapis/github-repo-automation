@@ -124,9 +124,8 @@ async function processRepository(
       );
       return;
     }
-    const encodedPatchedContent = Buffer.from(patchedContent).toString(
-      'base64'
-    );
+    const encodedPatchedContent =
+      Buffer.from(patchedContent).toString('base64');
 
     try {
       if (oldFileSha === undefined) {
