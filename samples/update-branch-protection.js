@@ -33,7 +33,8 @@ async function main(input) {
 
     let statusChecks;
     try {
-      statusChecks = await repository.getRequiredMasterBranchProtectionStatusChecks();
+      statusChecks =
+        await repository.getRequiredMasterBranchProtectionStatusChecks();
     } catch (err) {
       console.warn('  error getting required status checks:', err.toString());
       continue;
