@@ -64,6 +64,7 @@ export async function sync(cli: meow.Result<typeof meowFlags>) {
     const cwd = path.join(rootPath, repo.name);
     return q.add(async () => {
       if (dirs.indexOf(repo.name) !== -1) {
+        await spawn('git fetch --all', {cwd});
         await spawn(`git reset --hard origin/${repo.baseBranch}`, {cwd});
         await spawn(`git checkout ${repo.baseBranch}`, {cwd});
         await spawn('git fetch origin', {cwd});
