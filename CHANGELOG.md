@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.4.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.4.0...v4.4.1) (2021-05-24)
+
+
+### Bug Fixes
+
+* fetch all branches during sync ([#508](https://www.github.com/googleapis/github-repo-automation/issues/508)) ([5a43559](https://www.github.com/googleapis/github-repo-automation/commit/5a43559d5af32749c0ba295764b8c985583ae947))
+
 ## [4.4.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.3.1...v4.4.0) (2021-04-05)
 
 
