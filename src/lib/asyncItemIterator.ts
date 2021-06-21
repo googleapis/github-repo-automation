@@ -55,15 +55,22 @@ async function process(
   options: PRIteratorOptions | IssueIteratorOptions,
   processIssues = false
 ) {
-  if (!cli.flags.title && !cli.flags.branch && !cli.flags.body) {
+  if (
+    !cli.flags.title &&
+    !cli.flags.branch &&
+    !cli.flags.body &&
+    !cli.flags.label
+  ) {
     console.log(
       `Usage: repo ${
         options.commandName
-      } [--branch branch] [--title title] [--body body] ${options?.additionalFlags?.join(
+      } [--branch branch] [--title title] [--body body] [--label label] ${options?.additionalFlags?.join(
         ' '
       )}`
     );
-    console.log('Either branch name, body, or title regex must present.');
+    console.log(
+      'Either branch name, body, label, or title regex must present.'
+    );
     console.log(options.commandDesc);
     return;
   }
@@ -125,6 +132,15 @@ async function process(
     items = items.filter(itemSet => {
       const pr = itemSet.item as PullRequest;
       return new RegExp(cli.flags.branch as string).test(pr.head.ref);
+    });
+  }
+  if (cli.flags.label) {
+    console.log(`Label scan: ${cli.flags.label}`);
+    items = items.filter(itemSet => {
+      const pr = itemSet.item as PullRequest;
+      return pr.labels.some(label => {
+        return new RegExp(cli.flags.label as string).test(label.name);
+      });
     });
   }
   if (cli.flags.body) {

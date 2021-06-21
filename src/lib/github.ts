@@ -661,6 +661,9 @@ export interface PullRequest extends Issue {
   patch_url: string;
   base: {sha: string};
   head: {ref: string; label: string; repo: Repository};
+  labels: Array<{
+    name: string;
+  }>;
 }
 
 export interface Issue {
