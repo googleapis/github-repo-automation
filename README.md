@@ -15,6 +15,10 @@ of tasks.
 
 ## Installation
 
+**Googlers**: You should install this tool on your laptop
+or workstation, as folks have run into timeout issues when using
+a Google Cloud Compute Engine instance.
+
 If you're not familiar with Node.js development you can still
 use the tools included as they don't require writing any Javascript
 code. Before running the scripts, make sure you have Node.js version 8+
