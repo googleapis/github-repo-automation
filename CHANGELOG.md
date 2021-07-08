@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.5.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.4.1...v4.5.0) (2021-07-08)
+
+
+### Features
+
+* **list:** allow PRs to be filtered by label ([#519](https://www.github.com/googleapis/github-repo-automation/issues/519)) ([5e4cd3a](https://www.github.com/googleapis/github-repo-automation/commit/5e4cd3ac2a02543345e768e7f491878fa5cc4f16))
+
 ### [4.4.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.4.0...v4.4.1) (2021-05-24)
 
 
