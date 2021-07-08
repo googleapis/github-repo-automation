@@ -74,7 +74,7 @@ const cli = meow(
 	  $ repo <command>
 
   Examples
-    $ repo list [--branch branch] [--author author] [--title title]
+    $ repo list [--branch branch] [--author author] [--title title] [--label]
     $ repo list-issues [--branch branch] [--author author] [--title title] [--body body]
     $ repo approve [--branch branch] [--author author] [--title title]
     $ repo update [--branch branch] [--author author] [--title title]
