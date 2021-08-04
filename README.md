@@ -50,7 +50,11 @@ Now you are good to go!
 
 ## Usage
 
-### repo approve
+### PR based workflows
+
+The following commands operate over a collection of PRs.
+
+#### repo approve
 
 ```sh
 $ repo approve [--title title]
@@ -67,7 +71,7 @@ or all PRs with the word `test` in the title:
 
 `$ repo approve test`
 
-### repo list
+#### repo list
 
 ```sh
 $ repo list [--title title]
@@ -83,7 +87,7 @@ or all PRs with the word `test` in the title:
 
 `$ repo list --title test`
 
-### repo reject
+#### repo reject
 
 ```sh
 $ repo reject [--title title] [--clean]
@@ -97,7 +101,7 @@ them. For example, close all PRs with the word `test` in the title:
 
 If `--clean` is specified, the branch associated with the PR will also be deleted. Branches on forked PRs will be ignored.
 
-### repo rename
+#### repo rename
 
 ```sh
 $ repo rename --title title 'new title'
@@ -107,7 +111,7 @@ Iterates over all open pull requests matching `title` (this can be a regex,
 and all PRs will be processed if no regex for title is given), and renames
 them.
 
-### repo apply
+#### repo apply
 
 ```sh
 $ repo apply --branch branch
@@ -132,7 +136,7 @@ changing this library to use the low-level
 [Git data API](https://developer.github.com/v3/git/),
 your contributions are welcome!
 
-### repo check
+#### repo check
 
 ```sh
 $ repo check
@@ -141,6 +145,37 @@ $ repo check
 Iterates all configured repositories and checks that each repository
 is configured properly (branch protection, continuous integration,
 valid `README.md`, etc.).
+
+### Repository based workflows
+In some cases, you may want to clone all of the repositories that match a given filter, and perform operations over them all locally.
+
+#### repo sync
+To clone or reset all repositories in a given filter set, run:
+
+```sh
+$ repo sync
+```
+
+This will clone all repositories in the configured `clonePath`.  From there, you can open the entire codebase in your favorite editor, and make changes.
+
+#### repo exec
+After cloning all repositories and making a set of batch changes, you will likely want to commit those changes, push upstream, and submit a pull request.  For these, you can use `repo exec`.  This command executes a given command over every cloned repository brought in via `repo sync`:
+
+```sh
+$ repo exec -- git status
+```
+
+For example - to go through a typical PR workflow, you would run:
+
+```sh
+$ repo exec -- git checkout -b my-branch-name
+$ repo exec -- git add -A
+$ repo exec -- git commit -m \"chore: do something fun\"
+$ repo exec -- git push origin my-branch-name
+$ repo exec --concurrency 1 -- gh pr create --fill
+```
+
+The `gh` tool referenced above uses https://cli.github.com/, and the `--concurrency` flag allows you to control how many pull requests are sent to the GitHub API at once.  This is useful if you run into rate limiting or abuse errors.
 
 ## List of libraries
 
