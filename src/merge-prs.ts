@@ -74,9 +74,13 @@ export async function merge(cli: meow.Result<typeof meowFlags>) {
   if (!cli.flags.yespleasedoit) {
     console.error('repo merge might do bad things if you are an admin.');
     console.error('It might ignore your CI and merge some bad code.');
-    console.error('It it safer to rely on automerge functionality if you have it set up');
+    console.error(
+      'It it safer to rely on automerge functionality if you have it set up'
+    );
     console.error('(for Googlers: `repo tag --title ... automerge`)');
-    console.error('Please add --yespleasedoit if you still want to proceed with the merge.');
+    console.error(
+      'Please add --yespleasedoit if you still want to proceed with the merge.'
+    );
     return;
   }
   return processPRs(cli, {
