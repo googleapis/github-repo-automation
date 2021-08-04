@@ -22,6 +22,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   try {
     await repository.approvePullRequest(pr);
   } catch (err) {
+    console.warn(`    error trying to approve pull request ${pr.html_url}: ${err}`);
     return false;
   }
   return true;
