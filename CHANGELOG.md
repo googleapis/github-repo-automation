@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.6.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.6.0...v4.6.1) (2021-09-02)
+
+
+### Bug Fixes
+
+* **build:** switch primary branch to main ([#538](https://www.github.com/googleapis/github-repo-automation/issues/538)) ([45354f2](https://www.github.com/googleapis/github-repo-automation/commit/45354f22f791f24c475ed6ca9f03dd7ed4467b0e))
+
 ## [4.6.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.5.0...v4.6.0) (2021-09-02)
 
 
