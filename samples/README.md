@@ -40,7 +40,7 @@ Before running the samples, make sure you've followed the steps outlined in
 
 ### Add-collaborator
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/add-collaborator.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/add-collaborator.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/add-collaborator.js,samples/README.md)
 
@@ -57,7 +57,7 @@ __Usage:__
 
 ### Change-circleci-config-in-branch
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/change-circleci-config-in-branch.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/change-circleci-config-in-branch.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/change-circleci-config-in-branch.js,samples/README.md)
 
@@ -74,7 +74,7 @@ __Usage:__
 
 ### Chmod-repo-tools
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/chmod-repo-tools.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/chmod-repo-tools.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/chmod-repo-tools.js,samples/README.md)
 
@@ -91,7 +91,7 @@ __Usage:__
 
 ### Commit-package-lock
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/commit-package-lock.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/commit-package-lock.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/commit-package-lock.js,samples/README.md)
 
@@ -108,7 +108,7 @@ __Usage:__
 
 ### Create-secret
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/create-secret.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/create-secret.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/create-secret.js,samples/README.md)
 
@@ -125,7 +125,7 @@ __Usage:__
 
 ### Remove-node7
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/remove-node7.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/remove-node7.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/remove-node7.js,samples/README.md)
 
@@ -142,7 +142,7 @@ __Usage:__
 
 ### Setup-nighty-builds
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/setup-nighty-builds.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/setup-nighty-builds.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/setup-nighty-builds.js,samples/README.md)
 
@@ -159,7 +159,7 @@ __Usage:__
 
 ### Update-admin-branch-protection
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-admin-branch-protection.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/update-admin-branch-protection.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-admin-branch-protection.js,samples/README.md)
 
@@ -176,7 +176,7 @@ __Usage:__
 
 ### Update-branch-protection
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-branch-protection.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/update-branch-protection.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-branch-protection.js,samples/README.md)
 
@@ -193,7 +193,7 @@ __Usage:__
 
 ### Update-kokoro-branch-protection
 
-View the [source code](https://github.com/googleapis/github-repo-automation/blob/master/samples/update-kokoro-branch-protection.js).
+View the [source code](https://github.com/googleapis/github-repo-automation/blob/main/samples/update-kokoro-branch-protection.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/github-repo-automation&page=editor&open_in_editor=samples/update-kokoro-branch-protection.js,samples/README.md)
 
