@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.6.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.5.0...v4.6.0) (2021-09-02)
+
+
+### Features
+
+* better logging for approve, extra flag for merge ([#532](https://www.github.com/googleapis/github-repo-automation/issues/532)) ([32260c1](https://www.github.com/googleapis/github-repo-automation/commit/32260c156770720367bd413024f21f466da8eb21))
+
 ## [4.5.0](https://www.github.com/googleapis/github-repo-automation/compare/v4.4.1...v4.5.0) (2021-07-08)
 
 
