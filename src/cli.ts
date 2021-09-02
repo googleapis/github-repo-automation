@@ -63,6 +63,7 @@ export const meowFlags: {
   auto: {type: 'boolean'},
   concurrency: {type: 'string'},
   author: {type: 'string'},
+  yespleasedoit: {type: 'boolean'},
 };
 const meowOptions: meow.Options<typeof meowFlags> = {
   flags: meowFlags,
@@ -78,7 +79,7 @@ const cli = meow(
     $ repo list-issues [--branch branch] [--author author] [--title title] [--body body]
     $ repo approve [--branch branch] [--author author] [--title title]
     $ repo update [--branch branch] [--author author] [--title title]
-    $ repo merge [--branch branch] [--author author] [--title title]
+    $ repo merge [--branch branch] [--author author] [--title title] [--yespleasedoit]
     $ repo reject [--branch branch] [--author author] [--title title] [--clean]
     $ repo rename [--branch branch] [--author author] [--title title] 'new PR title'
     $ repo tag [--branch branch] [--author author] [--title title] label1 label2 ...
