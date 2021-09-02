@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Updates master branch protection to be replaced by Kokoro
+ * @fileoverview Updates main branch protection to be replaced by Kokoro
  * builds.
  */
 
@@ -40,7 +40,7 @@ async function main() {
   for (const repository of repos) {
     console.log(repository.getRepository()['name']);
     try {
-      await repository.updateRequiredMasterBranchProtectionStatusChecks(
+      await repository.updateRequiredBaseBranchProtectionStatusChecks(
         REQUIRED_STATUS_CHECKS
       );
     } catch (err) {

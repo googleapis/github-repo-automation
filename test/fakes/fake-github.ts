@@ -40,14 +40,14 @@ export class FakeGitHubRepository {
 
   reset() {
     this.branches = {
-      master: {
-        _latest: hash('latest-master-commit'),
+      main: {
+        _latest: hash('latest-main-commit'),
       },
     };
     this.prs = {
       _count: 0,
     };
-    this.baseBranch = 'master';
+    this.baseBranch = 'main';
   }
 
   testSetFile(branch: string, path: string, content: string) {
@@ -61,8 +61,8 @@ export class FakeGitHubRepository {
 
   testChangeBaseBranch(newBaseBranch: string) {
     this.baseBranch = newBaseBranch;
-    this.branches[newBaseBranch] = {_latest: this.branches.master._latest};
-    delete this.branches.master._latest;
+    this.branches[newBaseBranch] = {_latest: this.branches.main._latest};
+    delete this.branches.main._latest;
   }
 
   getRepository() {

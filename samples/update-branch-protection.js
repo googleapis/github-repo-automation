@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Updates master branch protection to remove node7 task from the
+ * @fileoverview Updates main branch protection to remove node7 task from the
  * list of required CI tasks.
  */
 
@@ -56,9 +56,7 @@ async function main(input) {
     }
 
     try {
-      await repository.updateRequiredMasterBranchProtectionStatusChecks(
-        contexts
-      );
+      await repository.updateRequiredBaseBranchProtectionStatusChecks(contexts);
     } catch (err) {
       console.warn('  error setting required status checks:', err.toString());
       continue;
