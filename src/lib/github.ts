@@ -296,7 +296,7 @@ export class GitHubRepository {
   /**
    * Creates a new branch in the given GitHub repository.
    * @param {string} branch Name of the new branch.
-   * @param {string} sha SHA of the master commit to base the branch on.
+   * @param {string} sha SHA of the main commit to base the branch on.
    * @returns {Object} Reference object, as returned by GitHub API.
    */
   async createBranch(branch: string, sha: string) {

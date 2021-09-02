@@ -29,7 +29,7 @@ const updateRepo = require('../build/src/lib/update-repo.js');
 
 /** Copies `test` workflow to a `nightly` workflow running every night
  * at 7am UTC.
- * Branch filters are set to `master`.
+ * Branch filters are set to `main`.
  * Adds a Python script to detect if the current CI task is a nightly build
  * or not (to be able to remove package-lock.json in case of a nightly build).
  * @param {string} repoPath Path to a cloned repository.
@@ -80,7 +80,7 @@ fi
           cron: '0 7 * * *',
           filters: {
             branches: {
-              only: 'master',
+              only: 'main',
             },
           },
         },

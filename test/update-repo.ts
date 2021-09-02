@@ -66,7 +66,7 @@ describe('UpdateRepo', () => {
     execCallback.resetHistory();
     fakeGitHub.repository.reset();
     fakeGitHub.repository.testSetFile(
-      'master',
+      'main',
       pathExisting,
       Buffer.from(originalContent).toString('base64')
     );
@@ -95,7 +95,7 @@ describe('UpdateRepo', () => {
   it('should perform update', async () => {
     await attemptUpdate();
     assert.strictEqual(
-      fakeGitHub.repository.branches['master'][pathExisting]['content'],
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.strictEqual(
@@ -113,7 +113,7 @@ describe('UpdateRepo', () => {
       comment,
       reviewers,
       html_url: 'http://example.com/pulls/1',
-      base: 'master',
+      base: 'main',
     });
     assert(
       execCallback.calledOnceWith(
@@ -163,11 +163,10 @@ describe('UpdateRepo', () => {
   });
 
   it('should not update a file if it is not a file', async () => {
-    fakeGitHub.repository.branches['master'][pathExisting]['type'] =
-      'not-a-file';
+    fakeGitHub.repository.branches['main'][pathExisting]['type'] = 'not-a-file';
     await attemptUpdate();
     assert.strictEqual(
-      fakeGitHub.repository.branches['master'][pathExisting]['content'],
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
       Buffer.from(originalContent).toString('base64')
     );
   });
@@ -176,7 +175,7 @@ describe('UpdateRepo', () => {
     await attemptUpdate([pathFailed]);
   });
 
-  it('should not update a file if cannot get master latest sha', async () => {
+  it('should not update a file if cannot get main latest sha', async () => {
     const stub = sinon
       .stub(fakeGitHub.repository, 'getLatestCommitToBaseBranch')
       .returns(Promise.reject(new Error('Random error')));
@@ -210,7 +209,7 @@ describe('UpdateRepo', () => {
     await attemptUpdate();
     stub.restore();
     assert.strictEqual(
-      fakeGitHub.repository.branches['master'][pathExisting]['content'],
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.strictEqual(
@@ -229,7 +228,7 @@ describe('UpdateRepo', () => {
       .rejects('Random error');
     await attemptUpdate();
     assert.strictEqual(
-      fakeGitHub.repository.branches['master'][pathExisting]['content'],
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.strictEqual(
@@ -246,7 +245,7 @@ describe('UpdateRepo', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
-      base: 'master',
+      base: 'main',
     });
     stub.restore();
   });
@@ -309,7 +308,7 @@ describe('UpdateRepo', () => {
       });
     });
     assert.strictEqual(
-      fakeGitHub.repository.branches['master'][pathExisting]['content'],
+      fakeGitHub.repository.branches['main'][pathExisting]['content'],
       Buffer.from(originalContent).toString('base64')
     );
     assert.strictEqual(
@@ -326,7 +325,7 @@ describe('UpdateRepo', () => {
       message,
       comment,
       html_url: 'http://example.com/pulls/1',
-      base: 'master',
+      base: 'main',
     });
   });
 

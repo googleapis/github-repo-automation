@@ -29,7 +29,7 @@ your `PATH`, and install the required dependencies:
 $ npm install -g @google/repo
 ```
 
-You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/master/config.yaml.default) and put your GitHub token there. Example:
+You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/main/config.yaml.default) and put your GitHub token there. Example:
 
 ```
 githubToken: your-github-token

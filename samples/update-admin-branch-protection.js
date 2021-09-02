@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Updates master branch protection to add/remove admin enforcement
+ * @fileoverview Updates main branch protection to add/remove admin enforcement
  */
 
 'use strict';
