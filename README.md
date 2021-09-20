@@ -37,6 +37,13 @@ clonePath: /User/beckwith/.repo # optional
 repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
 ```
 
+To create, update, or approve pull requests, your token must have the scope
+![full control](./images/full-control.png)
+
+To simply browse and list repos and pull requests, your token needs only
+the scope ![public_repo](./images/public_repo.png)
+
+
 The `repoSearch` field uses the [GitHub Repository Search syntax](https://help.github.com/en/github/searching-for-information-on-github/searching-for-repositories).
 
 You can set the path to the config file with the `REPO_CONFIG_PATH` environment variable:
