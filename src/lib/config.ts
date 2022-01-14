@@ -64,4 +64,5 @@ export interface Config {
     }
   ];
   repoSearch?: string;
+  retryStrategy?: Array<number>;
 }

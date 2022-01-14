@@ -17,8 +17,71 @@ import {meowFlags} from '../cli';
 import Q from 'p-queue';
 import ora = require('ora');
 
-import {getConfig} from './config';
+import * as configLib from './config';
 import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
+
+/**
+ * Promise that will resolve after ms provided.
+ * @param {number} ms ms to delay.
+ */
+function delay(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(undefined);
+    }, ms);
+  });
+}
+
+/**
+ * Retry the promise returned by a function if the promise throws
+ * an exception.
+ * @param {function} eventual method that returns a promise to retry.
+ * @param {number[]} retryStrategy array of retry intervals.
+ */
+async function retryException<T>(
+  eventual: () => Promise<T>,
+  retryStrategy: Array<number> = []
+): Promise<T> {
+  let result: T | undefined = undefined;
+  for (let i = 0; i <= retryStrategy.length; i++) {
+    if (i > 0) await delay(retryStrategy[i - 1]);
+    try {
+      result = await eventual();
+      return result;
+    } catch (err) {
+      if (i < retryStrategy.length) {
+        console.error(`operation failed: ${err.toString()}`);
+        console.info(`retry in ${retryStrategy[i]}ms`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw Error('unreachable');
+}
+
+/**
+ * Retry if the promise returned by the eventual function resolves
+ * as false, indicating the operation failed.
+ * @param {function} eventual method that returns a promise.
+ * @param {number[]} retryStrategy array of retry intervals.
+ */
+async function retryBoolean(
+  eventual: () => Promise<boolean>,
+  retryStrategy: Array<number> = []
+): Promise<boolean> {
+  for (let i = 0; i <= retryStrategy.length; i++) {
+    if (i > 0) await delay(retryStrategy[i - 1]);
+    const result = await eventual();
+    if (!result && i < retryStrategy.length) {
+      console.info(`retry in ${retryStrategy[i]}ms`);
+      continue;
+    } else {
+      return result;
+    }
+  }
+  return true;
+}
 
 export interface PRIteratorOptions extends IteratorOptions {
   processMethod: (
@@ -78,7 +141,10 @@ async function process(
   const concurrency = cli.flags.concurrency
     ? Number(cli.flags.concurrency)
     : 15;
-  const config = await getConfig();
+  const config = await configLib.getConfig();
+  const retryStrategy = config.retryStrategy ?? [
+    3000, 6000, 15000, 30000, 60000,
+  ];
   const github = new GitHub(config);
   const regex = new RegExp((cli.flags.title as string) || '.*');
   const bodyRe = new RegExp((cli.flags.body as string) || '.*');
@@ -104,9 +170,13 @@ async function process(
         try {
           let localItems;
           if (processIssues) {
-            localItems = await repo.listIssues();
+            localItems = await retryException<Issue[]>(() => {
+              return repo.listIssues();
+            }, retryStrategy);
           } else {
-            localItems = await repo.listPullRequests();
+            localItems = await retryException<PullRequest[]>(() => {
+              return repo.listPullRequests();
+            }, retryStrategy);
           }
           items.push(
             ...localItems.map(item => {
@@ -177,18 +247,22 @@ async function process(
           // process a list of issues rather than PR:
           if (processIssues) {
             const opts = options as IssueIteratorOptions;
-            result = await opts.processMethod(
-              itemSet.repo,
-              itemSet.item as Issue,
-              cli
-            );
+            result = await retryBoolean(() => {
+              return opts.processMethod(
+                itemSet.repo,
+                itemSet.item as Issue,
+                cli
+              );
+            }, retryStrategy);
           } else {
             const opts = options as PRIteratorOptions;
-            result = await opts.processMethod(
-              itemSet.repo,
-              itemSet.item as PullRequest,
-              cli
-            );
+            result = await retryBoolean(() => {
+              return opts.processMethod(
+                itemSet.repo,
+                itemSet.item as PullRequest,
+                cli
+              );
+            }, retryStrategy);
           }
           if (result) {
             successful.push(itemSet.item);
