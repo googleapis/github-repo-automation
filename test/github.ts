@@ -20,15 +20,12 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as nock from 'nock';
 import {Config} from '../src/lib/config';
-import {GitHub, GitHubRepository, Repository} from '../src/lib/github';
-import {Gaxios} from 'gaxios';
-
-function getClient(config: Config) {
-  return new Gaxios({
-    baseURL: 'https://api.github.com',
-    headers: {Authorization: `token ${config.githubToken}`},
-  });
-}
+import {
+  getClient,
+  GitHub,
+  GitHubRepository,
+  Repository,
+} from '../src/lib/github';
 
 nock.disableNetConnect();
 

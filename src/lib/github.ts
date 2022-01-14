@@ -19,7 +19,7 @@
 import {Gaxios} from 'gaxios';
 import {Config} from './config';
 
-function getClient(config: Config) {
+export function getClient(config: Config) {
   return new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},

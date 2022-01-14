@@ -17,8 +17,81 @@ import {meowFlags} from '../cli';
 import Q from 'p-queue';
 import ora = require('ora');
 
-import {getConfig} from './config';
+import * as configLib from './config';
 import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
+
+/**
+ * Retry the promise returned by a function if the promise throws
+ * an exception.
+ * @param {function} eventual method that returns a promise to retry.
+ * @param {number[]} retryStrategy array of retry intervals.
+ */
+async function retryException<T>(
+  eventual: () => Promise<T>,
+  retryStrategy: Array<number> = []
+): Promise<T> {
+  let result: T | undefined = undefined;
+  for (let i = 0; i <= retryStrategy.length; i++) {
+    try {
+      result = await eventual();
+      return result;
+    } catch (err) {
+      if (i < retryStrategy.length) {
+        console.error(`\noperation failed: ${err.toString()}`);
+        const delay = nextDelay(retryStrategy[i]);
+        console.info(`\nretrying in ${delay}ms`);
+        await delayMs(delay);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw Error('unreachable');
+}
+
+/**
+ * Retry if the promise returned by the eventual function resolves
+ * as false, indicating the operation failed.
+ * @param {function} eventual method that returns a promise.
+ * @param {number[]} retryStrategy array of retry intervals.
+ */
+async function retryBoolean(
+  eventual: () => Promise<boolean>,
+  retryStrategy: Array<number> = []
+): Promise<boolean> {
+  for (let i = 0; i <= retryStrategy.length; i++) {
+    const result = await eventual();
+    if (!result && i < retryStrategy.length) {
+      const delay = nextDelay(retryStrategy[i]);
+      console.info(`\nretrying in ${delay}ms`);
+      await delayMs(delay);
+      continue;
+    } else {
+      return result;
+    }
+  }
+  return true;
+}
+
+/*
+ * Propose next delay, introducing some jitter.
+ * @param {number} base delay.
+ */
+function nextDelay(base: number) {
+  return base + (base / 4) * Math.random();
+}
+
+/**
+ * Promise that will resolve after ms provided.
+ * @param {number} ms ms to delay.
+ */
+function delayMs(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(undefined);
+    }, ms);
+  });
+}
 
 export interface PRIteratorOptions extends IteratorOptions {
   processMethod: (
@@ -78,11 +151,20 @@ async function process(
   const concurrency = cli.flags.concurrency
     ? Number(cli.flags.concurrency)
     : 15;
-  const config = await getConfig();
+  // Introduce a delay between requests, this may be necessary if
+  // processing many repos in a row to avoid rate limits:
+  const delay: number = cli.flags.delay ? Number(cli.flags.delay) : 0;
+  const retry: boolean = cli.flags.retry ? Boolean(cli.flags.retry) : false;
+  const config = await configLib.getConfig();
+  const retryStrategy = retry
+    ? config.retryStrategy ?? [3000, 6000, 15000, 30000, 60000]
+    : [];
   const github = new GitHub(config);
   const regex = new RegExp((cli.flags.title as string) || '.*');
   const bodyRe = new RegExp((cli.flags.body as string) || '.*');
-  const repos = await github.getRepositories();
+  const repos = await retryException<GitHubRepository[]>(() => {
+    return github.getRepositories();
+  }, retryStrategy);
   const successful: Issue[] = [];
   const failed: Issue[] = [];
   let error: string | undefined;
@@ -104,9 +186,15 @@ async function process(
         try {
           let localItems;
           if (processIssues) {
-            localItems = await repo.listIssues();
+            localItems = await retryException<Issue[]>(async () => {
+              if (delay) delayMs(delay);
+              return await repo.listIssues();
+            }, retryStrategy);
           } else {
-            localItems = await repo.listPullRequests();
+            localItems = await retryException<PullRequest[]>(async () => {
+              if (delay) delayMs(delay);
+              return await repo.listPullRequests();
+            }, retryStrategy);
           }
           items.push(
             ...localItems.map(item => {
@@ -177,18 +265,24 @@ async function process(
           // process a list of issues rather than PR:
           if (processIssues) {
             const opts = options as IssueIteratorOptions;
-            result = await opts.processMethod(
-              itemSet.repo,
-              itemSet.item as Issue,
-              cli
-            );
+            result = await retryBoolean(async () => {
+              if (delay) await delayMs(delay);
+              return await opts.processMethod(
+                itemSet.repo,
+                itemSet.item as Issue,
+                cli
+              );
+            }, retryStrategy);
           } else {
             const opts = options as PRIteratorOptions;
-            result = await opts.processMethod(
-              itemSet.repo,
-              itemSet.item as PullRequest,
-              cli
-            );
+            result = await retryBoolean(async () => {
+              if (delay) await delayMs(delay);
+              return await opts.processMethod(
+                itemSet.repo,
+                itemSet.item as PullRequest,
+                cli
+              );
+            }, retryStrategy);
           }
           if (result) {
             successful.push(itemSet.item);
