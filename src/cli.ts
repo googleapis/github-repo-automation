@@ -63,6 +63,9 @@ export const meowFlags: {
   delay: {
     type: 'number',
   },
+  retry: {
+    type: 'boolean',
+  },
   auto: {type: 'boolean'},
   concurrency: {type: 'string'},
   author: {type: 'string'},

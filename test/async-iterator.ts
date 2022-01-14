@@ -44,6 +44,7 @@ describe('asyncItemIterator', () => {
     const cli = {
       flags: {
         title: '.*',
+        retry: true,
       },
     } as unknown as meow.Result<typeof meowFlags>;
     const githubRequests = nock('https://api.github.com')
@@ -87,6 +88,7 @@ describe('asyncItemIterator', () => {
     const cli = {
       flags: {
         title: '.*',
+        retry: true,
       },
     } as unknown as meow.Result<typeof meowFlags>;
     const githubRequests = nock('https://api.github.com')

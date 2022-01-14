@@ -39,6 +39,7 @@ async function retryException<T>(
       if (i < retryStrategy.length) {
         console.error(`\noperation failed: ${err.toString()}`);
         const delay = nextDelay(retryStrategy[i]);
+        console.info(`\nretrying in ${delay}ms`);
         await delayMs(delay);
         continue;
       }
@@ -62,6 +63,7 @@ async function retryBoolean(
     const result = await eventual();
     if (!result && i < retryStrategy.length) {
       const delay = nextDelay(retryStrategy[i]);
+      console.info(`\nretrying in ${delay}ms`);
       await delayMs(delay);
       continue;
     } else {
@@ -84,7 +86,6 @@ function nextDelay(base: number) {
  * @param {number} ms ms to delay.
  */
 function delayMs(ms: number) {
-  console.info(`\nwait ${ms}ms`);
   return new Promise(resolve => {
     setTimeout(() => {
       resolve(undefined);
@@ -153,10 +154,11 @@ async function process(
   // Introduce a delay between requests, this may be necessary if
   // processing many repos in a row to avoid rate limits:
   const delay: number = cli.flags.delay ? Number(cli.flags.delay) : 0;
+  const retry: boolean = cli.flags.retry ? Boolean(cli.flags.retry) : false;
   const config = await configLib.getConfig();
-  const retryStrategy = config.retryStrategy ?? [
-    3000, 6000, 15000, 30000, 60000,
-  ];
+  const retryStrategy = retry
+    ? config.retryStrategy ?? [3000, 6000, 15000, 30000, 60000]
+    : [];
   const github = new GitHub(config);
   const regex = new RegExp((cli.flags.title as string) || '.*');
   const bodyRe = new RegExp((cli.flags.body as string) || '.*');
