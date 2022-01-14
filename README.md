@@ -289,3 +289,27 @@ A promisified version of `readline.question` to provide some primitive
 interaction.
 
 ## Handling large numbers of repositories
+
+If you are running GitHub Repo Automation against a large number of repositories, you may find that
+the default settings lead to quota issues.
+
+There are settings you can configure to make this less likely:
+
+1. Set `--concurrency=N` to reduce the # of concurrent requests you are performing:
+  ```bash
+  repo approve --concurrency=4 --title='.*foo dep.*'
+  ```
+2. Set `--retry` to automatically retry exceptions with an exponential backoff:
+  ```
+  repo approve --retry --title='.*foo dep.*'
+  ```
+3. Set `--delay=N` to introduce a delay between requests, allowing you to spread out operations over a longer timeframe:
+  ```
+  repo approve --delay=2500
+  ```
+
+When running against a large number of repos, try the following as a starting point:
+
+```bash
+repo [command] --delay=2500 --concurrency=4 --retry --title='.*some title.*'
+```

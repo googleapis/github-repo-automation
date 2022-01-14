@@ -75,10 +75,10 @@ async function retryBoolean(
 
 /*
  * Propose next delay, introducing some jitter.
- * @param {number[]} retryStrategy array of retry intervals.
+ * @param {number} base delay.
  */
 function nextDelay(base: number) {
-  return base;
+  return base + (base / 4) * Math.random();
 }
 
 /**
@@ -266,7 +266,7 @@ async function process(
           if (processIssues) {
             const opts = options as IssueIteratorOptions;
             result = await retryBoolean(async () => {
-              if (delay) delayMs(delay);
+              if (delay) await delayMs(delay);
               return await opts.processMethod(
                 itemSet.repo,
                 itemSet.item as Issue,
@@ -276,7 +276,7 @@ async function process(
           } else {
             const opts = options as PRIteratorOptions;
             result = await retryBoolean(async () => {
-              if (delay) delayMs(delay);
+              if (delay) await delayMs(delay);
               return await opts.processMethod(
                 itemSet.repo,
                 itemSet.item as PullRequest,
