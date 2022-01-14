@@ -11,6 +11,13 @@
 
 * introduce retry and delay configuration ([#563](https://github.com/googleapis/github-repo-automation/issues/563)) ([f08bf08](https://github.com/googleapis/github-repo-automation/commit/f08bf08805a669f94c5d3d6f48de1f829452b877))
 
+## [4.7.0](https://github.com/googleapis/github-repo-automation/compare/v4.6.1...v4.7.0) (2022-01-14)
+
+
+### Features
+
+* introduce retry and delay configuration ([#563](https://github.com/googleapis/github-repo-automation/issues/563)) ([f08bf08](https://github.com/googleapis/github-repo-automation/commit/f08bf08805a669f94c5d3d6f48de1f829452b877))
+
 ### [4.6.1](https://www.github.com/googleapis/github-repo-automation/compare/v4.6.0...v4.6.1) (2021-09-02)
 
 
