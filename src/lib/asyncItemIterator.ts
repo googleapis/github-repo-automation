@@ -162,7 +162,9 @@ async function process(
   const github = new GitHub(config);
   const regex = new RegExp((cli.flags.title as string) || '.*');
   const bodyRe = new RegExp((cli.flags.body as string) || '.*');
-  const repos = await github.getRepositories();
+  const repos = await retryException<GitHubRepository[]>(() => {
+    return github.getRepositories();
+  }, retryStrategy);
   const successful: Issue[] = [];
   const failed: Issue[] = [];
   let error: string | undefined;
