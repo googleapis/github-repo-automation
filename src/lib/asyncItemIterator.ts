@@ -37,8 +37,8 @@ async function retryException<T>(
       return result;
     } catch (err) {
       if (i < retryStrategy.length) {
-        console.error(`operation failed: ${err.toString()}`);
-        const delay = nextDelay(retryStrategy[i - 1]);
+        console.error(`\noperation failed: ${err.toString()}`);
+        const delay = nextDelay(retryStrategy[i]);
         await delayMs(delay);
         continue;
       }
@@ -61,7 +61,7 @@ async function retryBoolean(
   for (let i = 0; i <= retryStrategy.length; i++) {
     const result = await eventual();
     if (!result && i < retryStrategy.length) {
-      const delay = nextDelay(retryStrategy[i - 1]);
+      const delay = nextDelay(retryStrategy[i]);
       await delayMs(delay);
       continue;
     } else {
@@ -84,7 +84,7 @@ function nextDelay(base: number) {
  * @param {number} ms ms to delay.
  */
 function delayMs(ms: number) {
-  console.info(`\rdelay ${ms}ms\r`);
+  console.info(`\nwait ${ms}ms`);
   return new Promise(resolve => {
     setTimeout(() => {
       resolve(undefined);
