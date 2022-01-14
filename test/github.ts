@@ -20,15 +20,7 @@ import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as nock from 'nock';
 import {Config} from '../src/lib/config';
-import {GitHub, GitHubRepository, Repository} from '../src/lib/github';
-import {Gaxios} from 'gaxios';
-
-function getClient(config: Config) {
-  return new Gaxios({
-    baseURL: 'https://api.github.com',
-    headers: {Authorization: `token ${config.githubToken}`},
-  });
-}
+import {getClient, GitHub, GitHubRepository, Repository} from '../src/lib/github';
 
 nock.disableNetConnect();
 
@@ -186,6 +178,36 @@ describe('GitHubRepository', () => {
     const path = '/repos/test-organization/test-repo/branches/test-branch';
     const ref = 'refs/heads/test-branch';
     const scope = nock(url).get(path).reply(200, {ref});
+    const branch = await repo.getBranch('test-branch');
+    scope.done();
+    assert.deepEqual(branch, {ref});
+  });
+
+  it.only('should retry on exception', async function () {
+    this.timeout(200000)
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path = '/repos/test-organization/test-repo/branches/test-branch';
+    const ref = 'refs/heads/test-branch';
+    const scope = nock(url)
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+      .get(path).reply(403, {ref})
+    ;
     const branch = await repo.getBranch('test-branch');
     scope.done();
     assert.deepEqual(branch, {ref});

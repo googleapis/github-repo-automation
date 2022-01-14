@@ -19,10 +19,21 @@
 import {Gaxios} from 'gaxios';
 import {Config} from './config';
 
-function getClient(config: Config) {
+export function getClient(config: Config) {
   return new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
+    retryConfig: {
+      retry: 10,
+      retryDelay: 3000,
+      shouldRetry: () => true,
+      onRetryAttempt: err => {
+        console.warn(`\n${err.message}`);
+        console.info(
+          `retrying ${err.config.url} attempt ${err.config.retryConfig?.currentRetryAttempt}`
+        );
+      },
+    },
   });
 }
 
