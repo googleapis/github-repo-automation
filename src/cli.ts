@@ -34,7 +34,7 @@ const pkg = require('../../package.json');
 updateNotifier({pkg}).notify();
 
 export const meowFlags: {
-  [key: string]: {type: 'string' | 'boolean'; alias?: string};
+  [key: string]: {type: 'string' | 'boolean' | 'number'; alias?: string};
 } = {
   branch: {
     type: 'string',
@@ -59,6 +59,9 @@ export const meowFlags: {
   title: {
     type: 'string',
     alias: 't',
+  },
+  delay: {
+    type: 'number',
   },
   auto: {type: 'boolean'},
   concurrency: {type: 'string'},
