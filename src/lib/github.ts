@@ -19,6 +19,7 @@
 import {Gaxios, GaxiosPromise, GaxiosOptions} from 'gaxios';
 import {Config} from './config';
 
+let resetPromise: undefined | Promise<unknown>;
 export function getClient(config: Config) {
   const client = new Gaxios({
     baseURL: 'https://api.github.com',
@@ -28,6 +29,11 @@ export function getClient(config: Config) {
   // account GitHub's ratelimit headers:
   const request = client.request.bind(client);
   client.request = async (opts: GaxiosOptions): GaxiosPromise => {
+    // If set, represents time when GitHub ratelimit resets:
+    if (resetPromise) {
+      await resetPromise;
+      resetPromise = undefined;
+    }
     const resp = await request(opts);
     const rateLimit = resp.headers['x-ratelimit-limit']
       ? Number(resp.headers['x-ratelimit-limit'])
@@ -53,7 +59,7 @@ export function getClient(config: Config) {
         console.info(
           `waiting ${msUntilReset + wiggleRoomMs}ms for ratelimit to reset`
         );
-        await delayMs(msUntilReset + wiggleRoomMs);
+        resetPromise = delayMs(msUntilReset + wiggleRoomMs);
       }
     }
     return resp;

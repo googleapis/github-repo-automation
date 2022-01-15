@@ -206,8 +206,11 @@ describe('GitHubRepository', () => {
         'x-ratelimit-reset': `${parseInt((Date.now() + 1000) / 1000 + '')}`,
       })
       .get(path)
+      .reply(200, {ref})
+      .get(path)
       .reply(200, {ref});
-    const branch = await repo.getBranch('test-branch');
+    let branch = await repo.getBranch('test-branch');
+    branch = await repo.getBranch('test-branch');
     scope.done();
     assert.deepEqual(branch, {ref});
     // Hitting 0 rate limit remaining should have caused
