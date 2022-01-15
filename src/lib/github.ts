@@ -25,15 +25,10 @@ export function getClient(config: Config) {
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
   });
-  // Replace the default request method with a method that takes into
-  // account GitHub's ratelimit headers:
+  // Report rate limiting information on the first request
+  // to help with debugging process:
   const request = client.request.bind(client);
   client.request = async (opts: GaxiosOptions): GaxiosPromise => {
-    // If set, represents time when GitHub ratelimit resets:
-    if (resetPromise) {
-      await resetPromise;
-      resetPromise = undefined;
-    }
     const resp = await request(opts);
     const rateLimit = resp.headers['x-ratelimit-limit']
       ? Number(resp.headers['x-ratelimit-limit'])
@@ -41,27 +36,11 @@ export function getClient(config: Config) {
     const rateLimitRemaining = resp.headers['x-ratelimit-remaining']
       ? Number(resp.headers['x-ratelimit-remaining'])
       : 0;
-    const msUntilReset = resp.headers['x-ratelimit-reset']
-      ? Number(resp.headers['x-ratelimit-reset']) * 1000 - Date.now()
-      : 0;
-    const wiggleRoomMs = 3000;
-    const dangerZone = 10;
-    // If ratelimit headers were found, listen to them:
+    const reset = resp.headers['x-ratelimit-reset'];
     if (rateLimit) {
-      if (rateLimitRemaining < dangerZone) {
-        console.warn(
-          `warning ${
-            rateLimit - rateLimitRemaining
-          } of ${rateLimit} requests used`
-        );
-      }
-      if (rateLimitRemaining <= 0) {
-        console.info(
-          `waiting ${msUntilReset + wiggleRoomMs}ms for ratelimit to reset`
-        );
-        resetPromise = delayMs(msUntilReset + wiggleRoomMs);
-      }
+      console.info(`GitHub rate limit: limit = ${rateLimit} remaining = ${rateLimitRemaining} reset epoch = ${reset}`);
     }
+    client.request = request;
     return resp;
   };
   return client;
