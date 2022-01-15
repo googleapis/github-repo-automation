@@ -16,6 +16,8 @@ import * as meow from 'meow';
 import {meowFlags} from '../cli';
 import Q from 'p-queue';
 import ora = require('ora');
+import {debuglog} from 'util';
+const debug = debuglog('repo');
 
 import * as configLib from './config';
 import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
@@ -37,9 +39,9 @@ async function retryException<T>(
       return result;
     } catch (err) {
       if (i < retryStrategy.length) {
-        console.error(`\noperation failed: ${err.toString()}`);
+        debug(`operation failed: ${err.toString()}`);
         const delay = nextDelay(retryStrategy[i]);
-        console.info(`\nretrying in ${delay}ms`);
+        debug(`retrying in ${delay}ms`);
         await delayMs(delay);
         continue;
       }
@@ -63,7 +65,7 @@ async function retryBoolean(
     const result = await eventual();
     if (!result && i < retryStrategy.length) {
       const delay = nextDelay(retryStrategy[i]);
-      console.info(`\nretrying in ${delay}ms`);
+      debug(`retrying in ${delay}ms`);
       await delayMs(delay);
       continue;
     } else {
@@ -153,7 +155,7 @@ async function process(
     : 15;
   // Introduce a delay between requests, this may be necessary if
   // processing many repos in a row to avoid rate limits:
-  const delay: number = cli.flags.delay ? Number(cli.flags.delay) : 0;
+  const delay: number = cli.flags.delay ? Number(cli.flags.delay) : 500;
   const retry: boolean = cli.flags.retry ? Boolean(cli.flags.retry) : false;
   const config = await configLib.getConfig();
   const retryStrategy = retry
@@ -187,12 +189,12 @@ async function process(
           let localItems;
           if (processIssues) {
             localItems = await retryException<Issue[]>(async () => {
-              if (delay) delayMs(delay);
+              if (delay) delayMs(nextDelay(delay));
               return await repo.listIssues();
             }, retryStrategy);
           } else {
             localItems = await retryException<PullRequest[]>(async () => {
-              if (delay) delayMs(delay);
+              if (delay) delayMs(nextDelay(delay));
               return await repo.listPullRequests();
             }, retryStrategy);
           }
@@ -266,7 +268,7 @@ async function process(
           if (processIssues) {
             const opts = options as IssueIteratorOptions;
             result = await retryBoolean(async () => {
-              if (delay) await delayMs(delay);
+              if (delay) await delayMs(nextDelay(delay));
               return await opts.processMethod(
                 itemSet.repo,
                 itemSet.item as Issue,
@@ -276,7 +278,7 @@ async function process(
           } else {
             const opts = options as PRIteratorOptions;
             result = await retryBoolean(async () => {
-              if (delay) await delayMs(delay);
+              if (delay) await delayMs(nextDelay(delay));
               return await opts.processMethod(
                 itemSet.repo,
                 itemSet.item as PullRequest,

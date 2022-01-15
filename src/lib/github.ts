@@ -18,15 +18,16 @@
 
 import {Gaxios, GaxiosPromise, GaxiosOptions} from 'gaxios';
 import {Config} from './config';
+import {debuglog} from 'util';
+const debug = debuglog('repo');
 
-let resetPromise: undefined | Promise<unknown>;
 export function getClient(config: Config) {
   const client = new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
   });
-  // Report rate limiting information on the first request
-  // to help with debugging process:
+  // Report rate limit information if NODE_DEBUG=repo set.
+  let counter = 0;
   const request = client.request.bind(client);
   client.request = async (opts: GaxiosOptions): GaxiosPromise => {
     const resp = await request(opts);
@@ -37,25 +38,14 @@ export function getClient(config: Config) {
       ? Number(resp.headers['x-ratelimit-remaining'])
       : 0;
     const reset = resp.headers['x-ratelimit-reset'];
-    if (rateLimit) {
-      console.info(`GitHub rate limit: limit = ${rateLimit} remaining = ${rateLimitRemaining} reset epoch = ${reset}`);
+    if (counter++ % 10 === 0) {
+      debug(
+        `GitHub rate limit: limit = ${rateLimit} remaining = ${rateLimitRemaining} reset epoch = ${reset}`
+      );
     }
-    client.request = request;
     return resp;
   };
   return client;
-}
-
-/**
- * Promise that will resolve after ms provided.
- * @param {number} ms ms to delay.
- */
-function delayMs(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(undefined);
-    }, ms);
-  });
 }
 
 interface SearchReposResponse {
