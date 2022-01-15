@@ -187,4 +187,31 @@ describe('GitHubRepository', () => {
     scope.done();
     assert.deepEqual(branch, {ref});
   });
+
+  it('should delay returning response until ratelimit resets', async function () {
+    this.timeout(5000);
+    const testingClient = getClient(testConfig);
+    const repo = new GitHubRepository(
+      testingClient,
+      testRepo,
+      'test-organization'
+    );
+    const path = '/repos/test-organization/test-repo/branches/test-branch';
+    const ref = 'refs/heads/test-branch';
+    const start = Date.now();
+    const scope = nock(url)
+      .defaultReplyHeaders({
+        'x-ratelimit-limit': '25',
+        'x-ratelimit-remaining': '0',
+        'x-ratelimit-reset': `${parseInt((Date.now() + 1000) / 1000 + '')}`,
+      })
+      .get(path)
+      .reply(200, {ref});
+    const branch = await repo.getBranch('test-branch');
+    scope.done();
+    assert.deepEqual(branch, {ref});
+    // Hitting 0 rate limit remaining should have caused
+    // the response to delay, such that the next request will have quota:
+    assert(Date.now() - start > 500);
+  });
 });

@@ -16,13 +16,60 @@
  * @fileoverview Wraps some octokit GitHub API calls.
  */
 
-import {Gaxios} from 'gaxios';
+import {Gaxios, GaxiosPromise, GaxiosOptions} from 'gaxios';
 import {Config} from './config';
 
 export function getClient(config: Config) {
-  return new Gaxios({
+  const client = new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
+  });
+  // Replace the default request method with a method that takes into
+  // account GitHub's ratelimit headers:
+  const request = client.request.bind(client);
+  client.request = async (opts: GaxiosOptions): GaxiosPromise => {
+    const resp = await request(opts);
+    const rateLimit = resp.headers['x-ratelimit-limit']
+      ? Number(resp.headers['x-ratelimit-limit'])
+      : 0;
+    const rateLimitRemaining = resp.headers['x-ratelimit-remaining']
+      ? Number(resp.headers['x-ratelimit-remaining'])
+      : 0;
+    const msUntilReset = resp.headers['x-ratelimit-reset']
+      ? Number(resp.headers['x-ratelimit-reset']) * 1000 - Date.now()
+      : 0;
+    const wiggleRoomMs = 3000;
+    const dangerZone = 10;
+    // If ratelimit headers were found, listen to them:
+    if (rateLimit) {
+      if (rateLimitRemaining < dangerZone) {
+        console.warn(
+          `warning ${
+            rateLimit - rateLimitRemaining
+          } of ${rateLimit} requests used`
+        );
+      }
+      if (rateLimitRemaining <= 0) {
+        console.info(
+          `waiting ${msUntilReset + wiggleRoomMs}ms for ratelimit to reset`
+        );
+        await delayMs(msUntilReset + wiggleRoomMs);
+      }
+    }
+    return resp;
+  };
+  return client;
+}
+
+/**
+ * Promise that will resolve after ms provided.
+ * @param {number} ms ms to delay.
+ */
+function delayMs(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(undefined);
+    }, ms);
   });
 }
 
