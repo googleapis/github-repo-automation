@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [4.8.0](https://github.com/googleapis/github-repo-automation/compare/v4.7.0...v4.8.0) (2022-01-17)
+
+
+### Features
+
+* delay by default ([#568](https://github.com/googleapis/github-repo-automation/issues/568)) ([2e522e4](https://github.com/googleapis/github-repo-automation/commit/2e522e4ef4ff8b9aad6ce204b5736abe47bab0f2))
+* detailed debugging now configured with NODE_DEBUG=repo ([#567](https://github.com/googleapis/github-repo-automation/issues/567)) ([5306b21](https://github.com/googleapis/github-repo-automation/commit/5306b2155387e5d99f199762390aff0baa12ffe8))
+
 ## [4.7.0](https://github.com/googleapis/github-repo-automation/compare/v4.6.1...v4.7.0) (2022-01-14)
 
 
