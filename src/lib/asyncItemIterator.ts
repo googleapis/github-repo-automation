@@ -189,12 +189,12 @@ async function process(
           let localItems;
           if (processIssues) {
             localItems = await retryException<Issue[]>(async () => {
-              if (delay) delayMs(nextDelay(delay));
+              if (delay) await delayMs(nextDelay(delay));
               return await repo.listIssues();
             }, retryStrategy);
           } else {
             localItems = await retryException<PullRequest[]>(async () => {
-              if (delay) delayMs(nextDelay(delay));
+              if (delay) await delayMs(nextDelay(delay));
               return await repo.listPullRequests();
             }, retryStrategy);
           }
