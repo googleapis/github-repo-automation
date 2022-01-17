@@ -311,5 +311,13 @@ There are settings you can configure to make this less likely:
 When running against a large number of repos, try the following as a starting point:
 
 ```bash
-repo [command] --delay=2500 --concurrency=4 --retry --title='.*some title.*'
+repo [command] --delay=1000 --concurrency=2 --retry --title='.*some title.*'
 ```
+
+If you are continuing to run into problems, run with:
+
+```
+NODE_DEBUG=repo repo [command] --delay=1000 --concurrency=2 --retry --title='.*some title.*'
+```
+
+And share the debug output in an issue, along with the command you are running.

@@ -16,6 +16,8 @@ import * as meow from 'meow';
 import {meowFlags} from '../cli';
 import Q from 'p-queue';
 import ora = require('ora');
+import {debuglog} from 'util';
+const debug = debuglog('repo');
 
 import * as configLib from './config';
 import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
@@ -37,9 +39,9 @@ async function retryException<T>(
       return result;
     } catch (err) {
       if (i < retryStrategy.length) {
-        console.error(`\noperation failed: ${err.toString()}`);
+        debug(`operation failed: ${err.toString()}`);
         const delay = nextDelay(retryStrategy[i]);
-        console.info(`\nretrying in ${delay}ms`);
+        debug(`retrying in ${delay}ms`);
         await delayMs(delay);
         continue;
       }
@@ -63,7 +65,7 @@ async function retryBoolean(
     const result = await eventual();
     if (!result && i < retryStrategy.length) {
       const delay = nextDelay(retryStrategy[i]);
-      console.info(`\nretrying in ${delay}ms`);
+      debug(`retrying in ${delay}ms`);
       await delayMs(delay);
       continue;
     } else {
@@ -187,12 +189,12 @@ async function process(
           let localItems;
           if (processIssues) {
             localItems = await retryException<Issue[]>(async () => {
-              if (delay) delayMs(nextDelay(delay));
+              if (delay) await delayMs(nextDelay(delay));
               return await repo.listIssues();
             }, retryStrategy);
           } else {
             localItems = await retryException<PullRequest[]>(async () => {
-              if (delay) delayMs(nextDelay(delay));
+              if (delay) await delayMs(nextDelay(delay));
               return await repo.listPullRequests();
             }, retryStrategy);
           }

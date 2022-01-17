@@ -16,14 +16,36 @@
  * @fileoverview Wraps some octokit GitHub API calls.
  */
 
-import {Gaxios} from 'gaxios';
+import {Gaxios, GaxiosPromise, GaxiosOptions} from 'gaxios';
 import {Config} from './config';
+import {debuglog} from 'util';
+const debug = debuglog('repo');
 
 export function getClient(config: Config) {
-  return new Gaxios({
+  const client = new Gaxios({
     baseURL: 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
   });
+  // Report rate limit information if NODE_DEBUG=repo set.
+  let counter = 0;
+  const request = client.request.bind(client);
+  client.request = async (opts: GaxiosOptions): GaxiosPromise => {
+    const resp = await request(opts);
+    const rateLimit = resp.headers['x-ratelimit-limit']
+      ? Number(resp.headers['x-ratelimit-limit'])
+      : 0;
+    const rateLimitRemaining = resp.headers['x-ratelimit-remaining']
+      ? Number(resp.headers['x-ratelimit-remaining'])
+      : 0;
+    const reset = resp.headers['x-ratelimit-reset'];
+    if (counter++ % 10 === 0) {
+      debug(
+        `GitHub rate limit: limit = ${rateLimit} remaining = ${rateLimitRemaining} reset epoch = ${reset}`
+      );
+    }
+    return resp;
+  };
+  return client;
 }
 
 interface SearchReposResponse {
