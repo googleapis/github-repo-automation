@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+### [4.8.1](https://github.com/googleapis/github-repo-automation/compare/v4.8.0...v4.8.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* approve command requires an --author ([#586](https://github.com/googleapis/github-repo-automation/issues/586)) ([1b1d1c5](https://github.com/googleapis/github-repo-automation/commit/1b1d1c5f530e066dc61227f0e8659beb13f6b5b3))
+
 ## [4.8.0](https://github.com/googleapis/github-repo-automation/compare/v4.7.0...v4.8.0) (2022-01-17)
 
 
