@@ -17,6 +17,6 @@
     "@google/repo": "^4.8.1"
   },
   "devDependencies": {
-    "mocha": "^8.0.0"
+    "mocha": "^10.0.0"
   }
 }
