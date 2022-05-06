@@ -1,6 +1,6 @@
 {
   "name": "@google/repo",
-  "version": "4.8.0",
+  "version": "4.8.1",
   "repository": "googleapis/github-repo-automation",
   "description": "A tool for automating multiple GitHub repositories.",
   "engines": {
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.11",
     "@types/js-yaml": "^4.0.0",
-    "@types/mocha": "^8.0.0",
+    "@types/mocha": "^9.0.0",
     "@types/node": "^16.0.0",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^10.0.0",

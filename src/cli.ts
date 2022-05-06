@@ -112,6 +112,9 @@ switch (cli.input[0]) {
     p = listIssues(cli);
     break;
   case 'approve':
+    if (!cli.flags.author) {
+      throw new Error('You must pass an --author for the approve command.');
+    }
     p = approve(cli);
     break;
   case 'rename':
