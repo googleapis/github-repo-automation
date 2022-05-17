@@ -48,7 +48,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       '  cannot get file, skipping this repository:',
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -74,7 +74,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       '  cannot get sha of latest commit, skipping this repository:',
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -85,7 +85,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot create branch ${branch}, skipping this repository:`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -101,7 +101,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -112,7 +112,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot create pull request for branch ${branch} -> base ${repository.baseBranch}! Branch is still there.`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -125,7 +125,7 @@ async function processRepository(
     } catch (err) {
       console.warn(
         `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
-        err.toString()
+        (err as Error).toString()
       );
       return;
     }

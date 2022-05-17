@@ -16,7 +16,7 @@ import * as meow from 'meow';
 import {meowFlags} from './cli';
 import {processPRs} from './lib/asyncItemIterator';
 
-export async function list(cli: meow.Result<typeof meowFlags>) {
+export async function list(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {
     commandName: 'list',
     commandNamePastTense: 'listed',

@@ -71,7 +71,7 @@ export const meowFlags: {
   author: {type: 'string'},
   yespleasedoit: {type: 'boolean'},
 };
-const meowOptions: meow.Options<typeof meowFlags> = {
+const meowOptions: meow.Options<meow.AnyFlags> = {
   flags: meowFlags,
 };
 

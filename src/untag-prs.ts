@@ -26,14 +26,14 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   } catch (err) {
     console.warn(
       `    error trying to untag PR ${pr.html_url}:`,
-      err.toString()
+      (err as Error).toString()
     );
     return false;
   }
   return true;
 }
 
-export async function untag(cli: meow.Result<typeof meowFlags>) {
+export async function untag(cli: meow.Result<meow.AnyFlags>) {
   name = cli.input[1];
   return processPRs(cli, {
     commandName: 'untag',

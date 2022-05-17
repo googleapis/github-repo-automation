@@ -49,7 +49,7 @@ function print(res: {stdout: string; stderr: string}) {
  * Clone all repositories into ~/.repo.
  * If repo already exists, fetch and reset.
  */
-export async function sync(cli: meow.Result<typeof meowFlags>) {
+export async function sync(cli: meow.Result<meow.AnyFlags>) {
   const repos = await getRepos();
   const rootPath = await getRootPath();
   const dirs = await readdir(rootPath);
@@ -81,7 +81,7 @@ export async function sync(cli: meow.Result<typeof meowFlags>) {
   orb.succeed('Repo sync complete.');
 }
 
-export async function exec(cli: meow.Result<typeof meowFlags>) {
+export async function exec(cli: meow.Result<meow.AnyFlags>) {
   const command = cli.input.slice(1);
   const rootPath = await getRootPath();
 

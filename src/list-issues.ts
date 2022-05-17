@@ -22,7 +22,7 @@ async function processMethod(repository: GitHubRepository, issue: Issue) {
   return true;
 }
 
-export async function listIssues(cli: meow.Result<typeof meowFlags>) {
+export async function listIssues(cli: meow.Result<meow.AnyFlags>) {
   return processIssues(cli, {
     commandName: 'list-issues',
     commandNamePastTense: 'listed',

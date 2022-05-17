@@ -39,7 +39,7 @@ async function retryException<T>(
       return result;
     } catch (err) {
       if (i < retryStrategy.length) {
-        debug(`operation failed: ${err.toString()}`);
+        debug(`operation failed: ${(err as Error).toString()}`);
         const delay = nextDelay(retryStrategy[i]);
         debug(`retrying in ${delay}ms`);
         await delayMs(delay);
@@ -99,7 +99,7 @@ export interface PRIteratorOptions extends IteratorOptions {
   processMethod: (
     repository: GitHubRepository,
     item: PullRequest,
-    cli: meow.Result<typeof meowFlags>
+    cli: meow.Result<meow.AnyFlags>
   ) => Promise<boolean>;
 }
 
@@ -107,7 +107,7 @@ export interface IssueIteratorOptions extends IteratorOptions {
   processMethod: (
     repository: GitHubRepository,
     item: Issue,
-    cli: meow.Result<typeof meowFlags>
+    cli: meow.Result<meow.AnyFlags>
   ) => Promise<boolean>;
 }
 
@@ -126,7 +126,7 @@ export interface IteratorOptions {
  * @param {string[]} args Command line arguments.
  */
 async function process(
-  cli: meow.Result<typeof meowFlags>,
+  cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions,
   processIssues = false
 ) {
@@ -206,9 +206,9 @@ async function process(
           scanned++;
           orb1.text = `[${scanned}/${repos.length}] Scanning repos for PRs`;
         } catch (err) {
-          error = `cannot list open ${
-            processIssues ? 'issue' : 'PR'
-          }s: ${err.toString()}`;
+          error = `cannot list open ${processIssues ? 'issue' : 'PR'}s: ${(
+            err as Error
+          ).toString()}`;
         }
       };
     })
@@ -343,7 +343,7 @@ async function process(
 
 // Shorthand for processing list of PRs:
 export async function processPRs(
-  cli: meow.Result<typeof meowFlags>,
+  cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions
 ) {
   return process(cli, options, false);
@@ -351,7 +351,7 @@ export async function processPRs(
 
 // Shorthand for processing list of issues:
 export async function processIssues(
-  cli: meow.Result<typeof meowFlags>,
+  cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions
 ) {
   return process(cli, options, true);

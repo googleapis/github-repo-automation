@@ -61,7 +61,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       '  callback function threw an exception, skipping this repository',
-      err ? err.stack : ''
+      err ? (err as Error).stack : ''
     );
     return;
   }
@@ -85,7 +85,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       '  cannot get sha of latest commit, skipping this repository:',
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -96,7 +96,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot create branch ${branch}, skipping this repository:`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -120,7 +120,7 @@ async function processRepository(
     } catch (err) {
       console.warn(
         `  cannot read file ${filePath}, skipping this repository:`,
-        err.toString()
+        (err as Error).toString()
       );
       return;
     }
@@ -147,7 +147,7 @@ async function processRepository(
     } catch (err) {
       console.warn(
         `  cannot commit file ${filePath} to branch ${branch}, skipping this repository:`,
-        err.toString()
+        (err as Error).toString()
       );
       return;
     }
@@ -159,7 +159,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot create pull request for branch ${branch}! Branch is still there.`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -172,7 +172,7 @@ async function processRepository(
     } catch (err) {
       console.warn(
         `  cannot request review for pull request #${pullRequestNumber}! Pull request is still there.`,
-        err.toString()
+        (err as Error).toString()
       );
       return;
     }
