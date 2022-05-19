@@ -4,6 +4,17 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [5.0.0](https://github.com/googleapis/github-repo-automation/compare/v4.8.1...v5.0.0) (2022-05-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* update library to use Node 12 (#595)
+
+### Build System
+
+* update library to use Node 12 ([#595](https://github.com/googleapis/github-repo-automation/issues/595)) ([a10f39d](https://github.com/googleapis/github-repo-automation/commit/a10f39dcb2cfc3f7a39c0c22b76509dc55d7b3ee))
+
 ### [4.8.1](https://github.com/googleapis/github-repo-automation/compare/v4.8.0...v4.8.1) (2022-04-12)
 
 
