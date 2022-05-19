@@ -30,7 +30,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
-export async function approve(cli: meow.Result<typeof meowFlags>) {
+export async function approve(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {
     commandName: 'approve',
     commandNamePastTense: 'approved',

@@ -44,7 +44,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       '  cannot get file, skipping this repository:',
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }
@@ -75,7 +75,7 @@ async function processRepository(
   } catch (err) {
     console.warn(
       `  cannot commit file ${path} to branch ${branch}, skipping this repository:`,
-      err.toString()
+      (err as Error).toString()
     );
     return;
   }

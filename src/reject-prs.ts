@@ -27,13 +27,16 @@ import {processPRs} from './lib/asyncItemIterator';
 async function processMethod(
   repository: GitHubRepository,
   pr: PullRequest,
-  cli: meow.Result<typeof meowFlags>
+  cli: meow.Result<meow.AnyFlags>
 ) {
   const ref = pr.head.ref;
   try {
     await repository.closePullRequest(pr);
   } catch (err) {
-    console.warn('    cannot close pull request, skipping:', err.toString());
+    console.warn(
+      '    cannot close pull request, skipping:',
+      (err as Error).toString()
+    );
     return false;
   }
 
@@ -52,7 +55,7 @@ async function processMethod(
   return true;
 }
 
-export async function reject(cli: meow.Result<typeof meowFlags>) {
+export async function reject(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {
     commandName: 'reject',
     commandActive: 'rejecting',

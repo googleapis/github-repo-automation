@@ -19,7 +19,6 @@
  */
 
 import * as meow from 'meow';
-import {meowFlags} from './cli';
 
 import {GitHubRepository, PullRequest} from './lib/github';
 import {processPRs} from './lib/asyncItemIterator';
@@ -35,7 +34,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   } catch (err) {
     console.warn(
       '    cannot get sha of latest commit to the base branch, skipping:',
-      err.toString()
+      (err as Error).toString()
     );
     return false;
   }
@@ -47,7 +46,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
     } catch (err) {
       console.warn(
         `    cannot update branch for PR ${htmlUrl}, skipping:`,
-        err.toString()
+        (err as Error).toString()
       );
       return false;
     }
@@ -56,7 +55,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
-export async function update(cli: meow.Result<typeof meowFlags>) {
+export async function update(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {
     commandName: 'update',
     commandActive: 'updating',

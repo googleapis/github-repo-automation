@@ -90,7 +90,6 @@ describe('Config', () => {
     console.error = () => {};
     getConfig('./config3.yaml').catch(err => {
       assert(err instanceof Error);
-      delete console.error;
       done();
     });
   });

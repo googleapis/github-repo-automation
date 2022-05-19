@@ -174,7 +174,9 @@ async function checkSamplesPackageDependency(
     });
   } catch (err) {
     logger.error(
-      `${repository.name}: [!] cannot download package.json: ${err.toString()}`
+      `${repository.name}: [!] cannot download package.json: ${(
+        err as Error
+      ).toString()}`
     );
     return;
   }
@@ -202,9 +204,9 @@ async function checkSamplesPackageDependency(
     }
   } catch (err) {
     logger.error(
-      `${
-        repository.name
-      }: cannot check samples package dependencies: ${err.toString()}`
+      `${repository.name}: cannot check samples package dependencies: ${(
+        err as Error
+      ).toString()}`
     );
   }
 }
@@ -223,7 +225,9 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
     });
   } catch (err) {
     logger.error(
-      `${repository.name}: [!] cannot download README.md: ${err.toString()}`
+      `${repository.name}: [!] cannot download README.md: ${(
+        err as Error
+      ).toString()}`
     );
     return;
   }

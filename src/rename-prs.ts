@@ -25,7 +25,7 @@ async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   return true;
 }
 
-export async function rename(cli: meow.Result<typeof meowFlags>) {
+export async function rename(cli: meow.Result<meow.AnyFlags>) {
   if (cli.input.length < 2) {
     console.log('New title name must present.');
     return;

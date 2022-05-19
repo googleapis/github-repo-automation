@@ -21,18 +21,21 @@ import {processPRs} from './lib/asyncItemIterator';
 async function processMethod(
   repository: GitHubRepository,
   pr: PullRequest,
-  cli: meow.Result<typeof meowFlags>
+  cli: meow.Result<meow.AnyFlags>
 ) {
   try {
     await repository.tagPullRequest(pr, cli.input.slice(1));
   } catch (err) {
-    console.warn(`    error trying to tag PR ${pr.html_url}:`, err.toString());
+    console.warn(
+      `    error trying to tag PR ${pr.html_url}:`,
+      (err as Error).toString()
+    );
     return false;
   }
   return true;
 }
 
-export async function tag(cli: meow.Result<typeof meowFlags>) {
+export async function tag(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {
     commandName: 'tag',
     commandActive: 'tagging',
