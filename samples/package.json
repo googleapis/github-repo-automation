@@ -14,7 +14,7 @@
     "test": "mocha system-test"
   },
   "dependencies": {
-    "@google/repo": "^5.0.0"
+    "@google/repo": "^4.8.1"
   },
   "devDependencies": {
     "mocha": "^8.0.0"
