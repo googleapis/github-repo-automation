@@ -20,8 +20,8 @@
 
 import * as meow from 'meow';
 
-import {GitHubRepository, PullRequest} from './lib/github';
-import {processPRs} from './lib/asyncItemIterator';
+import {GitHubRepository, PullRequest} from './lib/github.js';
+import {processPRs} from './lib/asyncItemIterator.js';
 
 async function processMethod(repository: GitHubRepository, pr: PullRequest) {
   const htmlUrl = pr.html_url;

@@ -19,8 +19,8 @@
 
 import {request, GaxiosResponse} from 'gaxios';
 
-import {getConfig} from './lib/config';
-import {GitHub, GitHubRepository} from './lib/github';
+import {GetConfig} from './lib/config.js';
+import {GitHub, GitHubRepository} from './lib/github.js';
 
 /**
  * Logs and counts errors and warnings to console with fancy coloring.
@@ -278,7 +278,7 @@ async function checkReadmeLinks(logger: Logger, repository: GitHubRepository) {
  * @param {Logger} logger Logger object.
  */
 async function checkAllRepositories(logger: Logger) {
-  const config = await getConfig();
+  const config = await GetConfig.getConfig();
   const github = new GitHub(config);
   const repos = await github.getRepositories();
   let index = 0;

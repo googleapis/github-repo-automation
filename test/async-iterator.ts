@@ -16,16 +16,15 @@
  * @fileoverview Unit tests for lib/asyncItemIterator.js.
  */
 
-import * as assert from 'assert';
-import meow = require('meow');
-import {meowFlags} from '../src/cli';
+import assert from 'assert';
+import meow from 'meow';
 import {describe, it} from 'mocha';
-import * as nock from 'nock';
+import nock from 'nock';
 import * as sinon from 'sinon';
 
-import {GitHubRepository, PullRequest} from '../src/lib/github';
-import * as config from '../src/lib/config';
-import {processPRs} from '../src/lib/asyncItemIterator';
+import {GitHubRepository, PullRequest} from '../src/lib/github.js';
+import * as config from '../src/lib/config.js';
+import {processPRs} from '../src/lib/asyncItemIterator.js';
 
 nock.disableNetConnect();
 
@@ -34,7 +33,7 @@ describe('asyncItemIterator', () => {
     sinon.restore();
   });
   it('should retry list operation on failure', async () => {
-    sinon.stub(config, 'getConfig').resolves({
+    sinon.stub(config.GetConfig, 'getConfig').resolves({
       githubToken: 'abc123',
       clonePath: '/foo/bar',
       retryStrategy: [5, 10, 20],
@@ -46,7 +45,7 @@ describe('asyncItemIterator', () => {
         title: '.*',
         retry: true,
       },
-    } as unknown as meow.Result<typeof meowFlags>;
+    } as unknown as ReturnType<typeof meow>;
     const githubRequests = nock('https://api.github.com')
       .get(
         '/search/repositories?per_page=100&page=1&q=org%3Agoogleapis%20language%3Atypescript%20language%3Ajavascript%20is%3Apublic%20archived%3Afalse'
@@ -78,7 +77,7 @@ describe('asyncItemIterator', () => {
     githubRequests.done();
   });
   it('should retry process method if it returns false', async () => {
-    sinon.stub(config, 'getConfig').resolves({
+    sinon.stub(config.GetConfig, 'getConfig').resolves({
       githubToken: 'abc123',
       clonePath: '/foo/bar',
       retryStrategy: [5, 10, 20],
@@ -90,7 +89,7 @@ describe('asyncItemIterator', () => {
         title: '.*',
         retry: true,
       },
-    } as unknown as meow.Result<typeof meowFlags>;
+    } as unknown as ReturnType<typeof meow>;
     const githubRequests = nock('https://api.github.com')
       .get(
         '/search/repositories?per_page=100&page=1&q=org%3Agoogleapis%20language%3Atypescript%20language%3Ajavascript%20is%3Apublic%20archived%3Afalse'

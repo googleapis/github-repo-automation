@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import * as meow from 'meow';
-import {meowFlags} from './cli';
 
-import {GitHubRepository, Issue} from './lib/github';
-import {processIssues} from './lib/asyncItemIterator';
+import {GitHubRepository, Issue} from './lib/github.js';
+import {processIssues} from './lib/asyncItemIterator.js';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function processMethod(repository: GitHubRepository, issue: Issue) {
   return true;

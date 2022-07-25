@@ -13,14 +13,13 @@
 // limitations under the License.
 
 import * as meow from 'meow';
-import {meowFlags} from '../cli';
 import Q from 'p-queue';
-import ora = require('ora');
+import ora from 'ora';
 import {debuglog} from 'util';
 const debug = debuglog('repo');
 
-import * as configLib from './config';
-import {GitHub, GitHubRepository, PullRequest, Issue} from './github';
+import * as configLib from './config.js';
+import {GitHub, GitHubRepository, PullRequest, Issue} from './github.js';
 
 /**
  * Retry the promise returned by a function if the promise throws
@@ -157,7 +156,7 @@ async function process(
   // processing many repos in a row to avoid rate limits:
   const delay: number = cli.flags.delay ? Number(cli.flags.delay) : 500;
   const retry: boolean = cli.flags.retry ? Boolean(cli.flags.retry) : false;
-  const config = await configLib.getConfig();
+  const config = await configLib.GetConfig.getConfig();
   const retryStrategy = retry
     ? config.retryStrategy ?? [3000, 6000, 15000, 30000, 60000]
     : [];

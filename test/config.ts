@@ -16,14 +16,14 @@
  * @fileoverview Unit tests for lib/config.js.
  */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {describe, it} from 'mocha';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as os from 'os';
 import * as path from 'path';
 
-import {Config, getConfig} from '../src/lib/config';
+import {Config, GetConfig} from '../src/lib/config.js';
 
 import * as tmp from 'tmp-promise';
 
@@ -62,24 +62,24 @@ describe('Config', () => {
   });
 
   it('should read default configuration file', async () => {
-    const config = await getConfig();
+    const config = await GetConfig.getConfig();
     assert.deepStrictEqual(config, configObject1);
   });
 
   it('should return individual values', async () => {
-    const config = await getConfig();
+    const config = await GetConfig.getConfig();
     assert.strictEqual(config.githubToken, configObject1.githubToken);
     assert.deepStrictEqual(config.repos, configObject1.repos);
   });
 
   it('should accept configuration filename', async () => {
-    const config = await getConfig('./config2.yaml');
+    const config = await GetConfig.getConfig('./config2.yaml');
     assert.deepStrictEqual(config, configObject2);
   });
 
   it('should read environment variable', async () => {
     process.env.REPO_CONFIG_PATH = './config2.yaml';
-    const config = await getConfig();
+    const config = await GetConfig.getConfig();
     delete process.env.REPO_CONFIG_PATH;
     assert.deepStrictEqual(config, configObject2);
   });
@@ -88,7 +88,7 @@ describe('Config', () => {
     // This check will be disabled in the new gts
     /* eslint-disable @typescript-eslint/no-empty-function */
     console.error = () => {};
-    getConfig('./config3.yaml').catch(err => {
+    GetConfig.getConfig('./config3.yaml').catch(err => {
       assert(err instanceof Error);
       done();
     });

@@ -20,15 +20,14 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as meow from 'meow';
-import {meowFlags} from './cli';
-import ora = require('ora');
+import ora from 'ora';
 import Q from 'p-queue';
 import * as path from 'path';
 import {promisify} from 'util';
 
-import {getConfig} from './lib/config';
-import {GitHub} from './lib/github';
-import * as logger from './lib/logger';
+import {GetConfig} from './lib/config.js';
+import {GitHub} from './lib/github.js';
+import * as logger from './lib/logger.js';
 
 const mkdir = promisify(fs.mkdir);
 const readdir = promisify(fs.readdir);
@@ -128,14 +127,14 @@ export async function exec(cli: meow.Result<meow.AnyFlags>) {
 }
 
 async function getRepos() {
-  const config = await getConfig();
+  const config = await GetConfig.getConfig();
   const github = new GitHub(config);
   const repos = await github.getRepositories();
   return repos.filter(x => !x.repository.archived);
 }
 
 async function getRootPath() {
-  const config = await getConfig();
+  const config = await GetConfig.getConfig();
   const repoPath = config.clonePath;
   if (!fs.existsSync(repoPath)) {
     await mkdir(repoPath);

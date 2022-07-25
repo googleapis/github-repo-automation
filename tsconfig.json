@@ -2,7 +2,11 @@
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "build"
+    "outDir": "build",
+    "esModuleInterop": true,
+    "lib": ["es2020"],
+    "module": "es2020",
+    "moduleResolution": "node"
   },
   "include": [
     "src/*.ts",

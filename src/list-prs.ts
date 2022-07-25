@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import * as meow from 'meow';
-import {meowFlags} from './cli';
-import {processPRs} from './lib/asyncItemIterator';
+import {processPRs} from './lib/asyncItemIterator.js';
 
 export async function list(cli: meow.Result<meow.AnyFlags>) {
   return processPRs(cli, {

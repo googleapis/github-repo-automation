@@ -23,11 +23,10 @@ import * as path from 'path';
 import {promisify} from 'util';
 const exec = promisify(child_process.exec);
 const readFile = promisify(fs.readFile);
-/* eslint-disable @typescript-eslint/no-var-requires */
-const tmp = require('tmp-promise');
+import * as tmp from 'tmp-promise';
 
-import {GitHub, GitHubRepository} from './github';
-import {getConfig} from './config';
+import {GitHub, GitHubRepository} from './github.js';
+import {GetConfig} from './config.js';
 
 /**
  * Updates files in the cloned repository and sends a pull request with
@@ -221,7 +220,7 @@ export async function updateRepo(options: UpdateRepoOptions) {
   const comment = options.comment || '';
   const reviewers = options.reviewers || [];
 
-  const config = await getConfig();
+  const config = await GetConfig.getConfig();
   const github = new GitHub(config);
   const repos = await github.getRepositories();
   for (const repository of repos) {

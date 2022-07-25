@@ -14,66 +14,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {main as apply} from './apply-change';
-import {list} from './list-prs';
-import {listIssues} from './list-issues';
-import {approve} from './approve-prs';
-import {rename} from './rename-prs';
-import {reject} from './reject-prs';
-import {update} from './update-prs';
-import {merge} from './merge-prs';
-import {main as check} from './repo-check';
-import {sync, exec} from './sync';
-import * as meow from 'meow';
-import * as updateNotifier from 'update-notifier';
-import {tag} from './tag-prs';
-import {untag} from './untag-prs';
-/* eslint-disable @typescript-eslint/no-var-requires */
-const pkg = require('../../package.json');
+import {main as apply} from './apply-change.js';
+import {list} from './list-prs.js';
+import {listIssues} from './list-issues.js';
+import {approve} from './approve-prs.js';
+import {rename} from './rename-prs.js';
+import {reject} from './reject-prs.js';
+import {update} from './update-prs.js';
+import {merge} from './merge-prs.js';
+import {main as check} from './repo-check.js';
+import {sync, exec} from './sync.js';
+import meow from 'meow';
+import updateNotifier from 'update-notifier';
+import {tag} from './tag-prs.js';
+import {untag} from './untag-prs.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import {fileURLToPath} from 'url';
 
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const pkg = JSON.parse(
+  fs.readFileSync(path.join(dirname, '..', '..', 'package.json')).toString()
+);
 updateNotifier({pkg}).notify();
-
-export const meowFlags: {
-  [key: string]: {type: 'string' | 'boolean' | 'number'; alias?: string};
-} = {
-  branch: {
-    type: 'string',
-    alias: 'b',
-  },
-  message: {
-    type: 'string',
-    alias: 'm',
-  },
-  comment: {
-    type: 'string',
-    alias: 'c',
-  },
-  reviewers: {
-    type: 'string',
-    alias: 'r',
-  },
-  silent: {
-    type: 'boolean',
-    alias: 'q',
-  },
-  title: {
-    type: 'string',
-    alias: 't',
-  },
-  delay: {
-    type: 'number',
-  },
-  retry: {
-    type: 'boolean',
-  },
-  auto: {type: 'boolean'},
-  concurrency: {type: 'string'},
-  author: {type: 'string'},
-  yespleasedoit: {type: 'boolean'},
-};
-const meowOptions: meow.Options<meow.AnyFlags> = {
-  flags: meowFlags,
-};
 
 const cli = meow(
   `
@@ -96,7 +60,45 @@ const cli = meow(
     $ repo exec -- git status
     $ repo exec --concurrency 10 -- git status
 `,
-  meowOptions
+  {
+    importMeta: import.meta,
+    flags: {
+      branch: {
+        type: 'string',
+        alias: 'b',
+      },
+      message: {
+        type: 'string',
+        alias: 'm',
+      },
+      comment: {
+        type: 'string',
+        alias: 'c',
+      },
+      reviewers: {
+        type: 'string',
+        alias: 'r',
+      },
+      silent: {
+        type: 'boolean',
+        alias: 'q',
+      },
+      title: {
+        type: 'string',
+        alias: 't',
+      },
+      delay: {
+        type: 'number',
+      },
+      retry: {
+        type: 'boolean',
+      },
+      auto: {type: 'boolean'},
+      concurrency: {type: 'string'},
+      author: {type: 'string'},
+      yespleasedoit: {type: 'boolean'},
+    },
+  }
 );
 
 if (cli.input.length < 1) {
