@@ -11,6 +11,7 @@ branchProtectionRules:
       - lint
       - test (14)
       - test (16)
+      - test (18)
       - cla/google
       - windows
       - OwlBot Post Processor
