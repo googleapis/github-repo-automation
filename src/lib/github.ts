@@ -17,7 +17,7 @@
  */
 
 import {Gaxios, GaxiosPromise, GaxiosOptions} from 'gaxios';
-import {Config} from './config';
+import {Config} from './config.js';
 import {debuglog} from 'util';
 const debug = debuglog('repo');
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import chalk = require('chalk');
+import chalk from 'chalk';
 import * as fs from 'fs';
 import {Writable} from 'stream';
 

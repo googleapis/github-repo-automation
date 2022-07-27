@@ -18,11 +18,10 @@
  */
 
 import * as childProcess from 'child_process';
-import * as commandLineUsage from 'command-line-usage';
-import {updateRepo, UpdateRepoOptions} from './lib/update-repo';
-import {question} from './lib/question';
-import * as meow from 'meow';
-import {meowFlags} from './cli';
+import commandLineUsage from 'command-line-usage';
+import {updateRepo, UpdateRepoOptions} from './lib/update-repo.js';
+import {question} from './lib/question.js';
+import meow from 'meow';
 
 // tslint:disable-next-line:no-any
 const exec = (command: string, options?: object): Promise<string> =>
@@ -120,7 +119,7 @@ async function getFilesToCommit() {
  * @param {Object} options Options object, as returned by meow.
  * @returns {Boolean} True if OK to continue, false otherwise.
  */
-function checkOptions(cli: meow.Result<typeof meowFlags>) {
+function checkOptions(cli: ReturnType<typeof meow>) {
   if (cli.flags.help) {
     console.log(commandLineUsage(helpSections));
     return false;
@@ -164,10 +163,7 @@ function checkOptions(cli: meow.Result<typeof meowFlags>) {
  * @returns {Promise<string[]>} A promise resolving to a list of files to
  * commit.
  */
-async function updateCallback(
-  cli: meow.Result<typeof meowFlags>,
-  repoPath: string
-) {
+async function updateCallback(cli: ReturnType<typeof meow>, repoPath: string) {
   const cwd = process.cwd();
   try {
     process.chdir(repoPath);
@@ -202,7 +198,7 @@ async function updateCallback(
 /**
  * Main function.
  */
-export async function main(cli: meow.Result<typeof meowFlags>) {
+export async function main(cli: ReturnType<typeof meow>) {
   if (!checkOptions(cli)) {
     return;
   }

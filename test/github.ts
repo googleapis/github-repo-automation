@@ -16,16 +16,16 @@
  * @fileoverview Unit tests for lib/github.js.
  */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {describe, it} from 'mocha';
-import * as nock from 'nock';
-import {Config} from '../src/lib/config';
+import nock from 'nock';
+import {Config} from '../src/lib/config.js';
 import {
   getClient,
   GitHub,
   GitHubRepository,
   Repository,
-} from '../src/lib/github';
+} from '../src/lib/github.js';
 
 nock.disableNetConnect();
 

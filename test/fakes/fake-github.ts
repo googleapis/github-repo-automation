@@ -17,8 +17,8 @@
  */
 
 import * as crypto from 'crypto';
-import {Config} from '../../src/lib/config';
-import {Repository} from '../../src/lib/github';
+import {Config} from '../../src/lib/config.js';
+import {Repository} from '../../src/lib/github.js';
 
 function hash(input: string) {
   return crypto.createHash('md5').update(input).digest('hex');
