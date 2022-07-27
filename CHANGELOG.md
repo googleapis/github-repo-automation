@@ -4,6 +4,17 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [6.0.0](https://github.com/googleapis/github-repo-automation/compare/v5.0.0...v6.0.0) (2022-07-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* ESM, drop API, drop Node 12 support (#611)
+
+### Bug Fixes
+
+* ESM, drop API, drop Node 12 support ([#611](https://github.com/googleapis/github-repo-automation/issues/611)) ([47834fe](https://github.com/googleapis/github-repo-automation/commit/47834fee545f742e8fcb606e897f3a21575bfdc1))
+
 ## [5.0.0](https://github.com/googleapis/github-repo-automation/compare/v4.8.1...v5.0.0) (2022-05-19)
 
 
