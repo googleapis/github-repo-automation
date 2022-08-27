@@ -25,6 +25,7 @@ import * as sinon from 'sinon';
 import {GitHubRepository, PullRequest} from '../src/lib/github.js';
 import * as config from '../src/lib/config.js';
 import {processPRs} from '../src/lib/asyncItemIterator.js';
+import {deleteCache} from '../src/lib/cache.js';
 
 nock.disableNetConnect();
 
@@ -77,6 +78,97 @@ describe('asyncItemIterator', () => {
     });
     githubRequests.done();
   });
+
+  it('should use cache', async () => {
+    await deleteCache(
+      {
+        repository: {
+          owner: {
+            login: 'googleapis',
+          },
+          name: 'foo',
+        },
+      } as GitHubRepository,
+      'prs'
+    );
+    sinon.stub(config.GetConfig, 'getConfig').resolves({
+      githubToken: 'abc123',
+      clonePath: '/foo/bar',
+      repoSearch:
+        'org:googleapis language:typescript language:javascript is:public archived:false',
+    });
+    const cli = {
+      flags: {
+        title: '.*',
+        retry: true,
+        nocache: false,
+      },
+    } as unknown as ReturnType<typeof meow>;
+    const githubRequests = nock('https://api.github.com')
+      // for the first invocation
+      .get(
+        '/search/repositories?per_page=100&page=1&q=org%3Agoogleapis%20language%3Atypescript%20language%3Ajavascript%20is%3Apublic%20archived%3Afalse'
+      )
+      .reply(200, {
+        items: [
+          {
+            full_name: 'googleapis/foo',
+            default_branch: 'main',
+          },
+        ],
+      })
+      .get('/repos/googleapis/foo/pulls?state=open&page=1')
+      .reply(200, [
+        {
+          title: 'feat: foo pull request',
+          html_url: 'http://example.com/pr/2',
+        },
+      ])
+      .get('/repos/googleapis/foo/pulls?state=open&page=2')
+      .reply(200)
+      // just the repositories for the second invocation
+      .get(
+        '/search/repositories?per_page=100&page=1&q=org%3Agoogleapis%20language%3Atypescript%20language%3Ajavascript%20is%3Apublic%20archived%3Afalse'
+      )
+      .reply(200, {
+        items: [
+          {
+            full_name: 'googleapis/foo',
+            default_branch: 'main',
+          },
+        ],
+      });
+
+    // First invocation: fill the cache
+    await processPRs(cli, {
+      commandName: 'update',
+      commandActive: 'updating',
+      commandNamePastTense: 'updated',
+      commandDesc:
+        'Iterates over all PRs matching the regex, and updates them, to the latest on the base branch.',
+      processMethod: async () => {
+        return true;
+      },
+    });
+
+    // Second invocation: must use the cache
+    const titles: string[] = [];
+    await processPRs(cli, {
+      commandName: 'update',
+      commandActive: 'updating',
+      commandNamePastTense: 'updated',
+      commandDesc:
+        'Iterates over all PRs matching the regex, and updates them, to the latest on the base branch.',
+      processMethod: async (_repo: unknown, pr: {title: string}) => {
+        titles.push(pr.title);
+        return true;
+      },
+    });
+    githubRequests.done();
+    assert.strictEqual(titles.length, 1);
+    assert.strictEqual(titles[0], 'feat: foo pull request');
+  });
+
   it('should retry process method if it returns false', async () => {
     sinon.stub(config.GetConfig, 'getConfig').resolves({
       githubToken: 'abc123',

@@ -102,3 +102,16 @@ export async function saveToCache(
     unlock();
   }
 }
+
+export async function deleteCache(repo: GitHubRepository, type: CacheType) {
+  try {
+    await lock();
+    await initCache();
+    const cacheFile = cacheFilename(repo, type);
+    if (existsSync(cacheFile)) {
+      await unlink(cacheFile);
+    }
+  } finally {
+    unlock();
+  }
+}
