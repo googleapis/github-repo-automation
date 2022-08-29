@@ -97,6 +97,7 @@ const cli = meow(
       concurrency: {type: 'string'},
       author: {type: 'string'},
       yespleasedoit: {type: 'boolean'},
+      nocache: {type: 'boolean'},
     },
   }
 );

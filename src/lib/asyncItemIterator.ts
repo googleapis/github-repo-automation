@@ -20,6 +20,7 @@ const debug = debuglog('repo');
 
 import * as configLib from './config.js';
 import {GitHub, GitHubRepository, PullRequest, Issue} from './github.js';
+import {CacheType, readFromCache, saveToCache} from './cache.js';
 
 /**
  * Retry the promise returned by a function if the promise throws
@@ -127,7 +128,7 @@ export interface IteratorOptions {
 async function process(
   cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions,
-  processIssues = false
+  type: CacheType
 ) {
   if (
     !cli.flags.title &&
@@ -175,27 +176,40 @@ async function process(
 
   const orb1 = ora(
     `[${scanned}/${repos.length}] Scanning repos for ${
-      processIssues ? 'issues' : 'PR'
+      type === 'issues' ? 'issues' : 'PR'
     }s`
   ).start();
 
   // Concurrently find all PRs or issues in all relevant repositories
+  let cached = 0;
   const q = new Q({concurrency});
   q.addAll(
     repos.map(repo => {
       return async () => {
         try {
           let localItems;
-          if (processIssues) {
-            localItems = await retryException<Issue[]>(async () => {
-              if (delay) await delayMs(nextDelay(delay));
-              return await repo.listIssues();
-            }, retryStrategy);
-          } else {
-            localItems = await retryException<PullRequest[]>(async () => {
-              if (delay) await delayMs(nextDelay(delay));
-              return await repo.listPullRequests();
-            }, retryStrategy);
+          if (!cli.flags.nocache) {
+            const cachedData = await readFromCache(repo, type);
+            if (cachedData !== null) {
+              localItems =
+                (type === 'issues' ? cachedData.issues : cachedData.prs) ?? [];
+              ++cached;
+            }
+          }
+          if (!localItems) {
+            if (type === 'issues') {
+              localItems = await retryException<Issue[]>(async () => {
+                if (delay) await delayMs(nextDelay(delay));
+                return await repo.listIssues();
+              }, retryStrategy);
+              await saveToCache(repo, type, {prs: [], issues: localItems});
+            } else {
+              localItems = await retryException<PullRequest[]>(async () => {
+                if (delay) await delayMs(nextDelay(delay));
+                return await repo.listPullRequests();
+              }, retryStrategy);
+              await saveToCache(repo, type, {prs: localItems, issues: []});
+            }
           }
           items.push(
             ...localItems.map(item => {
@@ -203,9 +217,11 @@ async function process(
             })
           );
           scanned++;
-          orb1.text = `[${scanned}/${repos.length}] Scanning repos for PRs`;
+          orb1.text = `[${scanned}/${repos.length}] Scanning repos for ${
+            type === 'issues' ? 'issue' : 'PR'
+          }`;
         } catch (err) {
-          error = `cannot list open ${processIssues ? 'issue' : 'PR'}s: ${(
+          error = `cannot list open ${type === 'issues' ? 'issue' : 'PR'}s: ${(
             err as Error
           ).toString()}`;
         }
@@ -213,6 +229,11 @@ async function process(
     })
   );
   await q.onIdle();
+  if (cached > 0) {
+    console.log(
+      `\nData for ${cached} repositories was taken from cache. Use --nocache to override.`
+    );
+  }
 
   // Filter the list of PRs or Issues to ones who match the PR title and/or the branch name
   items = items.filter(itemSet => itemSet.item.title.match(regex));
@@ -246,7 +267,7 @@ async function process(
   orb1.succeed(
     `[${scanned}/${repos.length}] repositories scanned, ${
       items.length
-    } matching ${processIssues ? 'issue' : 'PR'}s found`
+    } matching ${type === 'issues' ? 'issue' : 'PR'}s found`
   );
 
   // Concurrently process each relevant PR or Issue
@@ -260,11 +281,11 @@ async function process(
         if (title.match(regex)) {
           orb2.text = `[${processed}/${items.length}] ${
             options.commandActive
-          } ${processIssues ? 'issue' : 'PR'}s`;
+          } ${type === 'issues' ? 'issue' : 'PR'}s`;
           let result;
           // By setting the process issues flag, the iterator can be made to
           // process a list of issues rather than PR:
-          if (processIssues) {
+          if (type === 'issues') {
             const opts = options as IssueIteratorOptions;
             result = await retryBoolean(async () => {
               if (delay) await delayMs(nextDelay(delay));
@@ -293,7 +314,7 @@ async function process(
           processed++;
           orb2.text = `[${processed}/${items.length}] ${
             options.commandActive
-          } ${processIssues ? 'issue' : 'PR'}s`;
+          } ${type === 'issues' ? 'issue' : 'PR'}s`;
         }
       };
     })
@@ -301,7 +322,7 @@ async function process(
   await q.onIdle();
 
   orb2.succeed(
-    `[${processed}/${items.length}] ${processIssues ? 'issue' : 'PR'}s ${
+    `[${processed}/${items.length}] ${type === 'issues' ? 'issue' : 'PR'}s ${
       options.commandNamePastTense
     }`
   );
@@ -317,7 +338,7 @@ async function process(
 
   console.log(
     `Successfully processed: ${successful.length} ${
-      processIssues ? 'issue' : 'PR'
+      type === 'issues' ? 'issue' : 'PR'
     }s`
   );
   for (const item of successful) {
@@ -326,7 +347,9 @@ async function process(
 
   if (failed.length > 0) {
     console.log(
-      `Unable to process: ${failed.length} ${processIssues ? 'issue' : 'PR'}(s)`
+      `Unable to process: ${failed.length} ${
+        type === 'issues' ? 'issue' : 'PR'
+      }(s)`
     );
     for (const item of failed) {
       console.log(`  ${item.html_url.padEnd(maxUrlLength, ' ')} ${item.title}`);
@@ -335,7 +358,7 @@ async function process(
 
   if (error) {
     console.log(
-      `Error when processing ${processIssues ? 'issue' : 'PR'}s: ${error}`
+      `Error when processing ${type === 'issues' ? 'issue' : 'PR'}s: ${error}`
     );
   }
 }
@@ -345,7 +368,7 @@ export async function processPRs(
   cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions
 ) {
-  return process(cli, options, false);
+  return process(cli, options, 'prs');
 }
 
 // Shorthand for processing list of issues:
@@ -353,5 +376,5 @@ export async function processIssues(
   cli: meow.Result<meow.AnyFlags>,
   options: PRIteratorOptions | IssueIteratorOptions
 ) {
-  return process(cli, options, true);
+  return process(cli, options, 'issues');
 }
