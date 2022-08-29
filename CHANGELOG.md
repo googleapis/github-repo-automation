@@ -4,6 +4,18 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [6.1.0](https://github.com/googleapis/github-repo-automation/compare/v6.0.0...v6.1.0) (2022-08-29)
+
+
+### Features
+
+* use cache when listing PRs and issues ([#616](https://github.com/googleapis/github-repo-automation/issues/616)) ([6572a87](https://github.com/googleapis/github-repo-automation/commit/6572a87c73be076d6b685a73a2e0a1b81fa5ae55))
+
+
+### Bug Fixes
+
+* remove pip install statements ([#1546](https://github.com/googleapis/github-repo-automation/issues/1546)) ([#613](https://github.com/googleapis/github-repo-automation/issues/613)) ([a046b29](https://github.com/googleapis/github-repo-automation/commit/a046b295487d5da45597d26110effad0c15982ad))
+
 ## [6.0.0](https://github.com/googleapis/github-repo-automation/compare/v5.0.0...v6.0.0) (2022-07-27)
 
 
