@@ -16,6 +16,7 @@ import {existsSync} from 'fs';
 import {mkdir, readFile, stat, unlink, writeFile} from 'fs/promises';
 import {tmpdir} from 'os';
 import {join} from 'path';
+import {Mutex} from 'async-mutex';
 import {GitHubRepository, Issue, PullRequest} from './github';
 
 const cacheDirectory = join(tmpdir(), 'google-repo-cache');
@@ -24,23 +25,7 @@ const cacheMaxAge = 60 * 60 * 1000; // 1 hour
 export type CachedData = {issues?: Issue[]; prs?: PullRequest[]};
 export type CacheType = 'prs' | 'issues';
 
-// Quick'n'dirty mutex implementation, because it spawns multiple workers
-function sleep(interval: number) {
-  return new Promise(resolve => setTimeout(resolve, interval));
-}
-
-let locked = false;
-
-async function lock() {
-  while (locked) {
-    await sleep(Math.random() * 100);
-  }
-  locked = true;
-}
-
-function unlock() {
-  locked = false;
-}
+const mutex = new Mutex();
 
 async function initCache() {
   if (!existsSync(cacheDirectory)) {
@@ -58,8 +43,8 @@ function cacheFilename(repo: GitHubRepository, type: CacheType) {
 }
 
 export async function readFromCache(repo: GitHubRepository, type: CacheType) {
+  const release = await mutex.acquire();
   try {
-    await lock();
     await initCache();
     const cacheFile = cacheFilename(repo, type);
     if (!existsSync(cacheFile)) {
@@ -77,7 +62,7 @@ export async function readFromCache(repo: GitHubRepository, type: CacheType) {
     const json = JSON.parse(content.toString()) as CachedData;
     return json;
   } finally {
-    unlock();
+    release();
   }
 }
 
@@ -86,8 +71,8 @@ export async function saveToCache(
   type: CacheType,
   data: CachedData
 ) {
+  const release = await mutex.acquire();
   try {
-    await lock();
     await initCache();
     const cacheFile = cacheFilename(repo, type);
     if (!data.issues) {
@@ -99,19 +84,19 @@ export async function saveToCache(
     const content = JSON.stringify(data, null, '  ');
     await writeFile(cacheFile, content);
   } finally {
-    unlock();
+    release();
   }
 }
 
 export async function deleteCache(repo: GitHubRepository, type: CacheType) {
+  const release = await mutex.acquire();
   try {
-    await lock();
     await initCache();
     const cacheFile = cacheFilename(repo, type);
     if (existsSync(cacheFile)) {
       await unlink(cacheFile);
     }
   } finally {
-    unlock();
+    release();
   }
 }
