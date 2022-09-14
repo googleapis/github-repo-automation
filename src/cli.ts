@@ -25,19 +25,8 @@ import {merge} from './merge-prs.js';
 import {main as check} from './repo-check.js';
 import {sync, exec} from './sync.js';
 import meow from 'meow';
-import updateNotifier from 'update-notifier';
 import {tag} from './tag-prs.js';
 import {untag} from './untag-prs.js';
-import * as fs from 'fs';
-import * as path from 'path';
-import {fileURLToPath} from 'url';
-
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-const pkg = JSON.parse(
-  fs.readFileSync(path.join(dirname, '..', '..', 'package.json')).toString()
-);
-updateNotifier({pkg}).notify();
 
 const cli = meow(
   `
