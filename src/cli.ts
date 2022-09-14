@@ -27,7 +27,6 @@ import {sync, exec} from './sync.js';
 import meow from 'meow';
 import {tag} from './tag-prs.js';
 import {untag} from './untag-prs.js';
-import * as path from 'path';
 
 const cli = meow(
   `
