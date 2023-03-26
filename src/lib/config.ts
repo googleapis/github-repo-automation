@@ -58,6 +58,7 @@ export class GetConfig {
 export interface Config {
   githubToken: string;
   clonePath: string;
+  baseUrl?: string;
   repos?: [
     {
       org: string;
