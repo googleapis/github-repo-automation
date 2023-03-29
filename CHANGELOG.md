@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [6.2.0](https://github.com/googleapis/github-repo-automation/compare/v6.1.3...v6.2.0) (2023-03-29)
+
+
+### Features
+
+* Make possible to read custom baseUrl from config.yaml  ([#631](https://github.com/googleapis/github-repo-automation/issues/631)) ([9862fe5](https://github.com/googleapis/github-repo-automation/commit/9862fe5e38645d930e68d469588d07b19d317f62))
+
 ## [6.1.3](https://github.com/googleapis/github-repo-automation/compare/v6.1.2...v6.1.3) (2023-03-07)
 
 
