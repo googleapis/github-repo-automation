@@ -23,7 +23,7 @@ const debug = debuglog('repo');
 
 export function getClient(config: Config) {
   const client = new Gaxios({
-    baseURL: 'https://api.github.com',
+    baseURL: config.baseUrl || 'https://api.github.com',
     headers: {Authorization: `token ${config.githubToken}`},
   });
   // Report rate limit information if NODE_DEBUG=repo set.

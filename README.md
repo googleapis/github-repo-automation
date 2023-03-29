@@ -32,8 +32,9 @@ $ npm install -g @google/repo
 You need to make your own [`config.yaml`](https://github.com/googleapis/github-repo-automation/blob/main/config.yaml.default) and put your GitHub token there. Example:
 
 ```
+baseUrl: https://git.mycompany.com/api/v3 # optional, if you are using GitHub Enterprise
 githubToken: your-github-token
-clonePath: /User/beckwith/.repo # optional
+clonePath: /User/my-user/.repo # optional
 repoSearch: org:googleapis language:typescript language:javascript is:public archived:false
 ```
 
