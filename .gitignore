@@ -10,3 +10,5 @@ build
 .vscode
 package-lock.json
 __pycache__
+.DS_Store
+.repo
