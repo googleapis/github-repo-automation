@@ -4,6 +4,17 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [7.0.0](https://github.com/googleapis/github-repo-automation/compare/v6.2.0...v7.0.0) (2023-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Node 14 ([#647](https://github.com/googleapis/github-repo-automation/issues/647))
+
+### Miscellaneous Chores
+
+* Upgrade to Node 14 ([#647](https://github.com/googleapis/github-repo-automation/issues/647)) ([119377f](https://github.com/googleapis/github-repo-automation/commit/119377fdb37549eaa8a53efada7dce0f54cfb32b))
+
 ## [6.2.0](https://github.com/googleapis/github-repo-automation/compare/v6.1.3...v6.2.0) (2023-03-29)
 
 
