@@ -64,7 +64,7 @@ export interface Config {
       org: string;
       regex?: string;
       name?: string;
-    }
+    },
   ];
   repoSearch?: string;
   retryStrategy?: Array<number>;
