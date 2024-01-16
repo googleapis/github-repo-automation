@@ -25,7 +25,7 @@
     "gaxios": "^6.0.1",
     "js-yaml": "^4.1.0",
     "meow": "^11.0.0",
-    "ora": "^6.1.2",
+    "ora": "^8.0.0",
     "p-queue": "^7.2.0",
     "text-encoding-shim": "^1.0.5",
     "tmp-promise": "^3.0.3",
