@@ -41,7 +41,7 @@
     "@types/sinon": "^10.0.13",
     "c8": "^9.0.0",
     "gts": "^5.0.0",
-    "linkinator": "^4.0.2",
+    "linkinator": "^3.0.2",
     "mocha": "^10.0.0",
     "nock": "^13.2.9",
     "proxyquire": "^2.1.3",
