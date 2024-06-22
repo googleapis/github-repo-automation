@@ -32,7 +32,7 @@
     "tweetsodium": "0.0.5"
   },
   "devDependencies": {
-    "@compodoc/compodoc": "1.1.19",
+    "@compodoc/compodoc": "1.1.25",
     "@types/js-yaml": "^4.0.5",
     "@types/meow": "6.0.0",
     "@types/mocha": "^9.1.1",
