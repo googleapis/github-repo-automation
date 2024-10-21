@@ -31,12 +31,12 @@ module.exports = {
   source: {
     excludePattern: '(^|\\/|\\\\)[._]',
     include: [
-      'src',
+      'build/src',
     ],
     includePattern: '\\.js$'
   },
   templates: {
-    copyright: 'Copyright 2019 Google, LLC.',
+    copyright: 'Copyright 2024 Google, LLC.',
     includeDate: false,
     sourceFiles: false,
     systemName: '@google/repo',
