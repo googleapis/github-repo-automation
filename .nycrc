@@ -13,8 +13,8 @@
     "**/protos",
     "**/test",
     "**/*.d.ts",
-    ".jsdoc.js",
-    "**/.jsdoc.js",
+    ".jsdoc.cjs",
+    "**/.jsdoc.cjs",
     "karma.conf.js",
     "webpack-tests.config.js",
     "webpack.config.js"

@@ -54,7 +54,7 @@
   },
   "scripts": {
     "lint": "gts check",
-    "docs": "jsdoc -c .jsdoc.js",
+    "docs": "jsdoc -c .jsdoc.json",
     "test": "c8 mocha build/test",
     "check": "gts check",
     "clean": "gts clean",
