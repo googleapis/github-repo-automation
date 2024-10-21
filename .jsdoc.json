@@ -1,0 +1,34 @@
+{
+  "opts": {
+    "readme": "./README.md",
+    "package": "./package.json",
+    "template": "./node_modules/jsdoc-fresh",
+    "recurse": true,
+    "verbose": true,
+    "destination": "./docs/"
+  },
+  "plugins": [
+    "plugins/markdown",
+    "jsdoc-region-tag"
+  ],
+  "source": {
+    "excludePattern": "(^|\\/|\\\\)[._]",
+    "include": [
+      "build/src"
+    ],
+    "includePattern": "\\.js$"
+  },
+  "templates": {
+    "copyright": "Copyright 2024 Google, LLC.",
+    "includeDate": "false",
+    "sourceFiles": false,
+    "systemName": "@google/repo",
+    "theme": "lumen",
+    "default": {
+      "outputSourceFiles": false
+    }
+  },
+  "markdown": {
+    "idInHeadings": true
+  }
+}
