@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google/repo?activeTab=versions
 
+## [7.0.1](https://github.com/googleapis/github-repo-automation/compare/v7.0.0...v7.0.1) (2025-01-23)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency async-mutex to ^0.5.0 ([#662](https://github.com/googleapis/github-repo-automation/issues/662)) ([b924f94](https://github.com/googleapis/github-repo-automation/commit/b924f94cf5f43d7d7507a9246ba884af6596c487))
+
 ## [7.0.0](https://github.com/googleapis/github-repo-automation/compare/v6.2.0...v7.0.0) (2023-08-10)
 
 
